@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="8978a65d-ff93-49a6-8d11-44a758bf115d" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/jaime/app/productos/[categoria]/page.tsx" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
+  <component name="ProjectId" id="3Dh1Tn2X8IdpEQ6v8JNF60kvWxw" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "master",
+    "junie.onboarding.icon.badge.shown": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.lookFeel",
+    "to.speed.mode.migration.done": "true",
+    "ts.external.directory.path": "C:\\Users\\paulo\\WebstormProjects\\Mineria\\jaime\\backend\\node_modules\\typescript\\lib",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-e03c56caf84a-JavaScript-WS-252.23892.411" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="8978a65d-ff93-49a6-8d11-44a758bf115d" name="Changes" comment="" />
+      <created>1778719498035</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1778719498035</updated>
+      <workItem from="1778719499523" duration="4139000" />
+      <workItem from="1780096022780" duration="11318000" />
+      <workItem from="1780185240796" duration="9238000" />
+      <workItem from="1780269828635" duration="8750000" />
+      <workItem from="1780341108421" duration="18639000" />
+      <workItem from="1780443402624" duration="11545000" />
+      <workItem from="1780518246745" duration="13940000" />
+      <workItem from="1780624591701" duration="3565000" />
+      <workItem from="1780688650814" duration="12401000" />
+      <workItem from="1780784611013" duration="10373000" />
+      <workItem from="1780865324693" duration="16460000" />
+      <workItem from="1780950444348" duration="1535000" />
+      <workItem from="1780955869890" duration="12850000" />
+      <workItem from="1781044417440" duration="9790000" />
+      <workItem from="1781122239689" duration="14629000" />
+      <workItem from="1781385691340" duration="8000" />
+      <workItem from="1783992645312" duration="4546000" />
+      <workItem from="1784158258880" duration="9367000" />
+      <workItem from="1784253836223" duration="632000" />
+      <workItem from="1784597718438" duration="3217000" />
+      <workItem from="1784672318664" duration="543000" />
+      <workItem from="1784767390132" duration="4914000" />
+      <workItem from="1790988991435" duration="2054000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
