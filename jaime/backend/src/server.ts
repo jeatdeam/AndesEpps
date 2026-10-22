@@ -50,6 +50,8 @@ app.use((error : unknown, _req : Request, res : Response, _next : NextFunction) 
     res.status(500).json({error: 'Ocurrió un error en el servidor. Inténtalo de nuevo.'});
 });
 
-app.listen(3001, () => {
-    console.log(`Servidor en http://localhost:3001`);
+// en Render el puerto lo asigna la plataforma; en local se usa el 3001
+const PORT = Number(process.env.PORT) || 3001;
+app.listen(PORT, () => {
+    console.log(`Servidor en el puerto ${PORT}`);
 });
