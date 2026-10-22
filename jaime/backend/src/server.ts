@@ -5,6 +5,7 @@ import cors from "cors";
 import controladores from "./controllers/controladores";
 import banners from "./controllers/banners";
 import cotizaciones from "./controllers/cotizaciones";
+import webhookWhatsapp from "./controllers/webhookWhatsapp";
 import autenticacion, {soloAdministrador} from "./autenticacion";
 import {CARPETA_UPLOADS} from "./almacen";
 import {subirImagenes, subirImagenBanner} from "./subidas";
@@ -14,6 +15,9 @@ const app = express();
 // la cookie de sesion solo viaja si el origen esta permitido (URL_TIENDA, separadas por coma si son varias)
 const origenes = (process.env.URL_TIENDA || 'http://localhost:3000').split(',').map(o => o.trim().replace(/\/+$/, ''));
 app.use(cors({origin: origenes, credentials: true}));
+// el webhook de WhatsApp necesita el cuerpo sin procesar para comprobar la firma de meta, por eso va antes de express.json
+app.get('/webhook/whatsapp', webhookWhatsapp.verificar);
+app.post('/webhook/whatsapp', express.raw({type: 'application/json'}), webhookWhatsapp.recibir);
 app.use(express.json());
 app.use("/uploads", express.static(CARPETA_UPLOADS));
 
