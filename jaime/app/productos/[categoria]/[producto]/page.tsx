@@ -1,4 +1,5 @@
 import axios from 'axios';
+import {API} from '@/app/configuracion';
 import {notFound} from 'next/navigation';
 import {Product} from '../../../tipos/elementsType'
 // import {Product} from '@/app/tipos/elementsType'
@@ -19,7 +20,7 @@ export default async function Page ({params} : {params : Promise<{producto:strin
     const {producto} = await params;
     // el parametro llega codificado (ej. "diel%C3%A9ctrico") cuando tiene tildes o ñ
     const productoNormalizado = decodeURIComponent(producto).replace(/-+/g, ' ')
-    const {data} = await axios.get(`http://localhost:3001/getProductosCategoria`);
+    const {data} = await axios.get(`${API}/getProductosCategoria`);
     const elementoFiltrado = data.filter( (producto : Product, _ : number) => producto.name === productoNormalizado )[0]
     if (!elementoFiltrado) notFound();
 
