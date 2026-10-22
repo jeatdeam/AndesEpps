@@ -265,8 +265,10 @@ export default function Home() {
   return (
       <div className={""}>
           {/* el slider mide lo mismo que el menu flotante del header (mismas clases de ancho que en Header.tsx).
+              desde lg tiene 750px de alto; debajo conserva la proporcion que tiene a 1024px y se achica con la ventana,
+              asi el recorte de la imagen es el mismo en cualquier ancho.
               cada imagen y cada desplazamiento usan 100cqw (el ancho de este contenedor) en lugar de 100vw (el de la pantalla) */}
-          <div  className={`relative h-[750px] flex flex-col justify-center w-[calc(100%-16px)] sm:w-[94%] 2xl:w-[max(74%,1240px)] mx-auto overflow-hidden rounded-[12px] [container-type:inline-size] group/slider`}>
+          <div  className={`relative aspect-[32/25] lg:aspect-auto lg:h-[750px] flex flex-col justify-center w-[calc(100%-16px)] sm:w-[94%] 2xl:w-[max(74%,1240px)] mx-auto overflow-hidden rounded-[12px] [container-type:inline-size] group/slider`}>
               {/* las imagenes ya traen el degradado del fondo de la pagina, por eso no necesitan difuminar sus bordes */}
               <div className={"absolute inset-0"}>
                   <div ref={containerImg} style={{transform : `translateX(${-100}cqw)`}} className={`${ changeRight ? "-translate-x-[100cqw] transition-transform duration-500 ease-in-out" : ""} ${changeLeft ? "translate-x-[100cqw] transition-transform duration-500 ease-in-out" : ""} flex h-full `}>
