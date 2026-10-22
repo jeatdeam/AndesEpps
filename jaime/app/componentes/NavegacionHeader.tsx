@@ -1,6 +1,7 @@
 'use client'
 import Link from 'next/link';
 import axios from 'axios';
+import {API} from '@/app/configuracion';
 import {usePathname} from 'next/navigation';
 import {useState, useEffect, useRef} from 'react';
 import {Product} from '../tipos/elementsType';
@@ -23,7 +24,7 @@ const useCategorias = () => {
     const [categorias, setCategorias] = useState<string[]>([]);
 
     useEffect(() => {
-        axios.get<Product[]>('http://localhost:3001/getProductosCategoria')
+        axios.get<Product[]>(`${API}/getProductosCategoria`)
             .then(({data}) => setCategorias([...new Set(data.map(p => p.categoria))].sort((a, b) => a.localeCompare(b, 'es'))))
             .catch(() => setCategorias([]));
     }, []);

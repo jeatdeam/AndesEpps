@@ -1,11 +1,12 @@
 import {Product} from '../tipos/elementsType'
+import {API} from '@/app/configuracion';
 import {CatalogoProductos} from '@/app/componentes/CatalogoProductos';
 
 export default async function Page({searchParams} : {searchParams : Promise<{[key : string] : string | string[] | undefined}>}) {
 
     const parametros = await searchParams;
 
-    const response = await fetch("http://localhost:3001/getProductosCategoria")
+    const response = await fetch(`${API}/getProductosCategoria`)
     const productos : Product[] = await response.json();
 
     return(

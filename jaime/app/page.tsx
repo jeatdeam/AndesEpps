@@ -2,6 +2,7 @@
 import Image from "next/image";
 import {useState, useEffect, useRef} from 'react';
 import Link from 'next/link';
+import {API} from './configuracion';
 import {Product, Banners} from './tipos/elementsType'
 import {CarruselMasBuscados} from './componentes/CarruselMasBuscados'
 import {BannersOfertas, BannersNuevos} from './componentes/BannersInicio'
@@ -111,7 +112,7 @@ export default function Home() {
 
         const obtenerCategorias = async () => {
 
-            const response = await fetch('http://localhost:3001/getProductosCategoria');
+            const response = await fetch(`${API}/getProductosCategoria`);
             const result = await response.json();
             console.log(result);
             setCategorias(result);
@@ -120,7 +121,7 @@ export default function Home() {
         obtenerCategorias();
 
         // si fallan los banners del dashboard se muestran solo los automaticos
-        fetch('http://localhost:3001/banners')
+        fetch(`${API}/banners`)
             .then(response => response.json())
             .then(setBanners)
             .catch(() => setBanners(null));

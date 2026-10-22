@@ -1,6 +1,7 @@
 'use client'
 import {useState, useEffect} from 'react';
 import axios from 'axios'
+import {API} from '@/app/configuracion';
 import {Product} from '@/app/tipos/elementsType'
 
 
@@ -16,7 +17,7 @@ export const SideOptions =  ({producto} : {producto : string}) => {
     useEffect( () => {
 
         const peticionProductos = async () => {
-            const {data} = await axios.get('http://localhost:3001/getProductosCategoria');
+            const {data} = await axios.get(`${API}/getProductosCategoria`);
             const productoFiltrado = data.filter((el : Product, index: number) => el.name === producto.replace(/-+/g,' '))
             console.log(productoFiltrado)
             setProductoObtenido(productoFiltrado)
