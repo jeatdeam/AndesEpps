@@ -4,6 +4,7 @@ import {AnimacionLottie} from "@/app/componentes/AnimacionLottie";
 import pochita from "@/app/animaciones/pochita.json";
 import jeatdeam from "@/app/animaciones/jeatdeam.json";
 import {TextoEscritura} from "@/app/componentes/TextoEscritura";
+import {doto} from "@/app/fuentes";
 
 const iconoClase = "w-[18px] h-[18px] shrink-0";
 
@@ -221,9 +222,9 @@ export const Footer = () => {
             </div>
 
             {/* creditos del desarrollador */}
-            <div className={"border-t border-white/70"}>
+            <div className={"bg-neutral-900"}>
                 <div className={"w-[90%] xl:w-[80%] mx-auto py-[10px] flex flex-col sm:flex-row items-center justify-center gap-[6px] sm:gap-[12px]"}>
-                    <TextoEscritura texto={"Desarrollado y diseñado por:"} className={"text-[12px] font-semibold uppercase tracking-[.14em] text-slate-600"}/>
+                    <TextoEscritura texto={"Desarrollado y diseñado por:"} className={`${doto.className} text-[14px] font-bold uppercase tracking-[.14em] text-neutral-300`}/>
                     <a href="https://github.com/jeatdeam" target="_blank" rel="noopener noreferrer" aria-label={"Portafolio de jeatdeam en GitHub"} className={"flex items-center shrink-0 hover:opacity-80 transition-opacity"}>
                         {/* la firma escrita queda ~9px arriba del centro de su animacion y con ~24px vacios a la izquierda:
                             se baja y se corre para que quede alineada con el texto */}
