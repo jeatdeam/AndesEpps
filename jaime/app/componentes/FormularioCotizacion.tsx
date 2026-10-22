@@ -3,7 +3,7 @@ import axios from 'axios';
 import {useState, useEffect, useRef, type ReactNode} from 'react';
 import {useControladorCotizacion} from '@/app/controladoresGlobales/controladorCotizacion';
 import type {ProductoCarrito} from '@/app/controladoresGlobales/controladorCarrito';
-import {API} from '@/app/configuracion';
+import {API, WHATSAPP_TIENDA} from '@/app/configuracion';
 import {poppins} from '@/app/fuentes';
 import {formatoPrecio, IconoCotizar} from './elementosProducto';
 import {IconoWhatsapp} from './Footer';
@@ -72,7 +72,7 @@ const OpcionCanal = ({canal, marcado, disponible, cambiar} : {canal : Canal, mar
             <span className={`size-[34px] shrink-0 rounded-[10px] flex items-center justify-center ${colorIcono}`}>{icono}</span>
             <span className={"flex-1 min-w-0 flex flex-col"}>
                 <span className={"text-[14px] font-semibold"}>{titulo}</span>
-                <span className={"text-[12px] text-gray-500"}>{bloqueado ? 'No disponible por ahora' : 'Recibe el PDF aquí'}</span>
+                <span className={"text-[12px] text-gray-500"}>{bloqueado ? 'No disponible por ahora' : canal === 'whatsapp' ? 'Envíala a nuestro WhatsApp' : 'Recibe el PDF aquí'}</span>
             </span>
             <span aria-hidden={true} className={`size-[20px] shrink-0 rounded-[6px] border-2 flex items-center justify-center transition-colors ${marcado ? "bg-slate-900 border-slate-900 text-white" : "border-gray-300"}`}>
                 {marcado && <svg viewBox="0 0 24 24" className={"w-[13px] h-[13px]"} fill="none" stroke="currentColor" strokeWidth={3.5} strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 5 5L20 7"/></svg>}
@@ -138,6 +138,33 @@ const EnvioCanal = ({canal, archivo, destinoInicial, estadoInicial, disponible} 
     )
 }
 
+// en la pantalla final: abre el whatsapp del cliente con un mensaje a la tienda que lleva el enlace del pdf.
+// no pasa por el servidor ni por la API de Meta, el cliente solo tiene que darle a enviar
+const EnlaceWhatsapp = ({respuesta, cliente} : {respuesta : Respuesta, cliente : DatosCliente}) => {
+    const {titulo, icono, colorIcono} = CANALES.whatsapp;
+    const mensaje = [
+        `Hola, solicité la cotización N° ${respuesta.numero} por ${formatoPrecio(respuesta.total)}.`,
+        `Nombre: ${cliente.nombre}`,
+        cliente.empresa && `Empresa: ${cliente.empresa}`,
+        cliente.documento && `RUC/DNI: ${cliente.documento}`,
+        `PDF: ${API}${respuesta.pdf}`,
+    ].filter(Boolean).join('\n');
+
+    return (
+        <li className={"flex flex-col gap-[10px] rounded-[12px] border border-gray-200 p-[12px]"}>
+            <div className={"flex items-center gap-[10px]"}>
+                <span className={`size-[32px] shrink-0 rounded-[10px] flex items-center justify-center ${colorIcono}`}>{icono}</span>
+                <span className={"flex-1 text-[14px] font-semibold"}>{titulo}</span>
+            </div>
+            <p className={"text-[12px] text-gray-500"}>Se abrirá WhatsApp con tu cotización lista. Solo dale a enviar y te atenderemos por ahí.</p>
+            <a href={`https://wa.me/${WHATSAPP_TIENDA}?text=${encodeURIComponent(mensaje)}`} target={"_blank"} rel={"noopener noreferrer"} className={"flex items-center justify-center gap-[8px] rounded-[10px] bg-green-600 px-[14px] py-[10px] text-[13px] font-semibold text-white hover:bg-green-700 transition-colors"}>
+                <IconoWhatsapp className={"w-[16px] h-[16px]"}/>
+                Enviar por WhatsApp
+            </a>
+        </li>
+    )
+}
+
 const Modal = ({productosIniciales, cerrar} : {productosIniciales : ProductoCarrito[], cerrar : () => void}) => {
 
     const [productos, setProductos] = useState(productosIniciales);
@@ -167,8 +194,9 @@ const Modal = ({productosIniciales, cerrar} : {productosIniciales : ProductoCarr
         return () => window.removeEventListener('keydown', alPresionar);
     }, [enviando, cerrar]);
 
-    // un canal se usa si el cliente lo marco y el servidor lo tiene configurado
-    const usar = (canal : Canal) => elegidos[canal] && disponibles?.[canal] === true;
+    // whatsapp va por enlace wa.me y siempre esta disponible; el correo depende de que el servidor lo tenga configurado
+    const disponible = (canal : Canal) => canal === 'whatsapp' || disponibles?.[canal] === true;
+    const usar = (canal : Canal) => elegidos[canal] && disponible(canal);
     const algunCanal = usar('correo') || usar('whatsapp');
 
     const cambiar = (campo : keyof DatosCliente) => (e : React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
@@ -187,7 +215,8 @@ const Modal = ({productosIniciales, cerrar} : {productosIniciales : ProductoCarr
         try {
             const {data} = await axios.post<Respuesta>(`${API}/cotizaciones`, {
                 cliente,
-                canales : {correo: usar('correo'), whatsapp: usar('whatsapp')},
+                // whatsapp no lo envia el servidor: el cliente lo manda desde la pantalla final
+                canales : {correo: usar('correo'), whatsapp: false},
                 productos : productos.map(p => ({id: p.id, cantidad: p.cantidad})),
             });
             setRespuesta(data);
@@ -235,9 +264,8 @@ const Modal = ({productosIniciales, cerrar} : {productosIniciales : ProductoCarr
                         </div>
 
                         <ul className={"w-full max-w-[460px] flex flex-col gap-[10px]"}>
-                            {(['correo', 'whatsapp'] as const).map(canal => (
-                                <EnvioCanal key={canal} canal={canal} archivo={respuesta.archivo} destinoInicial={cliente[canal]} estadoInicial={respuesta[canal]} disponible={disponibles?.[canal] === true}/>
-                            ))}
+                            <EnvioCanal canal={'correo'} archivo={respuesta.archivo} destinoInicial={cliente.correo} estadoInicial={respuesta.correo} disponible={disponible('correo')}/>
+                            <EnlaceWhatsapp respuesta={respuesta} cliente={cliente}/>
                         </ul>
 
                         <div className={"flex flex-wrap justify-center gap-[10px] mt-[4px]"}>
@@ -285,7 +313,7 @@ const Modal = ({productosIniciales, cerrar} : {productosIniciales : ProductoCarr
                                 <h3 className={"text-[12px] font-semibold uppercase tracking-[.12em] text-gray-500 leading-none"}>¿Dónde quieres recibirla?</h3>
                                 <div className={"grid grid-cols-1 sm:grid-cols-2 gap-[10px]"}>
                                     {(['correo', 'whatsapp'] as const).map(canal => (
-                                        <OpcionCanal key={canal} canal={canal} marcado={usar(canal)} disponible={disponibles && disponibles[canal]} cambiar={marcado => setElegidos({...elegidos, [canal]: marcado})}/>
+                                        <OpcionCanal key={canal} canal={canal} marcado={usar(canal)} disponible={canal === 'whatsapp' ? true : disponibles && disponibles[canal]} cambiar={marcado => setElegidos({...elegidos, [canal]: marcado})}/>
                                     ))}
                                 </div>
                                 <p className={"text-[12px] text-gray-500"}>Puedes elegir los dos. El PDF siempre se puede descargar al terminar.</p>
@@ -300,12 +328,13 @@ const Modal = ({productosIniciales, cerrar} : {productosIniciales : ProductoCarr
                                     <Campo etiqueta={"Empresa"} opcional>
                                         <input maxLength={120} autoComplete={"organization"} value={cliente.empresa} onChange={cambiar('empresa')} className={claseInput}/>
                                     </Campo>
-                                    {/* el correo y el whatsapp solo son obligatorios si se eligio ese medio */}
+                                    {/* el correo solo es obligatorio si se eligio ese medio; el whatsapp es un dato de contacto
+                                        (la cotizacion por whatsapp la manda el propio cliente a la tienda) */}
                                     <Campo etiqueta={"Correo electrónico"} opcional={!usar('correo')}>
                                         <input type={"email"} required={usar('correo')} maxLength={150} autoComplete={"email"} placeholder={"tucorreo@empresa.com"} value={cliente.correo} onChange={cambiar('correo')} className={claseInput}/>
                                     </Campo>
-                                    <Campo etiqueta={"WhatsApp"} opcional={!usar('whatsapp')}>
-                                        <input type={"tel"} required={usar('whatsapp')} inputMode={"tel"} pattern={"[0-9 +()\\-]{9,20}"} title={"Celular de 9 dígitos o número con código de país"} autoComplete={"tel"} placeholder={"987 654 321"} value={cliente.whatsapp} onChange={cambiar('whatsapp')} className={claseInput}/>
+                                    <Campo etiqueta={"WhatsApp"} opcional>
+                                        <input type={"tel"} inputMode={"tel"} pattern={"[0-9 +()\\-]{9,20}"} title={"Celular de 9 dígitos o número con código de país"} autoComplete={"tel"} placeholder={"987 654 321"} value={cliente.whatsapp} onChange={cambiar('whatsapp')} className={claseInput}/>
                                     </Campo>
                                     <Campo etiqueta={"RUC o DNI"} opcional>
                                         <input inputMode={"numeric"} pattern={"\\d{8}|\\d{11}"} title={"DNI de 8 dígitos o RUC de 11"} maxLength={11} value={cliente.documento} onChange={cambiar('documento')} className={claseInput}/>
