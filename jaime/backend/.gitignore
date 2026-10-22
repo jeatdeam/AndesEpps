@@ -6,6 +6,9 @@ node_modules
 
 /src/generated/prisma
 
+# codigo compilado (npm run build lo genera en cada deploy)
+/dist
+
 # productos e imagenes que se crean desde el dashboard
 /data
 /uploads
