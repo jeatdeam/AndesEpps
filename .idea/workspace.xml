@@ -5,7 +5,29 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8978a65d-ff93-49a6-8d11-44a758bf115d" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/jaime/app/productos/[categoria]/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jaime/app/componentes/Footer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/jaime/app/componentes/Footer.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jaime/app/componentes/Header.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/jaime/app/componentes/Header.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jaime/app/componentes/InputBusqueda.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/jaime/app/componentes/InputBusqueda.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jaime/app/controladoresGlobales/controladorIconoSearch.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/jaime/app/controladoresGlobales/controladorIconoSearch.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jaime/app/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/jaime/app/globals.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jaime/app/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/jaime/app/layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jaime/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/jaime/app/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jaime/app/productos/[categoria]/[producto]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/jaime/app/productos/[categoria]/[producto]/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jaime/app/productos/[categoria]/[producto]/sideOptions.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/jaime/app/productos/[categoria]/[producto]/sideOptions.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jaime/app/productos/[categoria]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/jaime/app/productos/[categoria]/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jaime/app/productos/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/jaime/app/productos/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jaime/app/tipos/elementsType.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/jaime/app/tipos/elementsType.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jaime/backend/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/jaime/backend/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jaime/backend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/jaime/backend/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jaime/backend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/jaime/backend/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jaime/backend/prisma.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/jaime/backend/prisma.config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jaime/backend/prisma/schema.prisma" beforeDir="false" afterPath="$PROJECT_DIR$/jaime/backend/prisma/schema.prisma" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jaime/backend/src/controllers/controladores.ts" beforeDir="false" afterPath="$PROJECT_DIR$/jaime/backend/src/controllers/controladores.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jaime/backend/src/server.ts" beforeDir="false" afterPath="$PROJECT_DIR$/jaime/backend/src/server.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jaime/backend/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/jaime/backend/tsconfig.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jaime/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/jaime/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jaime/pnpm-lock.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/jaime/pnpm-lock.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,25 +45,25 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "master",
-    "junie.onboarding.icon.badge.shown": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.lookFeel",
-    "to.speed.mode.migration.done": "true",
-    "ts.external.directory.path": "C:\\Users\\paulo\\WebstormProjects\\Mineria\\jaime\\backend\\node_modules\\typescript\\lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\paulo\\WebstormProjects\\Mineria\\jaime\\backend\\node_modules\\typescript\\lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -79,6 +101,18 @@
       <workItem from="1784672318664" duration="543000" />
       <workItem from="1784767390132" duration="4914000" />
       <workItem from="1790988991435" duration="2054000" />
+      <workItem from="1792278812640" duration="12295000" />
+      <workItem from="1792299245553" duration="13234000" />
+      <workItem from="1792381491308" duration="3056000" />
+      <workItem from="1792442225708" duration="373000" />
+      <workItem from="1792442618719" duration="642000" />
+      <workItem from="1792443285013" duration="10148000" />
+      <workItem from="1792497163808" duration="723000" />
+      <workItem from="1792497903216" duration="26719000" />
+      <workItem from="1792586543255" duration="21519000" />
+      <workItem from="1792641284486" duration="1489000" />
+      <workItem from="1792643423039" duration="4117000" />
+      <workItem from="1792667814870" duration="682000" />
     </task>
     <servers />
   </component>

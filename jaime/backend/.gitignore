@@ -1,5 +1,11 @@
 node_modules
 # Keep environment variables out of version control
 .env
+# la plantilla de variables no tiene secretos y si se versiona
+!.env.example
 
 /src/generated/prisma
+
+# productos e imagenes que se crean desde el dashboard
+/data
+/uploads

@@ -10,7 +10,7 @@ type controlador = {
 
 
 export const useControladorIconoSearch = create<controlador>((set)=> ({
-    statusIcon : true,
+    statusIcon : false,
     changeStatusIcon : () => set((state)=>({
         statusIcon : !state.statusIcon,
     })),

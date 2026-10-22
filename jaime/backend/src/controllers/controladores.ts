@@ -1,15 +1,6 @@
 import type {Request, Response} from 'express';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
-
-// console.log(prisma);
-
-
-
-
-
-
+import {leerProductos, buscarProducto, crearProducto as insertarProducto, actualizarProducto as guardarProducto, eliminarProducto as borrarProducto, type Producto} from '../almacen';
+import {MAX_IMAGENES, borrarImagenes, type ArchivoSubido} from '../subidas';
 
 const cat: string[] = [
     "sistemas de bloqueo",
@@ -27,149 +18,156 @@ const cat: string[] = [
 ];
 
 
-const products = [
-    {
-        id : 1,
-        name : 'casco de seguridad',
-        precio: 150,
-        stock : 110,
-        img : ["https://res.cloudinary.com/dfwtyxxba/image/upload/v1752811244/cuack_camu_4_kqwlso.webp","https://res.cloudinary.com/dfwtyxxba/image/upload/v1752811230/cuack_camu_2_nmx790.webp","https://res.cloudinary.com/dfwtyxxba/image/upload/v1752811230/cuack_camu_3_exd229.webp","https://res.cloudinary.com/dfwtyxxba/image/upload/v1752415297/DeWatermark.ai_1752414337753-Photoroom_gxlax4.webp"],
-        descripcionPrimaria : "lorem ipsum dolor sit amet consetetur lorem ipsum dolor sit amet consetetur",
-        descripcionSecundaria : ["lorem ipsum dolor sit amet consetetur 1 1 1 ","lorem ipsum dolor sit amet consetetur 2 2 2","lorem ipsum dolor sit amet consetetur 3 3 3","lorem ipsum dolor sit amet consetetur 4 4 4"],
-        caracteristicas : ["aqui esta la descripcion uno","aqui esta la decripcion dos","aqui esta la descripcion 3","aqui esta la descripcion 4"],
-        informacionAdicional : ["color del objeto","marca del objeto","material del objeto","tipo de producto"],
-        categoria : "proteccion para soldador",
-    },
-    {
-        id : 2,
-        name : 'chompa de seguridad',
-        precio: 250,
-        stock : 220,
-        img : ["https://res.cloudinary.com/dfwtyxxba/image/upload/v1752414254/camu_camu-Photoroom_dm1ahl.webp","https://res.cloudinary.com/dfwtyxxba/image/upload/v1752414254/camu-transparente_poanwc.webp","https://res.cloudinary.com/dfwtyxxba/image/upload/v1750646066/plato_echado-Photoroom_xndrsi.webp","https://res.cloudinary.com/dfwtyxxba/image/upload/v1750643317/DeWatermark.ai_1750642722000-Photoroom_zenofw.webp"],
-        descripcionPrimaria : "lorem ipsum dolor sit amet consetetur lorem ipsum dolor sit amet consetetur",
-        descripcionSecundaria : ["lorem ipsum dolor sit amet consetetur 1 1 1 ","lorem ipsum dolor sit amet consetetur 2 2 2","lorem ipsum dolor sit amet consetetur 3 3 3","lorem ipsum dolor sit amet consetetur 4 4 4"],
-        caracteristicas : ["aqui esta la descripcion uno","aqui esta la decripcion dos","aqui esta la descripcion 3","aqui esta la descripcion 4"],
-        informacionAdicional : ["color del objeto","marca del objeto","material del objeto","tipo de producto"],
-        categoria : "proteccion facial",
-    },
-    {
-        id : 3,
-        name : 'pantalon de seguridad',
-        precio: 350,
-        stock : 330,
-        img : ["https://res.cloudinary.com/dfwtyxxba/image/upload/v1750643317/DeWatermark.ai_1750642722000-Photoroom_zenofw.webp","https://res.cloudinary.com/dfwtyxxba/image/upload/v1750642195/camu_camu-Photoroom_-_copia_yblpdv.webp","https://res.cloudinary.com/dfwtyxxba/image/upload/v1750642074/pote-invisible_kuuyuf.webp","https://res.cloudinary.com/dfwtyxxba/image/upload/v1750642048/gota_got_fino_njwj52.webp"],
-        descripcionPrimaria : "lorem ipsum dolor sit amet consetetur lorem ipsum dolor sit amet consetetur",
-        descripcionSecundaria : ["lorem ipsum dolor sit amet consetetur 1 1 1 ","lorem ipsum dolor sit amet consetetur 2 2 2","lorem ipsum dolor sit amet consetetur 3 3 3","lorem ipsum dolor sit amet consetetur 4 4 4"],
-        caracteristicas : ["aqui esta la descripcion uno","aqui esta la decripcion dos","aqui esta la descripcion 3","aqui esta la descripcion 4"],
-        informacionAdicional : ["color del objeto","marca del objeto","material del objeto","tipo de producto"],
-        categoria : "proteccion de alturas",
-    },
-    {
-        id : 4,
-        name : 'zapatos de seguridad',
-        precio: 450,
-        stock : 440,
-        img : ["https://res.cloudinary.com/dfwtyxxba/image/upload/v1750642022/cuackssito_fino_lqinny.webp","https://res.cloudinary.com/dfwtyxxba/image/upload/v1750642021/aguaje-invisible_l8kujq.webp","https://res.cloudinary.com/dfwtyxxba/image/upload/v1750642021/aguajina-invisible_oaj3qf.webpp","https://res.cloudinary.com/dfwtyxxba/image/upload/v1750556906/aguajina-sin-marca_kdx0oq.png"],
-        descripcionPrimaria : "lorem ipsum dolor sit amet consetetur lorem ipsum dolor sit amet consetetur",
-        descripcionSecundaria : ["lorem ipsum dolor sit amet consetetur 1 1 1 ","lorem ipsum dolor sit amet consetetur 2 2 2","lorem ipsum dolor sit amet consetetur 3 3 3","lorem ipsum dolor sit amet consetetur 4 4 4"],
-        caracteristicas : ["aqui esta la descripcion uno","aqui esta la decripcion dos","aqui esta la descripcion 3","aqui esta la descripcion 4"],
-        informacionAdicional : ["color del objeto","marca del objeto","material del objeto","tipo de producto"],
-        categoria : "calzado de seguridad",
-    },
-    {
-        id : 5,
-        name : 'lentes de seguridad',
-        precio: 550,
-        stock : 550,
-        img : ["https://res.cloudinary.com/dfwtyxxba/image/upload/v1750556837/aguaje-liquido-sinMarca_ldcomu.jpg","https://res.cloudinary.com/dfwtyxxba/image/upload/v1750556829/aguaje-fruta-sin-fondo_wugtgb.jpg","https://res.cloudinary.com/dfwtyxxba/image/upload/v1750556829/aguaje-cuatro-frutas-sin-logo_hc4hfl.jpg","https://res.cloudinary.com/dfwtyxxba/image/upload/v1750382848/cuack_uisdlb.webp"],
-        descripcionPrimaria : "lorem ipsum dolor sit amet consetetur lorem ipsum dolor sit amet consetetur",
-        descripcionSecundaria : ["lorem ipsum dolor sit amet consetetur 1 1 1 ","lorem ipsum dolor sit amet consetetur 2 2 2","lorem ipsum dolor sit amet consetetur 3 3 3","lorem ipsum dolor sit amet consetetur 4 4 4"],
-        caracteristicas : ["aqui esta la descripcion uno","aqui esta la decripcion dos","aqui esta la descripcion 3","aqui esta la descripcion 4"],
-        informacionAdicional : ["color del objeto","marca del objeto","material del objeto","tipo de producto"],
-        categoria : "proteccion de manos",
-    },
-    {
-        id : 6,
-        name : 'chalecos de seguridad',
-        precio: 650,
-        stock : 660,
-        img : ["https://res.cloudinary.com/dfwtyxxba/image/upload/v1745037637/visaTwo_yvy6v3.jpg","https://res.cloudinary.com/dfwtyxxba/image/upload/v1745037451/americanExpressTwo_ihb1dt.png","https://res.cloudinary.com/dfwtyxxba/image/upload/v1745037439/plinTwo_it8axc.png","https://res.cloudinary.com/dfwtyxxba/image/upload/v1745036133/yapethree_pprrrw.png"],
-        descripcionPrimaria : "lorem ipsum dolor sit amet consetetur lorem ipsum dolor sit amet consetetur",
-        descripcionSecundaria : ["lorem ipsum dolor sit amet consetetur 1 1 1 ","lorem ipsum dolor sit amet consetetur 2 2 2","lorem ipsum dolor sit amet consetetur 3 3 3","lorem ipsum dolor sit amet consetetur 4 4 4"],
-        caracteristicas : ["aqui esta la descripcion uno","aqui esta la decripcion dos","aqui esta la descripcion 3","aqui esta la descripcion 4"],
-        informacionAdicional : ["color del objeto","marca del objeto","material del objeto","tipo de producto"],
-        categoria : "proteccion corporal",
-    },
-    {
-        id : 7,
-        name : 'mamelucos se seguridad',
-        precio: 750,
-        stock : 770,
-        img : ["https://res.cloudinary.com/dfwtyxxba/image/upload/v1745034321/mastercard_ksbmak.jpg","https://res.cloudinary.com/dfwtyxxba/image/upload/v1745037637/visaTwo_yvy6v3.jpg","https://res.cloudinary.com/dfwtyxxba/image/upload/v1745297417/codigoYape_c0wwou.png","https://res.cloudinary.com/dfwtyxxba/image/upload/v1745037451/americanExpressTwo_ihb1dt.png"],
-        descripcionPrimaria : "lorem ipsum dolor sit amet consetetur lorem ipsum dolor sit amet consetetur",
-        descripcionSecundaria : ["lorem ipsum dolor sit amet consetetur 1 1 1 ","lorem ipsum dolor sit amet consetetur 2 2 2","lorem ipsum dolor sit amet consetetur 3 3 3","lorem ipsum dolor sit amet consetetur 4 4 4"],
-        caracteristicas : ["aqui esta la descripcion uno","aqui esta la decripcion dos","aqui esta la descripcion 3","aqui esta la descripcion 4"],
-        informacionAdicional : ["color del objeto","marca del objeto","material del objeto","tipo de producto"],
-        categoria : "proteccion auditiva",
-    },    {
-        id : 8,
-        name : 'maquinas de seguridad',
-        precio: 850,
-        stock : 880,
-        img : ["https://res.cloudinary.com/dfwtyxxba/image/upload/v1744128099/agresivo-two_zh22jb.webp","https://res.cloudinary.com/dfwtyxxba/image/upload/v1744128098/agresivo-three_jbct5e.webp","https://res.cloudinary.com/dfwtyxxba/image/upload/v1744128098/agresivo-one_tselei.webpp","https://res.cloudinary.com/dfwtyxxba/image/upload/v1744128098/agresivo-four_xmobis.webp"],
-        descripcionPrimaria : "lorem ipsum dolor sit amet consetetur lorem ipsum dolor sit amet consetetur",
-        descripcionSecundaria : ["lorem ipsum dolor sit amet consetetur 1 1 1 ","lorem ipsum dolor sit amet consetetur 2 2 2","lorem ipsum dolor sit amet consetetur 3 3 3","lorem ipsum dolor sit amet consetetur 4 4 4"],
-        caracteristicas : ["aqui esta la descripcion uno","aqui esta la decripcion dos","aqui esta la descripcion 3","aqui esta la descripcion 4"],
-        informacionAdicional : ["color del objeto","marca del objeto","material del objeto","tipo de producto"],
-        categoria : "proteccion visual",
-    },
-    {
-        id : 9,
-        name : 'minas de seguridad',
-        precio: 950,
-        stock : 990,
-        img : ["https://res.cloudinary.com/dfwtyxxba/image/upload/v1743982937/anquilosaurio-three_ojwluy.webp","https://res.cloudinary.com/dfwtyxxba/image/upload/v1743982937/anquilosaurio-four_mmgzlg.webp","https://res.cloudinary.com/dfwtyxxba/image/upload/v1743982937/anquilosaurio-two_apwoil.webp","https://res.cloudinary.com/dfwtyxxba/image/upload/v1743982937/anquilosaurio-one_gpass7.webp"],
-        descripcionPrimaria : "lorem ipsum dolor sit amet consetetur lorem ipsum dolor sit amet consetetur",
-        descripcionSecundaria : ["lorem ipsum dolor sit amet consetetur 1 1 1 ","lorem ipsum dolor sit amet consetetur 2 2 2","lorem ipsum dolor sit amet consetetur 3 3 3","lorem ipsum dolor sit amet consetetur 4 4 4"],
-        caracteristicas : ["aqui esta la descripcion uno","aqui esta la decripcion dos","aqui esta la descripcion 3","aqui esta la descripcion 4"],
-        informacionAdicional : ["color del objeto","marca del objeto","material del objeto","tipo de producto"],
-        categoria : "proteccion de cabeza",
-    },
-    {
-        id : 10,
-        name : 'chaleco antibalas',
-        precio: 1050,
-        stock : 1010,
-        img : ["https://res.cloudinary.com/dfwtyxxba/image/upload/v1743991324/carnotauro-two_avsert.webp","https://res.cloudinary.com/dfwtyxxba/image/upload/v1743991323/carnotauro-three_tdrfel.webp","https://res.cloudinary.com/dfwtyxxba/image/upload/v1743991321/carnotauro-one_njmu1o.webp","https://res.cloudinary.com/dfwtyxxba/image/upload/v1743991321/carnotauro-four_vvef0n.webp"],
-        descripcionPrimaria : "lorem ipsum dolor sit amet consetetur lorem ipsum dolor sit amet consetetur",
-        descripcionSecundaria : ["lorem ipsum dolor sit amet consetetur 1 1 1 ","lorem ipsum dolor sit amet consetetur 2 2 2","lorem ipsum dolor sit amet consetetur 3 3 3","lorem ipsum dolor sit amet consetetur 4 4 4"],
-        caracteristicas : ["aqui esta la descripcion uno","aqui esta la decripcion dos","aqui esta la descripcion 3","aqui esta la descripcion 4"],
-        informacionAdicional : ["color del objeto","marca del objeto","material del objeto","tipo de producto"],
-        categoria : "sistema de bloqueo",
-    }
-]
-
-
-
-
-
-
 const categorias = (req: Request, res: Response) => {
 
     res.json(cat)
 }
 
-const getProductosCategoria = (req: Request, res: Response) => {
+const getProductosCategoria = async (req: Request, res: Response) => {
 
-    res.json(products)
+    res.json(await leerProductos())
 }
 
-const getProductElegido = (req: Request, res: Response) => {
-    const { id} = req.params
-    console.log(id)
+const getProductElegido = async (req: Request, res: Response) => {
+    const producto = await buscarProducto(Number(req.params.id));
+    if (!producto) return res.status(404).json({error: 'Producto no encontrado'});
+    res.json(producto)
+}
 
-    res.json({ elegido: 'tas yendo bien chamito'})
 
+// ---------------- alta, edicion y baja de productos (dashboard) ----------------
+
+// la imagen llega como url ya guardada o como indice de un archivo nuevo dentro de req.files
+type ImagenEntrada = string | {nuevo : number};
+
+const texto = (valor : unknown) => typeof valor === 'string' ? valor.trim().replace(/\s+/g, ' ') : '';
+const lista = (valor : unknown) => Array.isArray(valor) ? valor.map(texto).filter(Boolean) : [];
+
+// nombre y categoria forman la URL publica (/productos/categoria/nombre), por eso van en minusculas y sin estos caracteres
+const CARACTERES_PROHIBIDOS = /[-/?#%]/;
+
+// subidas.ts ya guardo cada archivo (cloudinary o disco) y le anoto su url
+const descartarArchivos = (req : Request) => {
+    borrarImagenes(((req.files as ArchivoSubido[] | undefined) ?? []).map(archivo => archivo.url));
+}
+
+const construirProducto = (req : Request, productos : Producto[], anterior? : Producto) : {producto : Producto} | {error : string} => {
+
+    let datos : Record<string, unknown>;
+    try {
+        datos = JSON.parse(req.body?.datos ?? '');
+    } catch {
+        return {error: 'Los datos del producto no son válidos'};
+    }
+
+    const archivos = (req.files as ArchivoSubido[] | undefined) ?? [];
+
+    const name = texto(datos.name).toLowerCase();
+    if (!name) return {error: 'El nombre es obligatorio'};
+    if (CARACTERES_PROHIBIDOS.test(name)) return {error: 'El nombre no puede tener los caracteres - / ? # %'};
+    if (productos.some(p => p.id !== anterior?.id && p.name.toLowerCase() === name)) return {error: 'Ya existe un producto con ese nombre'};
+
+    const categoria = texto(datos.categoria).toLowerCase();
+    if (!categoria) return {error: 'La categoría es obligatoria'};
+    if (CARACTERES_PROHIBIDOS.test(categoria)) return {error: 'La categoría no puede tener los caracteres - / ? # %'};
+
+    const precio = Number(datos.precio);
+    if (datos.precio === '' || !Number.isFinite(precio) || precio < 0) return {error: 'El precio debe ser un número mayor o igual a 0'};
+
+    const stock = Number(datos.stock);
+    if (datos.stock === '' || !Number.isInteger(stock) || stock < 0) return {error: 'El stock debe ser un número entero mayor o igual a 0'};
+
+    // sin descuento (vacio o 0) el producto no esta en oferta
+    const descuento = datos.descuento === undefined || datos.descuento === '' ? 0 : Number(datos.descuento);
+    if (!Number.isInteger(descuento) || descuento < 0 || descuento > 90) return {error: 'El descuento debe ser un número entero entre 0 y 90'};
+
+    if (!Array.isArray(datos.img)) return {error: 'Las imágenes no son válidas'};
+    const img : string[] = [];
+    for (const entrada of datos.img as ImagenEntrada[]) {
+        if (typeof entrada === 'string' && entrada.trim()) img.push(entrada.trim());
+        else if (typeof entrada === 'object' && entrada && archivos[entrada.nuevo]) img.push(archivos[entrada.nuevo]!.url);
+        else return {error: 'Una de las imágenes no es válida'};
+    }
+    if (img.length === 0) return {error: 'Agrega al menos una imagen'};
+    if (img.length > MAX_IMAGENES) return {error: `Máximo ${MAX_IMAGENES} imágenes por producto`};
+
+    const producto : Producto = {
+        // en un producto nuevo la base de datos asigna el id
+        id: anterior?.id ?? 0,
+        name,
+        precio: Math.round(precio * 100) / 100,
+        stock,
+        img,
+        descripcionPrimaria: texto(datos.descripcionPrimaria),
+        descripcionSecundaria: lista(datos.descripcionSecundaria),
+        caracteristicas: lista(datos.caracteristicas),
+        informacionAdicional: lista(datos.informacionAdicional),
+        categoria,
+        normas: lista(datos.normas),
+        tallas: lista(datos.tallas),
+        colores: lista(datos.colores),
+    };
+
+    const marca = texto(datos.marca);
+    const material = texto(datos.material);
+    if (marca) producto.marca = marca;
+    if (material) producto.material = material;
+    if (descuento > 0) producto.descuento = descuento;
+    // la fecha de creacion define los "nuevos ingresos" y no cambia al editar
+    const creadoEn = anterior ? anterior.creadoEn : new Date().toISOString();
+    if (creadoEn) producto.creadoEn = creadoEn;
+    // las calificaciones vienen de los clientes, el dashboard no las edita
+    if (anterior?.calificacion !== undefined) producto.calificacion = anterior.calificacion;
+    if (anterior?.resenas !== undefined) producto.resenas = anterior.resenas;
+
+    return {producto};
+}
+
+const crearProducto = async (req : Request, res : Response) => {
+    const productos = await leerProductos();
+    const resultado = construirProducto(req, productos);
+    if ('error' in resultado) {
+        descartarArchivos(req);
+        return res.status(400).json(resultado);
+    }
+    try {
+        res.status(201).json(await insertarProducto(resultado.producto));
+    } catch (error) {
+        // si no se guardo, las imagenes recien subidas no las usa nadie
+        descartarArchivos(req);
+        throw error;
+    }
+}
+
+const actualizarProducto = async (req : Request, res : Response) => {
+    const productos = await leerProductos();
+    const anterior = productos.find(p => p.id === Number(req.params.id));
+    if (!anterior) {
+        descartarArchivos(req);
+        return res.status(404).json({error: 'Producto no encontrado'});
+    }
+    const resultado = construirProducto(req, productos, anterior);
+    if ('error' in resultado) {
+        descartarArchivos(req);
+        return res.status(400).json(resultado);
+    }
+    let producto : Producto;
+    try {
+        producto = await guardarProducto(resultado.producto);
+    } catch (error) {
+        descartarArchivos(req);
+        throw error;
+    }
+    borrarImagenes(anterior.img.filter(url => !producto.img.includes(url)));
+    res.json(producto);
+}
+
+const eliminarProducto = async (req : Request, res : Response) => {
+    const producto = await buscarProducto(Number(req.params.id));
+    if (!producto) return res.status(404).json({error: 'Producto no encontrado'});
+    await borrarProducto(producto.id);
+    borrarImagenes(producto.img);
+    res.status(204).end();
 }
 
 
@@ -177,4 +175,7 @@ export default {
     categorias,
     getProductosCategoria,
     getProductElegido,
+    crearProducto,
+    actualizarProducto,
+    eliminarProducto,
 }

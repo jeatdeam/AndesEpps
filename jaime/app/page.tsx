@@ -2,14 +2,85 @@
 import Image from "next/image";
 import {useState, useEffect, useRef} from 'react';
 import Link from 'next/link';
-import {Product} from './tipos/elementsType'
+import {Product, Banners} from './tipos/elementsType'
+import {CarruselMasBuscados} from './componentes/CarruselMasBuscados'
+import {BannersOfertas, BannersNuevos} from './componentes/BannersInicio'
+import {TituloSeccion} from './componentes/TituloSeccion'
+import {IconoWhatsapp} from './componentes/Footer'
+import {AnimacionLottie} from './componentes/AnimacionLottie'
+import {Cargando} from './componentes/Cargando'
+import pulsoWhatsapp from './animaciones/pulsoWhatsapp.json'
 
+
+// mosaico de 6 columnas (desde md):
+// fila 1 completa, fila 2 en dos mitades, fila 3 grande (2/3) + pequeña (1/3),
+// luego grupos de 4 que mezclan bloques verticales y horizontales
+const MOSAICO_INICIO = [
+    "sm:col-span-2 md:col-span-6",
+    "md:col-span-3",
+    "md:col-span-3",
+    "md:col-span-4",
+    "sm:col-span-2 md:col-span-2",
+];
+
+const MOSAICO_GRUPOS = [
+    ["md:col-span-2 md:row-span-2", "sm:col-span-2 md:col-span-4", "md:col-span-2", "md:col-span-2"],
+    ["sm:col-span-2 md:col-span-4", "md:col-span-2 md:row-span-2", "md:col-span-2", "md:col-span-2"],
+];
+
+// si sobran elementos que no completan un grupo, se reparten para llenar la fila
+const MOSAICO_SOBRANTES = [
+    [],
+    ["sm:col-span-2 md:col-span-6"],
+    ["md:col-span-3", "md:col-span-3"],
+    ["md:col-span-2", "md:col-span-2", "sm:col-span-2 md:col-span-2"],
+];
+
+const MAS_BUSCADOS_IDS = [3, 1, 7, 5, 9, 2, 10, 4];
+
+// boton de flecha del slider: oculto hasta pasar el cursor; con [@media(hover:none)] queda visible en pantallas tactiles
+const CLASE_FLECHA_SLIDER = "pointer-events-auto size-[46px] rounded-full bg-white/70 backdrop-blur-md ring-1 ring-black/5 shadow-[0_4px_14px_rgba(15,23,42,.15)] flex items-center justify-center text-slate-900 cursor-pointer opacity-0 group-hover/slider:opacity-100 focus-visible:opacity-100 focus-visible:translate-x-0 [@media(hover:none)]:opacity-100 [@media(hover:none)]:translate-x-0 hover:bg-white/90 active:scale-90 transition-all duration-300";
+
+// chevron fino de iOS (mismo trazo que las flechas de la galeria del producto)
+const ChevronIOS = ({direccion} : {direccion : 'izquierda' | 'derecha'}) => (
+    <svg viewBox="0 0 24 24" className={"w-[22px] h-[22px]"} fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden={true}>
+        <path d={direccion === 'izquierda' ? "M15 4.5 7.5 12l7.5 7.5" : "M9 4.5 16.5 12 9 19.5"}/>
+    </svg>
+)
+
+
+const claseMosaico =(index : number, total : number) => {
+    if (index < MOSAICO_INICIO.length) return MOSAICO_INICIO[index];
+    const posicion = index - MOSAICO_INICIO.length;
+    const restantes = total - MOSAICO_INICIO.length;
+    const inicioSobrantes = restantes - (restantes % 4);
+    if (posicion >= inicioSobrantes) return MOSAICO_SOBRANTES[restantes % 4][posicion - inicioSobrantes];
+    return MOSAICO_GRUPOS[Math.floor(posicion / 4) % 2][posicion % 4];
+}
+
+// separa el texto en letras para la animacion de cascada; cada palabra queda junta
+// para que el salto de linea no corte una palabra a la mitad
+const TextoCascada = ({texto} : {texto : string}) => {
+    let indice = 0;
+    return (
+        <span aria-hidden={true}>
+            {texto.split(" ").map((palabra, p) => (
+                <span key={p} className={"inline-block whitespace-nowrap"}>
+                    {[...palabra].map((letra, l) => (
+                        <span key={l} className={"letraCascada"} style={{"--i" : indice++} as React.CSSProperties}>{letra}</span>
+                    ))}
+                    {p < texto.split(" ").length - 1 && <span className={"inline-block"}>&nbsp;</span>}
+                </span>
+            ))}
+        </span>
+    );
+}
 
 export default function Home() {
 
     const containerImg = useRef<HTMLDivElement|null>(null);
-    const arrowRight = useRef<SVGSVGElement|null>(null);
-    const arrowLeft = useRef<SVGSVGElement|null>(null);
+    const arrowRight = useRef<HTMLButtonElement|null>(null);
+    const arrowLeft = useRef<HTMLButtonElement|null>(null);
     const idInterval = useRef<ReturnType<typeof setInterval> | null>(null)
     const flagInterval = useRef<boolean>(true);
     const firstImg = useRef<HTMLImageElement|null>(null);
@@ -23,7 +94,18 @@ export default function Home() {
     const [positionImg, setPositionImg] = useState<number>(0);
 
 
+
+
     const [categorias, setCategorias] = useState<Product[]|null>(null)
+    const [banners, setBanners] = useState<Banners|null>(null)
+
+    // un producto por categoria para el mosaico
+    const categoriasUnicas = (categorias ?? []).filter((el, index, arr) => arr.findIndex(p => p.categoria === el.categoria) === index);
+
+    // simulado: orden fijo de ids hasta tener datos reales de busquedas
+    const masBuscados = MAS_BUSCADOS_IDS
+        .map(id => categorias?.find(p => p.id === id))
+        .filter((p) : p is Product => !!p);
 
     useEffect(() => {
 
@@ -36,17 +118,23 @@ export default function Home() {
 
         }
         obtenerCategorias();
+
+        // si fallan los banners del dashboard se muestran solo los automaticos
+        fetch('http://localhost:3001/banners')
+            .then(response => response.json())
+            .then(setBanners)
+            .catch(() => setBanners(null));
     },[])
 
 
 
 
 
-    const [imagenes, setImagenes] = useState<string[]|null>(["https://res.cloudinary.com/dlrd1wxwd/image/upload/v1780188156/main-sample.png",
-                                                            "https://res.cloudinary.com/dlrd1wxwd/image/upload/v1780188156/cld-sample-4.jpg",
-                                                            "https://res.cloudinary.com/dlrd1wxwd/image/upload/v1780188156/cld-sample-3.jpg",
-                                                            "https://res.cloudinary.com/dlrd1wxwd/image/upload/v1780188154/samples/zoom.avif",
-                                                            "https://res.cloudinary.com/dlrd1wxwd/image/upload/v1780188154/samples/upscale-face-1.jpg"])
+    // banners de ejemplo (public/slider): marcas y ofertas ficticias hasta tener las reales
+    const [imagenes, setImagenes] = useState<string[]|null>(["/slider/casco.svg",
+                                                            "/slider/guantes.svg",
+                                                            "/slider/lentes.svg",
+                                                            "/slider/botas.svg"])
 
     const [imagenesCarrusel, setImagenesCarrusel] = useState<string[]>(["https://res.cloudinary.com/dlrd1wxwd/image/upload/v1780188143/samples/sheep.jpg",
                                                             "https://res.cloudinary.com/dlrd1wxwd/image/upload/v1780188146/samples/imagecon-group.jpg",
@@ -70,7 +158,7 @@ export default function Home() {
         setChangeRight(false);
     }
 
-    const moverDirectionImgLeft = () => {
+    const moveDirectionImgLeft = () => {
         if(!imagenes || imagenes.length === 0) return;
         setImagenes( prev => {
             if(!prev || prev.length === 0) return prev;
@@ -85,6 +173,8 @@ export default function Home() {
             if(flagInterval.current) {
                 if( !idInterval.current ) return;
                 flagInterval.current = false;
+
+
                 clearInterval(idInterval.current);
                 setChangeRight(true);
                 changeCircleRight();
@@ -102,11 +192,13 @@ export default function Home() {
         if(flagInterval.current) {
             if(!idInterval.current) return;
             flagInterval.current = false;
+
+
             clearInterval(idInterval.current);
             setChangeLeft(true);
             changeCircleLeft();
             setTimeout(()=>{
-                moverDirectionImgLeft();
+                moveDirectionImgLeft();
                 idInterval.current = setInterval(changeImgRight, 2000);
                 flagInterval.current = true;
             }, 500)
@@ -130,40 +222,32 @@ export default function Home() {
 
     }
 
-    // const movCarrusel = (mov : number) => {
-    //
-    //     if (!firstImg.current || !containerCarrusel.current) return;
-    //
-    //     const containerRect = containerCarrusel.current.parentElement?.getBoundingClientRect();
-    //     const imgRect = firstImg.current.getBoundingClientRect();
-    //
-    //
-    //     if(!containerRect) return;
-    //
-    //     console.log(containerRect.left)
-    //
-    //     if (imgRect.right + 20 <= containerRect.left) {
-    //         console.log('si se cambio de imagen');
-    //         setImagenesCarrusel(prev => [...prev.slice(1), prev[0]]);
-    //         mov = 1;
-    //     }
-    //
-    //     containerCarrusel.current.style.transform = `translateX(-${mov}px)`;
-    //
-    //     requestAnimationFrame(()=>movCarrusel(mov+1)); // aqui no se deberia de usar el post-incremento
-    //     //es decir porner movCarrusel(mov++) por que esto hace que se ejecute la funcion y recien se agregue el +1 a la variable pero
-    //     //para eso ya esta en otra funcion con su respectivo scoope y ya no es reflejado.
-    // }
-    //
-    // useEffect(() => {
-    //
-    //     const id = requestAnimationFrame(()=>movCarrusel(1));
-    //
-    //     return () => {
-    //         cancelAnimationFrame(id);
-    //     };
-    //
-    // }, []);
+    // el boton de whatsapp es fixed, pero no baja mas alla de la fila de redes sociales del footer:
+    // al llegar a ella se queda a su altura (centrado con los iconos) y sube junto con la pagina
+    const botonWhatsapp = useRef<HTMLAnchorElement|null>(null);
+    useEffect(() => {
+        const redes = document.getElementById('redes-footer');
+        if (!redes) return;
+        let cuadro = 0;
+        const ubicar = () => {
+            cancelAnimationFrame(cuadro);
+            cuadro = requestAnimationFrame(() => {
+                const boton = botonWhatsapp.current;
+                if (!boton) return;
+                const fila = redes.getBoundingClientRect();
+                const tope = window.innerHeight - (fila.top + fila.height / 2) - boton.offsetHeight / 2;
+                boton.style.bottom = `${Math.max(25, tope)}px`;
+            });
+        }
+        ubicar();
+        window.addEventListener('scroll', ubicar, {passive: true});
+        window.addEventListener('resize', ubicar);
+        return () => {
+            cancelAnimationFrame(cuadro);
+            window.removeEventListener('scroll', ubicar);
+            window.removeEventListener('resize', ubicar);
+        }
+    }, []);
 
     //interval
     useEffect(()=> {
@@ -179,22 +263,33 @@ export default function Home() {
 
   return (
       <div className={""}>
-          <div  className={`relative h-[750px] flex flex-col justify-center w-screen overflow-hidden border-2`}>
-              <div ref={containerImg} style={{transform : `translateX(${-100}vw)`}} className={`${ changeRight ? "-translate-x-[100vw] transition-transform duration-500 ease-in-out" : ""} ${changeLeft ? "translate-x-[100vw] transition-transform duration-500 ease-in-out" : ""} flex h-full `}>
-                  {
-                      imagenes &&  imagenes.map((el, index) => (
-                          <img src={el} alt="" key={index} className={"h-full min-w-screen"}/>
-                      ))
-                  }
+          {/* el slider mide lo mismo que el menu flotante del header (mismas clases de ancho que en Header.tsx).
+              cada imagen y cada desplazamiento usan 100cqw (el ancho de este contenedor) en lugar de 100vw (el de la pantalla) */}
+          <div  className={`relative h-[750px] flex flex-col justify-center w-[calc(100%-16px)] sm:w-[94%] 2xl:w-[max(74%,1240px)] mx-auto overflow-hidden rounded-[12px] [container-type:inline-size] group/slider`}>
+              {/* las imagenes ya traen el degradado del fondo de la pagina, por eso no necesitan difuminar sus bordes */}
+              <div className={"absolute inset-0"}>
+                  <div ref={containerImg} style={{transform : `translateX(${-100}cqw)`}} className={`${ changeRight ? "-translate-x-[100cqw] transition-transform duration-500 ease-in-out" : ""} ${changeLeft ? "translate-x-[100cqw] transition-transform duration-500 ease-in-out" : ""} flex h-full `}>
+                      {
+                          imagenes &&  imagenes.map((el, index) => (
+                              <img src={el} alt="" key={index} className={"h-full w-[100cqw] shrink-0 object-cover"}/>
+                          ))
+                      }
+                  </div>
               </div>
-              <div className={"absolute flex justify-between w-screen px-[10px] left-0"}>
-                  <svg ref={arrowLeft} onClick={changeImgLeft} className={"size-[40px] border"} xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z"/></svg>
-                  <svg ref={arrowRight} onClick={changeImgRight} className={"size-[40px] border translate-x-[12px] flex justify-center"} xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M400-80 0-480l400-400 71 71-329 329 329 329-71 71Z"/></svg>
+              {/* flechas estilo iOS: circulo de vidrio con chevron fino. aparecen al pasar el cursor por el slider
+                  (o al enfocarlas con teclado); en pantallas tactiles, sin cursor, se ven siempre */}
+              <div className={"absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-[4%] pointer-events-none"}>
+                  <button ref={arrowLeft} type={"button"} onClick={changeImgLeft} aria-label={"Imagen anterior"} className={`${CLASE_FLECHA_SLIDER} -translate-x-[8px] group-hover/slider:translate-x-0`}>
+                      <ChevronIOS direccion={"izquierda"}/>
+                  </button>
+                  <button ref={arrowRight} type={"button"} onClick={changeImgRight} aria-label={"Imagen siguiente"} className={`${CLASE_FLECHA_SLIDER} translate-x-[8px] group-hover/slider:translate-x-0`}>
+                      <ChevronIOS direccion={"derecha"}/>
+                  </button>
               </div>
               <div className={"absolute bottom-[2.5%] flex left-1/2 -translate-x-1/2 gap-[10px]"}>
                   {
                       imagenes && imagenes.map((_, index) => (
-                          <div className={` ${ paintCircle === index ? "w-[100px] largeCircle relative overflow-hidden" : ""} size-[15px] rounded-full border-2 border-amber-800 transition-all duration-500 ease-in-out`} key={index}/>
+                          <div className={` ${ paintCircle === index ? "w-[100px] largeCircle relative overflow-hidden" : ""} size-[15px] rounded-full border-1 border-gray-700 transition-all duration-500 ease-in-out`} key={index}/>
                       ))
                   }
               </div>
@@ -202,25 +297,21 @@ export default function Home() {
 
           {/*-----------------------------------------------------*/}
 
-          <div className={"w-[90%] mx-auto"}>
-              <div className={"py-[25px] flex gap-[10px] justify-center items-center"}>
-                  <span className={"block w-[350px] h-[1px] bg-white"}/>
-                  <h1 className={"text-[35px] text-center"}>Nuestras marcas </h1>
-                  <span className={"block w-[350px] h-[1px] bg-white"}/>
-              </div>
+          <div className={"w-[90%] 2xl:w-[70%] mx-auto"}>
+              <TituloSeccion>Nuestras marcas</TituloSeccion>
           </div>
 
-          <div  className={"w-[90%] mx-auto overflow-hidden"}>
-              <div ref={containerCarrusel} className={"border-4 border-amber-300 py-[25px]"}>
+          <div  className={"w-[90%] 2xl:w-[70%] mx-auto overflow-hidden"}>
+              <div ref={containerCarrusel} className={"shadow-[0_0_0_1px_rgba(0,0,0,.12)] rounded-[12px]"}>
                   <div className={"flex carrusel gap-[35px]"}>
                       {
                           imagenesCarrusel && imagenesCarrusel.map((el, index) => (
-                              <img  src={el} alt="" key={index} className={"w-[200px] h-[100px] object-cover"}/>
+                              <img  src={el} alt="" key={index} className={"rounded-[12px] w-[200px] h-[100px] object-cover"}/>
                           ))
                       }
                       {
                           imagenesCarrusel && imagenesCarrusel.map((el, index) => (
-                              <img  src={el} alt="" key={index} className={"w-[200px] h-[100px] object-cover"}/>
+                              <img  src={el} alt="" key={index} className={"rounded-[12px] w-[200px] h-[100px] object-cover"}/>
                           ))
                       }
                   </div>
@@ -228,21 +319,28 @@ export default function Home() {
 
           </div>
 
+          {/*---------------banners de ofertas---------------*/}
+
+          {categorias && <BannersOfertas productos={categorias} banners={banners}/>}
+
           {/*---------------categoria de productos---------------*/}
 
-          <div className={"w-[90%] mx-auto"}>
-              <div className={"flex gap-[15px] items-center justify-center py-[25px]"}>
-                  <span className={"block w-[450px] h-[1px] bg-white"}/>
-                  <h1 className={"text-[35px] text-center"}>Categorias de prodcutos EPPS</h1>
-                  <span className={"block w-[450px] h-[1px] bg-white"}/>
-              </div>
+          <div className={"w-[90%] 2xl:w-[70%] mx-auto"}>
+              <TituloSeccion>Categorias de productos EPPS</TituloSeccion>
               {/*<h2> J & M Andes security EIRL</h2>*/}
               {/*<h1>3M - STEELPRO - MSA -NORTH -ANSELL -CAT- CLUTE - DELTA PLUS</h1>*/}
-              <div className={"grid grid-cols-2 gap-y-10 justify-items-center border-1 border-blue-400"}>
+              {!categorias && <Cargando texto={"Cargando categorías..."}/>}
+              <div className={"grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 auto-rows-[220px] md:auto-rows-[240px] grid-flow-dense gap-[15px]"}>
                   {
-                      categorias && categorias.map((el : Product, index : number) => (
-                          <Link href={`/productos/${el.categoria.replace(/\s+/g, "-").toLowerCase()}`} key={index} className={"w-[350px] h-[550px] rounded-[8px] border-6 bg-gradient-to-b from-blue-500 to-yellow-400 flex items-center justify-center text-[75px]"}>
-                              <img src={el.img[0]} alt=""/>
+                      categoriasUnicas.map((el : Product, index : number) => (
+                          <Link href={`/productos/${el.categoria.replace(/\s+/g, "-").toLowerCase()}`} key={el.categoria} className={`${claseMosaico(index, categoriasUnicas.length)} group relative overflow-hidden rounded-[12px] shadow-[0_0_0_1px_rgba(0,0,0,.12)]`}>
+                              <img src={el.img[0]} alt={el.categoria} className={"absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"}/>
+                              <div className={"absolute inset-0 bg-black/45 group-hover:bg-black/60 transition-colors duration-300"}/>
+                              <div className={"relative h-full flex items-center justify-center p-[15px]"}>
+                                  <h2 aria-label={el.categoria} className={"text-white text-center font-medium uppercase tracking-wide text-[22px] md:text-[26px] drop-shadow-[0_2px_6px_rgba(0,0,0,.8)] leading-none"}>
+                                      <TextoCascada texto={el.categoria}/>
+                                  </h2>
+                              </div>
                           </Link>
                       ))
                   }
@@ -251,32 +349,26 @@ export default function Home() {
 
           {/*---------------------productos mas buscados------------------------------*/}
 
-          <div className={"flex gap-[15px] items-center py-[25px]"}>
-              <span className={"block w-[450px] h-[1px] bg-white"}/>
-              <h1 className={"text-[35px] text-center"}>productos mas buscados</h1>
-              <span className={"block w-[450px] h-[1px] bg-white"}/>
+          <div className={"w-[90%] 2xl:w-[70%] mx-auto"}>
+              <TituloSeccion>productos mas buscados</TituloSeccion>
           </div>
 
           {/*-----------------------------grid de productos  mas buscados -----------------------------------------*/}
-          <div className={"flex w-[90%] mx-auto flex-wrap gap-[10px] justify-center"}>
-              {
-                  categorias && categorias.map((el, index) => (
-                      <div key={index} className={"size-[200px] border-2 rounded-[8px] flex items-center justify-center"}>{el.name}</div>
-                  ))
-              }
+          <div className={"w-[90%] 2xl:w-[70%] mx-auto"}>
+              <CarruselMasBuscados productos={masBuscados}/>
           </div>
 
 
-          {/*--------------------------recomendados--------------------------------------------*/}
-          <div className={"bg-blue-500 py-[50px]"}>
-              <div className={"border-2 w-[90%] mx-auto justify-center grid grid-cols-[repeat(auto-fit,250px)] gap-x-[40px] gap-y-[40px] "}>
-                  <div className={"w-[250px] h-[500px] border flex items-center justify-center text-[75px]"}>1</div>
-                  <div className={"w-[250px] h-[500px] border flex items-center justify-center text-[75px]"}>1</div>
-                  <div className={"w-[250px] h-[500px] border flex items-center justify-center text-[75px]"}>1</div>
-              </div>
+          {/*--------------------------nuevos ingresos--------------------------------------------*/}
+          <div className={"pb-[50px]"}>
+              {categorias && <BannersNuevos productos={categorias} banners={banners}/>}
           </div>
 
-          <div className={"size-[75px] bg-blue-500 border-4 rounded-full fixed top-[90%] left-[90%]"}/>
+          <a ref={botonWhatsapp} href="https://wa.me/51986680850" target="_blank" rel="noopener noreferrer" aria-label="Escríbenos por WhatsApp" className={"size-[60px] md:size-[70px] bg-[#25D366] text-white rounded-full fixed bottom-[25px] right-[25px] z-[30] flex items-center justify-center shadow-[0px_4px_14px_rgba(0,0,0,.35)] transition-transform duration-300 hover:scale-110 active:scale-95"}>
+              {/* ondas detras del icono: el boton es fixed con z-index, asi -z-10 queda sobre su fondo y debajo del icono */}
+              <AnimacionLottie datos={pulsoWhatsapp} className={"absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 size-[200%] -z-10 pointer-events-none"}/>
+              <IconoWhatsapp className={"w-[34px] h-[34px] md:w-[40px] md:h-[40px]"}/>
+          </a>
 
 
       </div>

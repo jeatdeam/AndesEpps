@@ -19,22 +19,96 @@
   }
 }
 
+
+/*----------------scroll----------------------*/
+/* globals.css */
+.scroll-fino::-webkit-scrollbar { width: 8px; }
+.scroll-fino::-webkit-scrollbar-track { background: transparent; }
+.scroll-fino::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 999px; }
+.scroll-fino:hover::-webkit-scrollbar-thumb { background: #9ca3af; }
+
+
+
+
+/*-----------------/end scroll/---------------------------*/
+/* ningun elemento (ej. el carrusel del inicio en 100vw) puede crear scroll horizontal; clip no rompe position: sticky */
+@layer base {
+  html, body {
+    overflow-x: clip;
+  }
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
+  /*background: var(--background);*/
+  /* degradado azul hielo: celeste glaciar arriba a la izquierda que se aclara hasta blanco.
+     "fixed" lo deja quieto mientras se hace scroll (en celulares que no lo soportan se desplaza con la pagina) */
+  background-color: #f7fbfe;
+  background-image: linear-gradient(160deg, #d6ecf8 0%, #e6f4fb 35%, #f3f9fd 70%, #ffffff 100%);
+  background-attachment: fixed;
+  /*color: var(--foreground);*/
   font-family: Arial, Helvetica, sans-serif;
 }
 
 
-.largeCircle {
+/*svg de search*/
+
+.backCircle {
+}
+
+.backCircle::after {
+    content : "";
+    /*border: 1px solid white;*/
+    z-index: -20;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    transition: all .3s ease-in-out;
 
 }
+
+.backCircle:hover::after{
+    background: white;
+}
+
+
+/*end de svg-search*/
+
+.flicker{
+    animation: parpadeo .2s linear;
+    transition: all .5s linear;
+}
+
+@keyframes parpadeo{
+    0%{
+        opacity: 1;
+    }
+    100%{
+        opacity: 0;
+    }
+}
+
+/*cursor del texto con animacion de escritura*/
+.cursorEscritura{
+    animation: cursorEscritura 1s steps(1) infinite;
+}
+
+@keyframes cursorEscritura{
+    50%{
+        opacity: 0;
+    }
+}
+
+
 
 
 /*slider*/
 .largeCircle::after {
     content: "";
-    background: red;
+    background: white;
     position: absolute;
     transform-origin: left;
     z-index: -1;
@@ -67,6 +141,41 @@ body {
     }
     100% {
         transform: translateX(-50%);
+    }
+}
+
+/*cascada de letras en las cajas de categorias: cada letra espera --i pasos*/
+.letraCascada {
+    display: inline-block;
+    transition: opacity .3s ease, transform .3s ease;
+    transition-delay: calc(var(--i) * 40ms);
+}
+
+.group:hover .letraCascada,
+.group:focus-visible .letraCascada {
+    opacity: 0;
+    transform: translateY(14px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .letraCascada {
+        transition-duration: 0s;
+        transition-delay: 0s;
+    }
+}
+
+/*barra de carga de la bolita activa en la galeria del producto (la duracion la pone el componente)*/
+.barraCarga {
+    transform-origin: left;
+    animation: barraCarga linear forwards;
+}
+
+@keyframes barraCarga {
+    from {
+        transform: scaleX(0);
+    }
+    to {
+        transform: scaleX(1);
     }
 }
 

@@ -1,17 +1,25 @@
 'use client'
 import Link from "next/link";
 import {InputBusqueda} from './InputBusqueda'
+import {CarritoHeader} from './CarritoHeader'
+import {EnlacesHeader, MenuHeader} from './NavegacionHeader'
+import {AnimacionLottie} from './AnimacionLottie'
+import losAndesEpps from '@/app/animaciones/losAndesEpps.json'
 import {useRef, useEffect, useState} from 'react';
 import {useControladorBusqueda} from "@/app/controladoresGlobales/controladorBusqueda";
 import {useControladorIconoSearch} from "@/app/controladoresGlobales/controladorIconoSearch";
+
 
 
 export const  Header = () => {
 
     const containerBusqueda = useRef<HTMLDivElement|null>(null)
 
-    const {statusBusqueda,desactiveBusqueda} = useControladorBusqueda();
+    const {statusBusqueda,desactiveBusqueda, changeStatusBusqueda} = useControladorBusqueda();
     const {statusIcon ,changeStatusIcon, desactiveIcon, activeIcon} = useControladorIconoSearch();
+
+
+    const [activeSearch, setActiveSearch] = useState<boolean>(false)
 
     const [flagSearch, setFlagSearch] = useState<boolean>(false);
 
@@ -21,10 +29,12 @@ export const  Header = () => {
     const containerHeader = useRef<HTMLDivElement|null>(null);
 
     const showBusqueda = () => {
-        if(!flagSearch) return;
-        console.log(`aqui esta el valor del icono ${statusIcon}!`);
-        changeStatusIcon();
-        console.log('entramos en true por que estamos menos de 768px')
+        if(!activeSearch) return;
+        console.log('gaaaa')
+        changeStatusIcon(); //click a la lupa
+        changeStatusBusqueda()
+        // if(!flagSearch) return;
+        // changeStatusIcon();
     }
 
     useEffect(()=> {
@@ -67,48 +77,53 @@ export const  Header = () => {
 
     useEffect(() => {
         const media = window.matchMedia("(max-width: 768px)");
-        if(media.matches) {
-            console.log('gaa ctmre iniciamos aqui');
-            setFlagSearch(true);
-        }
-        const handleChange = (event: MediaQueryListEvent) => {
-            if(event.matches) {
-                // activeIcon();
-                setFlagSearch(true);
-                console.log('gaaaa ctmre llegamos a 768px');
-            } else {
-                // desactiveIcon();
-                setFlagSearch(false);
-                console.log('pantalla mayor a 768px');
-            }
-        }
-        media.addEventListener('change', handleChange);
 
-        return () => {
-            media.removeEventListener('change', handleChange);
-        }
+        const sync = (matches: boolean) => {
+            setActiveSearch(matches); //Deja que se use el evento click del svg
+            desactiveIcon()
+            // desactiveIcon()
+        };
 
-    },[]);
+        sync(media.matches); // estado inicial
 
+        const handleChange = (e: MediaQueryListEvent) => sync(e.matches);
 
-
+        media.addEventListener("change", handleChange);
+        return () => media.removeEventListener("change", handleChange);
+    }, []);
 
 
     return (
+        // el menu flotante sobresale un poco a cada lado del contenido de la pagina (90% del ancho, 70% en 2xl):
+        // 8px de margen en celular, 94% desde sm y en 2xl el 74% sin bajar de 1240px (el detalle de producto llega a 1200px)
         <div ref={containerHeader} className={"h-[100px]  flex items-center relative"}>
-            <div ref={containerMenu} className={`${activeMenu ? "border-2 w-[85%] backdrop-blur-md" : "w-[90%] backdrop-blur-none"} border-2 transition-all duration-500 linear fixed top-[10px] z-[10] -translate-x-1/2 left-1/2  bg-white/10  flex justify-between p-[20px] rounded-[8px] items-center  origin-center mx-auto`}>
-                <Link href={"/"} className={"sm:text-[20px] border flex items-center w-fit "}>Los Andes J & C </Link>
-                <div className={"flex gap-[10px]"}>
-                    <div ref={containerBusqueda} className={"flex items-center border rounded-[7.5px] p-[2.5px] border-gray-900 relative"}>
-                        <svg onClick={showBusqueda} className={"hover:bg-white w-[50px] h-[22.5px] rounded-full"} xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
-                        {statusIcon && <InputBusqueda/>}
+            <div ref={containerMenu} className={`${activeMenu ? "backdrop-blur-md  bg-blue-500/50" : " bg-blue-500/70 border-gray-400 backdrop-blur-none"} w-[calc(100%-16px)] sm:w-[94%] 2xl:w-[max(74%,1240px)] border transition-all duration-500 linear fixed top-[10px] z-[10] -translate-x-1/2 left-1/2 flex justify-between gap-[24px] p-[20px] rounded-[15px] items-center  origin-center mx-auto h-[80px]`}>
+
+                {/* el margen negativo deja que la animacion sea mas alta que el contenido sin agrandar el header.
+                    el dibujo empieza ~48px dentro de la animacion: bajo 1024px se corre 40px para que quede
+                    a la misma distancia del borde que el icono del menu del lado derecho */}
+                <Link href={"/"} aria-label={"Los Andes J & C - inicio"} className={"flex items-center w-fit shrink-0 mr-auto -my-[56px] lg:-my-[78px]"}>
+                    <AnimacionLottie datos={losAndesEpps} className={"w-[251px] h-[150.4px] lg:w-[326px] lg:h-[195.5px] shrink-0 max-lg:-ml-[40px] max-lg:translate-y-[8px] lg:translate-y-[14px]"}/>
+                </Link>
+                <EnlacesHeader/>
+                {/* el logo empuja todo a la derecha (mr-auto): enlaces, buscador e iconos quedan juntos con la misma separacion */}
+                <div className={`flex min-w-0 justify-end ${activeSearch ? "gap-[10px]" : "gap-[24px]"}`}>
+                    <div ref={containerBusqueda} className={`flex items-center rounded-[7.5px] gap-[10px] py-[5px] ${activeSearch ? "" : "min-w-0"} relative`}>
+                        {activeSearch &&
+                            <div onClick={showBusqueda} className={"backCircle  relative size-[35px] shrink-0 flex items-center justify-center cursor-pointer"}>
+                                <svg className={" block z-[-10] transition-all duration-300 linear w-[22.5px] h-[22.5px] rounded-full"} xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
+                            </div>
+                        }
+                        {!activeSearch && <InputBusqueda/>}
                     </div>
                     <div className={"flex gap-[10px] items-center"}>
-                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M240-80q-33 0-56.5-23.5T160-160v-480q0-33 23.5-56.5T240-720h80q0-66 47-113t113-47q66 0 113 47t47 113h80q33 0 56.5 23.5T800-640v480q0 33-23.5 56.5T720-80H240Zm0-80h480v-480h-80v80q0 17-11.5 28.5T600-520q-17 0-28.5-11.5T560-560v-80H400v80q0 17-11.5 28.5T360-520q-17 0-28.5-11.5T320-560v-80h-80v480Zm160-560h160q0-33-23.5-56.5T480-800q-33 0-56.5 23.5T400-720ZM240-160v-480 480Z"/></svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg>
+                        <CarritoHeader/>
+                        <MenuHeader/>
                     </div>
                 </div>
-                {!statusIcon && <InputBusqueda/>}
+
+                {statusIcon && <InputBusqueda/>}
+
             </div>
         </div>
     )

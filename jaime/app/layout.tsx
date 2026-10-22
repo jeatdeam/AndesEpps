@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import {Header} from "./componentes/Header";
 import {Footer} from "./componentes/Footer";
+import {FormularioCotizacion} from "./componentes/FormularioCotizacion";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -25,14 +26,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
       <Header/>
       {children}
       <Footer/>
+      <FormularioCotizacion/>
       </body>
     </html>
   );

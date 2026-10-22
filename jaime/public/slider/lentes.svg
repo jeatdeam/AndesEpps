@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1650 1000" width="1650" height="1000" font-family="Arial, Helvetica, sans-serif">
+  <defs>
+    <linearGradient id="fondo" x1="0.33" y1="0" x2="0.67" y2="1">
+      <stop offset="0" stop-color="#d6ecf8"/>
+      <stop offset=".35" stop-color="#e6f4fb"/>
+      <stop offset=".7" stop-color="#f3f9fd"/>
+      <stop offset="1" stop-color="#ffffff"/>
+    </linearGradient>
+    <linearGradient id="mica" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fb923c"/>
+      <stop offset="1" stop-color="#f59e0b"/>
+    </linearGradient>
+  </defs>
+  <rect width="1650" height="1000" fill="url(#fondo)"/>
+  <circle cx="1150" cy="500" r="330" fill="#f97316" opacity=".1"/>
+  <circle cx="1150" cy="500" r="230" fill="#f97316" opacity=".08"/>
+
+  <!-- lentes -->
+  <ellipse cx="1150" cy="700" rx="290" ry="20" fill="#0f172a" opacity=".14"/>
+  <path d="M875 432 L835 440" stroke="#334155" stroke-width="16" stroke-linecap="round"/>
+  <path d="M1425 432 L1545 452" stroke="#334155" stroke-width="16" stroke-linecap="round"/>
+  <path d="M880 455 C880 412 920 398 1000 398 L1300 398 C1380 398 1420 412 1420 455 C1420 545 1370 595 1290 595 C1220 595 1186 550 1170 520 C1162 505 1138 505 1130 520 C1114 550 1080 595 1010 595 C930 595 880 545 880 455 Z" fill="url(#mica)" opacity=".92" stroke="#334155" stroke-width="10" stroke-linejoin="round"/>
+  <path d="M868 424 Q1150 372 1432 424" fill="none" stroke="#334155" stroke-width="24" stroke-linecap="round"/>
+  <path d="M935 470 C950 440 990 428 1040 428" fill="none" stroke="#ffffff" stroke-width="14" stroke-linecap="round" opacity=".45"/>
+  <path d="M1225 470 C1240 440 1280 428 1330 428" fill="none" stroke="#ffffff" stroke-width="14" stroke-linecap="round" opacity=".45"/>
+
+  <!-- descuento -->
+  <circle cx="1400" cy="270" r="88" fill="#dc2626"/>
+  <text x="1400" y="288" text-anchor="middle" font-size="54" font-weight="700" fill="#ffffff">-25%</text>
+
+  <!-- texto -->
+  <rect x="230" y="230" width="220" height="48" rx="24" fill="#f97316"/>
+  <text x="340" y="263" text-anchor="middle" font-size="22" font-weight="700" letter-spacing="4" fill="#0f172a">PUNA PRO</text>
+  <text x="230" y="370" font-size="60" font-weight="700" fill="#0f172a">Lentes de seguridad</text>
+  <text x="230" y="444" font-size="66" font-weight="700" fill="#ea580c">antiempañantes</text>
+  <text x="230" y="505" font-size="28" fill="#475569">Protección UV400 · Mica antirayaduras</text>
+  <text x="230" y="585" font-size="34" fill="#64748b">S/ 19.90</text>
+  <line x1="230" y1="574" x2="356" y2="574" stroke="#64748b" stroke-width="3"/>
+  <text x="230" y="668" font-size="80" font-weight="700" fill="#ea580c">S/ 14.90</text>
+  <rect x="230" y="710" width="300" height="72" rx="36" fill="#f97316"/>
+  <text x="380" y="756" text-anchor="middle" font-size="28" font-weight="700" fill="#0f172a">Comprar ahora →</text>
+</svg>
