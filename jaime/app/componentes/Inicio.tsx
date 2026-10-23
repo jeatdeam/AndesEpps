@@ -39,6 +39,20 @@ const MOSAICO_SOBRANTES = [
 
 const MAS_BUSCADOS_IDS = [3, 1, 7, 5, 9, 2, 10, 4];
 
+// logos de "Nuestras marcas" (public/marcas): tarjetas de 400x200 con el color de fondo de cada marca
+const MARCAS = [
+    {nombre: '3M', imagen: '/marcas/3m.webp'},
+    {nombre: 'Ansell', imagen: '/marcas/ansell.webp'},
+    {nombre: 'DuPont', imagen: '/marcas/dupont.webp'},
+    {nombre: 'CAT', imagen: '/marcas/cat.webp'},
+    {nombre: 'DeWalt', imagen: '/marcas/dewalt.webp'},
+    {nombre: 'Stanley', imagen: '/marcas/stanley.webp'},
+    {nombre: 'Truper', imagen: '/marcas/truper.webp'},
+    {nombre: 'Bosch', imagen: '/marcas/bosch.webp'},
+    {nombre: 'Makita', imagen: '/marcas/makita.webp'},
+    {nombre: 'Total', imagen: '/marcas/total.webp'},
+];
+
 // boton de flecha del slider: oculto hasta pasar el cursor; con [@media(hover:none)] queda visible en pantallas tactiles
 // en celular el slider mide ~150px de alto, por eso la flecha es mas chica hasta sm
 const CLASE_FLECHA_SLIDER = "pointer-events-auto size-[32px] sm:size-[46px] rounded-full bg-white/70 backdrop-blur-md ring-1 ring-black/5 shadow-[0_4px_14px_rgba(15,23,42,.15)] flex items-center justify-center text-slate-900 cursor-pointer opacity-0 group-hover/slider:opacity-100 focus-visible:opacity-100 focus-visible:translate-x-0 [@media(hover:none)]:opacity-100 [@media(hover:none)]:translate-x-0 hover:bg-white/90 active:scale-90 transition-all duration-300";
@@ -138,16 +152,6 @@ export function Inicio({productosIniciales, bannersIniciales} : {productosInicia
                                                             "/slider/herramientas-construccion.webp",
                                                             "/slider/cat-grafters.webp",
                                                             "/slider/dewalt-grid-x.webp"])
-
-    const [imagenesCarrusel, setImagenesCarrusel] = useState<string[]>(["https://res.cloudinary.com/dlrd1wxwd/image/upload/v1780188143/samples/sheep.jpg",
-                                                            "https://res.cloudinary.com/dlrd1wxwd/image/upload/v1780188146/samples/imagecon-group.jpg",
-                                                            "https://res.cloudinary.com/dlrd1wxwd/image/upload/v1780188152/samples/man-portrait.jpg",
-                                                            "https://res.cloudinary.com/dlrd1wxwd/image/upload/v1780188151/samples/man-on-a-escalator.jpg",
-                                                            "https://res.cloudinary.com/dlrd1wxwd/image/upload/v1780188142/samples/animals/reindeer.jpg","https://res.cloudinary.com/dlrd1wxwd/image/upload/v1780188142/samples/food/pot-mussels.jpg",
-                                                            "https://res.cloudinary.com/dlrd1wxwd/image/upload/v1780188146/samples/imagecon-group.jpg",
-                                                            "https://res.cloudinary.com/dlrd1wxwd/image/upload/v1780188141/samples/ecommerce/analog-classic.jpg",
-                                                            "https://res.cloudinary.com/dlrd1wxwd/image/upload/v1780188154/samples/zoom.avif",
-                                                            "https://res.cloudinary.com/dlrd1wxwd/image/upload/v1780188146/samples/imagecon-group.jpg"])
 
 
     const moveDirectionImgRight = () => {
@@ -294,7 +298,7 @@ export function Inicio({productosIniciales, bannersIniciales} : {productosInicia
                   {
                       imagenes && imagenes.map((_, index) => (
                           // el punto activo se rellena con la animacion (largeCircle en globals.css); el resto va pintado con el mismo blanco al 80%
-                          <div className={` ${ paintCircle === index ? "w-[48px] sm:w-[100px] largeCircle relative overflow-hidden" : "bg-white/80"} size-[9px] sm:size-[15px] rounded-full border-1 border-gray-700 transition-all duration-500 ease-in-out`} key={index}/>
+                          <div className={` ${ paintCircle === index ? "w-[48px] sm:w-[100px] largeCircle relative overflow-hidden" : "bg-white/80"} size-[9px] sm:size-[15px] rounded-full shadow-[0_0_0_1px_rgba(15,23,42,.35)] transition-all duration-500 ease-in-out`} key={index}/>
                       ))
                   }
               </div>
@@ -318,15 +322,12 @@ export function Inicio({productosIniciales, bannersIniciales} : {productosInicia
 
           <div  className={"w-[90%] 2xl:w-[70%] mx-auto overflow-hidden"}>
               <div ref={containerCarrusel} className={"shadow-[0_0_0_1px_rgba(0,0,0,.12)] rounded-[12px]"}>
-                  <div className={"flex carrusel gap-[35px]"}>
+                  {/* la lista va dos veces para que la animacion de desplazamiento no tenga cortes;
+                      el py de 2px deja ver la sombra de 1px de cada logo, que el overflow-hidden recortaria */}
+                  <div className={"flex carrusel gap-[35px] py-[2px]"}>
                       {
-                          imagenesCarrusel && imagenesCarrusel.map((el, index) => (
-                              <img  src={el} alt="" key={index} className={"rounded-[12px] w-[200px] h-[100px] object-cover"}/>
-                          ))
-                      }
-                      {
-                          imagenesCarrusel && imagenesCarrusel.map((el, index) => (
-                              <img  src={el} alt="" key={index} className={"rounded-[12px] w-[200px] h-[100px] object-cover"}/>
+                          [...MARCAS, ...MARCAS].map((marca, index) => (
+                              <img src={marca.imagen} alt={index < MARCAS.length ? marca.nombre : ""} key={index} className={"rounded-[12px] w-[200px] h-[100px] object-cover shadow-[0_0_0_1px_rgba(0,0,0,.12)]"}/>
                           ))
                       }
                   </div>
