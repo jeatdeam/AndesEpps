@@ -299,6 +299,13 @@ export function Inicio({productosIniciales, bannersIniciales} : {productosInicia
               </div>
           </div>
 
+          {/*---------------presentacion: el titulo principal (h1) que lee Google---------------*/}
+
+          <div className={"w-[90%] 2xl:w-[70%] mx-auto pt-[28px] text-center"}>
+              <h1 className={"text-[22px] md:text-[30px] font-semibold leading-tight"}>Equipos de protección personal para minería y construcción</h1>
+              <p className={"mt-[8px] text-[15px] md:text-[17px] text-slate-600"}>Abastecemos a empresas mineras, contratistas y obras de construcción con EPP certificados. Venta por mayor y menor en Lima.</p>
+          </div>
+
           {/*-----------------------------------------------------*/}
 
           <div className={"w-[90%] 2xl:w-[70%] mx-auto"}>

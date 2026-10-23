@@ -3,7 +3,7 @@ import Link from 'next/link';
 import {poppins} from '@/app/fuentes';
 
 // datos que se repiten en las paginas legales (privacidad, terminos y eliminacion de datos)
-export const EMPRESA = 'Los Andes J & C';
+export const EMPRESA = 'Los Andes EPPS (J & M Andes Security E.I.R.L.)';
 export const CORREO_ATENCION = 'servicioalcliente@rashperu.com';
 export const WHATSAPP_ATENCION = '986 680 850';
 export const ACTUALIZACION = '22 de octubre de 2026';

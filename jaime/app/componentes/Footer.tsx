@@ -153,7 +153,7 @@ export const Footer = () => {
                 <div className={"sm:col-span-3 lg:col-span-1 flex flex-col gap-[16px]"}>
                     <Link href={"/"} className={"w-fit flex items-center gap-[10px] text-slate-900"}>
                         <span className={"size-[48px] rounded-[14px] bg-sky-700 text-white flex items-center justify-center"}><IconoCasco/></span>
-                        <span className={"text-[20px] font-bold leading-tight"}>Los Andes J & C</span>
+                        <span className={"text-[20px] font-bold leading-tight"}>Los Andes EPPS</span>
                     </Link>
                     <p className={"text-[14px] leading-relaxed"}>
                         Equipos de protección personal y seguridad industrial para minería y construcción.
@@ -214,7 +214,7 @@ export const Footer = () => {
             </div>
 
             <div className={"w-[90%] xl:w-[80%] mx-auto py-[22px] flex flex-col md:flex-row gap-[15px] items-center justify-between text-[13px] text-slate-600"}>
-                <span className={"text-center md:text-left"}>© {new Date().getFullYear()} Los Andes J & C. Todos los derechos reservados.</span>
+                <span className={"text-center md:text-left"}>© {new Date().getFullYear()} Los Andes EPPS – J & M Andes Security E.I.R.L. Todos los derechos reservados.</span>
                 <nav aria-label={"Información legal"} className={"flex flex-wrap justify-center gap-x-[16px] gap-y-[6px]"}>
                     <Link href={"/privacidad"} className={"hover:text-slate-900 hover:underline"}>Privacidad</Link>
                     <Link href={"/terminos"} className={"hover:text-slate-900 hover:underline"}>Términos</Link>

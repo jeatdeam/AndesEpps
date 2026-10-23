@@ -2,7 +2,7 @@ import type {Metadata} from 'next';
 import {PaginaLegal, Seccion, Lista, Correo, EMPRESA, CORREO_ATENCION, WHATSAPP_ATENCION} from '@/app/componentes/PaginaLegal';
 
 export const metadata : Metadata = {
-    title: `Eliminación de datos | ${EMPRESA}`,
+    title: 'Eliminación de datos',
     description: `Cómo solicitar a ${EMPRESA} que elimine tus datos personales.`,
 };
 

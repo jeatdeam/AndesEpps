@@ -108,7 +108,7 @@ const FOTO = 40;
 // genera el pdf, lo guarda en data/cotizaciones y devuelve su contenido.
 // miniaturas: id del producto -> jpg (ver miniaturas.ts); los que no tienen se dibujan sin foto
 export const generarPdf = (cotizacion : Cotizacion, miniaturas : Map<number, Buffer>) : Promise<Buffer> => new Promise((resolve, reject) => {
-    const doc = new PDFDocument({size: 'A4', margin: 40, info: {Title: `Cotización ${cotizacion.numero}`, Author: 'Los Andes J & C'}});
+    const doc = new PDFDocument({size: 'A4', margin: 40, info: {Title: `Cotización ${cotizacion.numero}`, Author: 'Los Andes EPPS'}});
     const partes : Buffer[] = [];
     doc.on('data', parte => partes.push(parte));
     doc.on('error', reject);
@@ -123,7 +123,7 @@ export const generarPdf = (cotizacion : Cotizacion, miniaturas : Map<number, Buf
 
     // encabezado
     doc.rect(0, 0, doc.page.width, 8).fill(COLOR.amarillo);
-    doc.fillColor(COLOR.tinta).font('Helvetica-Bold').fontSize(20).text('Los Andes J & C', 40, 36);
+    doc.fillColor(COLOR.tinta).font('Helvetica-Bold').fontSize(20).text('Los Andes EPPS', 40, 36);
     doc.font('Helvetica').fontSize(9).fillColor(COLOR.gris)
         .text('Equipos de protección personal y seguridad industrial', 40, 60)
         .text('WhatsApp: 986 680 850  ·  servicioalcliente@rashperu.com', 40, 73);

@@ -3,7 +3,7 @@ import Link from 'next/link';
 import {PaginaLegal, Seccion, Lista, Correo, EMPRESA, WHATSAPP_ATENCION} from '@/app/componentes/PaginaLegal';
 
 export const metadata : Metadata = {
-    title: `Política de privacidad | ${EMPRESA}`,
+    title: 'Política de privacidad',
     description: `Cómo ${EMPRESA} recopila, usa y protege los datos personales de sus clientes.`,
 };
 
