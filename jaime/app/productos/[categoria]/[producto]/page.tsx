@@ -14,6 +14,12 @@ import {poppins} from '@/app/fuentes';
 
 const Separador = () => <div className={"w-full self-stretch h-px shrink-0 bg-current opacity-30"}/>;
 
+// lista vacia: ninguna pagina se arma en el build; cada producto se arma en su primera visita
+// y queda en la cache de Vercel (ISR) con la misma revalidacion que los datos
+export async function generateStaticParams() {
+    return [];
+}
+
 export default async function Page ({params} : {params : Promise<{producto:string}>}) {
 
     const {producto} = await params;
