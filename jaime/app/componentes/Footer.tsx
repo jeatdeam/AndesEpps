@@ -215,6 +215,11 @@ export const Footer = () => {
 
             <div className={"w-[90%] xl:w-[80%] mx-auto py-[22px] flex flex-col md:flex-row gap-[15px] items-center justify-between text-[13px] text-slate-600"}>
                 <span className={"text-center md:text-left"}>© {new Date().getFullYear()} Los Andes J & C. Todos los derechos reservados.</span>
+                <nav aria-label={"Información legal"} className={"flex flex-wrap justify-center gap-x-[16px] gap-y-[6px]"}>
+                    <Link href={"/privacidad"} className={"hover:text-slate-900 hover:underline"}>Privacidad</Link>
+                    <Link href={"/terminos"} className={"hover:text-slate-900 hover:underline"}>Términos</Link>
+                    <Link href={"/eliminacion-de-datos"} className={"hover:text-slate-900 hover:underline"}>Eliminación de datos</Link>
+                </nav>
                 <Link href={"#"} className={"flex items-center gap-[8px] rounded-full bg-white/60 ring-1 ring-white hover:ring-sky-500/60 hover:text-slate-900 px-[14px] py-[8px] transition"}>
                     <IconoLibro/>
                     Libro de reclamaciones
