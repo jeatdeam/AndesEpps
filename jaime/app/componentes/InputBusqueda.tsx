@@ -58,13 +58,14 @@ export const InputBusqueda = () => {
     },[statusBusqueda])
 
     return(
-            <div className={`${!statusIcon ? "w-[450px] max-w-full min-w-0" : "min-w-[350px] absolute top-[150px] left-1/2 -translate-x-1/2"}`}>
+            <div className={`${!statusIcon ? "w-[450px] max-w-full min-w-0" : "min-w-[350px] absolute top-[150px] left-1/2 -translate-x-1/2 text-gray-900"}`}>
                 <div className={`w-full shadow-[0_0_1px_1.25px_rgba(255,255,255,0.8)] py-[2.5px] px-[10px] rounded-[12px] relative flex items-center gap-[8px]`}>
                     {/* la lupa dentro del input usa el mismo circulo de 35px de backCircle; el alto del input se ajusta a el */}
                     <button type="button" onClick={() => inputBusqueda.current?.focus()} aria-label={"Buscar"} className={"backCircle relative size-[35px] -ml-[7.5px] shrink-0 flex items-center justify-center cursor-pointer"}>
-                        <svg className={"w-[22.5px] h-[22.5px] shrink-0"} xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="#000000" aria-hidden="true"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
+                        <svg className={"w-[22.5px] h-[22.5px] shrink-0"} xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
                     </button>
-                    <input ref={inputBusqueda}  onChange={busquedaTxt} className={`text-[15px] h-[25px] md:block w-full outline-none`} type="text" placeholder={"escriba el nombre del producto"}/>
+                    {/* dentro del header (azul marino) el texto es blanco; en celular el buscador se abre fuera, sobre la pagina clara */}
+                    <input ref={inputBusqueda}  onChange={busquedaTxt} className={`text-[15px] h-[25px] md:block w-full outline-none ${statusIcon ? "text-gray-900 placeholder:text-gray-500" : "text-white placeholder:text-white/60"}`} type="text" placeholder={"escriba el nombre del producto"}/>
                     {
                         statusBusqueda &&
                         <div className={`py-[10px] px-[10px] ${elementosBuscados && elementosBuscados.length > 0 ? "h-[250px]" : "h-auto"} ${activeSubInput ? '' : 'hidden'} w-full absolute top-[125%] bg-white rounded-[8px] z-[10]  gap-[7.5px] flex flex-col transition-all duration-300 ease-in-out left-0 shadow-[0_0_1px_1.25px_rgba(128,128,128,0.8)]`}>

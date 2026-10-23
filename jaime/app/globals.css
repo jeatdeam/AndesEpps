@@ -74,6 +74,33 @@ body {
     background: white;
 }
 
+/* en el header azul marino los iconos son blancos: el circulo del hover es blanco translucido para no taparlos */
+.menuOscuro .backCircle:hover::after{
+    background: rgba(255, 255, 255, .18);
+}
+
+/* caminante del header: va de un extremo al otro por el borde de abajo y se da vuelta en cada punta.
+   --ancho-caminante lo define el componente; la duracion la ajusta segun el ancho del header */
+.caminante {
+    animation: caminarHeader var(--duracion-caminante, 20s) linear infinite;
+}
+
+.caminante svg image {
+    image-rendering: pixelated;
+}
+
+@keyframes caminarHeader {
+    0%      { left: 14px; transform: scaleX(1); }
+    49.99%  { left: calc(100% - var(--ancho-caminante) - 14px); transform: scaleX(1); }
+    50%     { left: calc(100% - var(--ancho-caminante) - 14px); transform: scaleX(-1); }
+    99.99%  { left: 14px; transform: scaleX(-1); }
+    100%    { left: 14px; transform: scaleX(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .caminante { animation: none; left: 14px; }
+}
+
 
 /*end de svg-search*/
 
