@@ -101,6 +101,22 @@ body {
     .caminante { animation: none; left: 14px; }
 }
 
+/* secciones que aparecen al bajar por la pagina (componente Aparecer) */
+.aparecer {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity .7s ease, transform .8s cubic-bezier(.22, 1, .36, 1);
+}
+
+.aparecer-visible {
+    opacity: 1;
+    transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .aparecer { opacity: 1; transform: none; transition: none; }
+}
+
 
 /*end de svg-search*/
 

@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import {useState, useEffect, useRef} from 'react';
+import {useState, useEffect, useLayoutEffect, useRef} from 'react';
 import Link from 'next/link';
 import {API} from '@/app/configuracion';
 import {Product, Banners} from '@/app/tipos/elementsType'
@@ -10,6 +10,7 @@ import {TituloSeccion} from './TituloSeccion'
 import {IconoWhatsapp} from './Footer'
 import {AnimacionLottie} from './AnimacionLottie'
 import {Cargando} from './Cargando'
+import {Aparecer} from './Aparecer'
 import pulsoWhatsapp from '@/app/animaciones/pulsoWhatsapp.json'
 
 
@@ -229,6 +230,44 @@ export function Inicio({productosIniciales, bannersIniciales} : {productosInicia
 
     }
 
+    // entrada del mosaico de categorias: la primera vez que se ve, cada caja llega desde fuera de la ventana por su lado
+    // (las de la izquierda desde la izquierda, las de la derecha desde la derecha, las que ocupan casi todo el ancho desde arriba o abajo),
+    // en orden aleatorio y una despues de otra
+    const mosaico = useRef<HTMLDivElement|null>(null);
+    useLayoutEffect(() => {
+        const grilla = mosaico.current;
+        if (!grilla || grilla.children.length === 0) return;
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        const cajas = [...grilla.children] as HTMLElement[];
+        cajas.forEach(caja => caja.style.opacity = '0');
+
+        // cada caja entra cuando llega a la pantalla (el mosaico es mas alto que la ventana);
+        // las que entran a la vez lo hacen en orden aleatorio, una despues de otra
+        const observador = new IntersectionObserver((entradas) => {
+            const visibles = entradas.filter(e => e.isIntersecting).map(e => e.target as HTMLElement);
+            if (visibles.length === 0) return;
+            const g = grilla.getBoundingClientRect();
+            const turnos = visibles.map((_, i) => i).sort(() => Math.random() - 0.5);
+            visibles.forEach((caja, i) => {
+                observador.unobserve(caja);
+                const r = caja.getBoundingClientRect();
+                // las anchas de la mitad de arriba bajan desde arriba de la ventana; las de la mitad de abajo suben desde abajo
+                const ancha = r.width > g.width * 0.7;
+                const desde = ancha
+                    ? (r.top + r.height / 2 < g.top + g.height / 2 ? `translateY(${-(r.bottom + 20)}px)` : `translateY(${window.innerHeight - r.top + 20}px)`)
+                    : r.left + r.width / 2 < g.left + g.width / 2
+                        ? `translateX(${-(r.right + 20)}px)`
+                        : `translateX(${window.innerWidth - r.left + 20}px)`;
+                caja.style.opacity = '';
+                caja.animate([{transform: desde, opacity: 0}, {transform: 'none', opacity: 1}], {
+                    duration: 1000, delay: turnos[i] * 120, easing: 'cubic-bezier(.22, 1, .36, 1)', fill: 'backwards',
+                });
+            });
+        }, {threshold: 0.2});
+        cajas.forEach(caja => observador.observe(caja));
+        return () => observador.disconnect();
+    }, [categoriasUnicas.length]);
+
     // el boton de whatsapp es fixed, pero no baja mas alla de la fila de redes sociales del footer:
     // al llegar a ella se queda a su altura (centrado con los iconos) y sube junto con la pagina
     const botonWhatsapp = useRef<HTMLAnchorElement|null>(null);
@@ -307,15 +346,17 @@ export function Inicio({productosIniciales, bannersIniciales} : {productosInicia
           {/*---------------presentacion: el titulo principal (h1) que lee Google---------------*/}
 
           {/* tarjeta con el degradado celeste de los banners de ofertas y el borde de 1px de las demas tarjetas */}
-          <div className={"w-[90%] 2xl:w-[70%] mx-auto pt-[40.5px]"}>
+          {/* desde aqui cada seccion aparece con una transicion suave al llegar a ella (componente Aparecer) */}
+          <Aparecer className={"w-[90%] 2xl:w-[70%] mx-auto pt-[40.5px]"}>
               <div className={"rounded-[12px] bg-gradient-to-r from-[#d3ebf8] via-[#e6f4fb] to-[#a8d5ef] shadow-[0_0_0_1px_rgba(0,0,0,.12)] px-[20px] py-[24px] md:px-[40px] md:py-[32px] text-center"}>
                   <h1 className={"text-[22px] md:text-[30px] font-semibold leading-tight text-slate-900"}>Equipos de protección personal para minería y construcción</h1>
                   <p className={"mt-[8px] text-[15px] md:text-[17px] text-slate-600"}>Abastecemos a empresas mineras, contratistas y obras de construcción con EPP certificados. Venta por mayor y menor en Lima.</p>
               </div>
-          </div>
+          </Aparecer>
 
           {/*-----------------------------------------------------*/}
 
+          <Aparecer>
           <div className={"w-[90%] 2xl:w-[70%] mx-auto"}>
               <TituloSeccion>Nuestras marcas</TituloSeccion>
           </div>
@@ -334,19 +375,21 @@ export function Inicio({productosIniciales, bannersIniciales} : {productosInicia
               </div>
 
           </div>
+          </Aparecer>
 
           {/*---------------banners de ofertas---------------*/}
 
-          {categorias && <BannersOfertas productos={categorias} banners={banners}/>}
+          {categorias && <Aparecer><BannersOfertas productos={categorias} banners={banners}/></Aparecer>}
 
           {/*---------------categoria de productos---------------*/}
 
           <div className={"w-[90%] 2xl:w-[70%] mx-auto"}>
-              <TituloSeccion>Categorias de productos EPPS</TituloSeccion>
+              {/* el titulo aparece suave; las cajas del mosaico tienen su propia entrada (ver "mosaico" arriba) */}
+              <Aparecer><TituloSeccion>Categorias de productos EPPS</TituloSeccion></Aparecer>
               {/*<h2> J & M Andes security EIRL</h2>*/}
               {/*<h1>3M - STEELPRO - MSA -NORTH -ANSELL -CAT- CLUTE - DELTA PLUS</h1>*/}
               {!categorias && <Cargando texto={"Cargando categorías..."}/>}
-              <div className={"grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 auto-rows-[220px] md:auto-rows-[240px] grid-flow-dense gap-[15px]"}>
+              <div ref={mosaico} className={"grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 auto-rows-[220px] md:auto-rows-[240px] grid-flow-dense gap-[15px]"}>
                   {
                       categoriasUnicas.map((el : Product, index : number) => (
                           <Link href={`/productos/${el.categoria.replace(/\s+/g, "-").toLowerCase()}`} key={el.categoria} className={`${claseMosaico(index, categoriasUnicas.length)} group relative overflow-hidden rounded-[12px] shadow-[0_0_0_1px_rgba(0,0,0,.12)]`}>
@@ -365,6 +408,7 @@ export function Inicio({productosIniciales, bannersIniciales} : {productosInicia
 
           {/*---------------------productos mas buscados------------------------------*/}
 
+          <Aparecer>
           <div className={"w-[90%] 2xl:w-[70%] mx-auto"}>
               <TituloSeccion>productos mas buscados</TituloSeccion>
           </div>
@@ -373,11 +417,12 @@ export function Inicio({productosIniciales, bannersIniciales} : {productosInicia
           <div className={"w-[90%] 2xl:w-[70%] mx-auto"}>
               <CarruselMasBuscados productos={masBuscados}/>
           </div>
+          </Aparecer>
 
 
           {/*--------------------------nuevos ingresos--------------------------------------------*/}
           <div className={"pb-[50px]"}>
-              {categorias && <BannersNuevos productos={categorias} banners={banners}/>}
+              {categorias && <Aparecer><BannersNuevos productos={categorias} banners={banners}/></Aparecer>}
           </div>
 
           <a ref={botonWhatsapp} href="https://wa.me/51986680850" target="_blank" rel="noopener noreferrer" aria-label="Escríbenos por WhatsApp" className={"size-[60px] md:size-[70px] bg-[#25D366] text-white rounded-full fixed bottom-[25px] right-[25px] z-[30] flex items-center justify-center shadow-[0px_4px_14px_rgba(0,0,0,.35)] transition-transform duration-300 hover:scale-110 active:scale-95"}>
