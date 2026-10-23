@@ -293,7 +293,8 @@ export function Inicio({productosIniciales, bannersIniciales} : {productosInicia
               <div className={"absolute bottom-[4%] flex left-1/2 -translate-x-1/2 gap-[6px] sm:gap-[10px]"}>
                   {
                       imagenes && imagenes.map((_, index) => (
-                          <div className={` ${ paintCircle === index ? "w-[48px] sm:w-[100px] largeCircle relative overflow-hidden" : ""} size-[9px] sm:size-[15px] rounded-full border-1 border-gray-700 transition-all duration-500 ease-in-out`} key={index}/>
+                          // el punto activo se rellena con la animacion (largeCircle en globals.css); el resto va pintado con el mismo blanco al 80%
+                          <div className={` ${ paintCircle === index ? "w-[48px] sm:w-[100px] largeCircle relative overflow-hidden" : "bg-white/80"} size-[9px] sm:size-[15px] rounded-full border-1 border-gray-700 transition-all duration-500 ease-in-out`} key={index}/>
                       ))
                   }
               </div>
