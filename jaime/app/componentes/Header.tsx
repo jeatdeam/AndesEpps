@@ -102,7 +102,7 @@ export const  Header = () => {
                 {/* el margen negativo deja que la animacion sea mas alta que el contenido sin agrandar el header.
                     el dibujo empieza ~48px dentro de la animacion: bajo 1024px se corre 40px para que quede
                     a la misma distancia del borde que el icono del menu del lado derecho */}
-                <Link href={"/"} aria-label={"Los Andes J & C - inicio"} className={"flex items-center w-fit shrink-0 mr-auto -my-[56px] lg:-my-[78px]"}>
+                <Link href={"/"} aria-label={"Los Andes EPPS - inicio"} className={"flex items-center w-fit shrink-0 mr-auto -my-[56px] lg:-my-[78px]"}>
                     <AnimacionLottie datos={losAndesEpps} className={"w-[251px] h-[150.4px] lg:w-[326px] lg:h-[195.5px] shrink-0 max-lg:-ml-[40px] max-lg:translate-y-[8px] lg:translate-y-[14px]"}/>
                 </Link>
                 <EnlacesHeader/>

@@ -38,7 +38,7 @@ const htmlCorreo = (cotizacion : Cotizacion, miniaturas : Map<number, Buffer>) =
         <div style="max-width:620px;margin:0 auto;background:#ffffff;border-radius:14px;overflow:hidden">
             <div style="height:6px;background:#facc15"></div>
             <div style="padding:24px 28px">
-                <div style="font-size:20px;font-weight:700">Los Andes J &amp; C</div>
+                <div style="font-size:20px;font-weight:700">Los Andes EPPS</div>
                 <div style="color:#64748b;font-size:13px">Cotización ${cotizacion.numero} · ${formatoFecha(new Date(cotizacion.fecha))}</div>
                 <p style="font-size:15px;line-height:1.6;margin:22px 0 6px">Hola ${escaparHtml(cotizacion.cliente.nombre)},</p>
                 <p style="font-size:15px;line-height:1.6;margin:0 0 18px">Gracias por tu interés. Estos son los productos que cotizaste; también adjuntamos la cotización en PDF.</p>
@@ -81,7 +81,7 @@ export const enviarCorreo = async (cotizacion : Cotizacion, pdf : Buffer, miniat
         to : cotizacion.cliente.correo,
         // copia oculta para que ventas reciba cada cotizacion
         bcc : process.env.CORREO_VENTAS || undefined,
-        subject : `Tu cotización ${cotizacion.numero} - Los Andes J & C`,
+        subject : `Tu cotización ${cotizacion.numero} - Los Andes EPPS`,
         html : htmlCorreo(cotizacion, miniaturas),
         attachments : [
             {filename: `Cotizacion-${cotizacion.numero}.pdf`, content: pdf, contentType: 'application/pdf'},
@@ -139,7 +139,7 @@ export const enviarWhatsapp = async (cotizacion : Cotizacion, pdf : Buffer) : Pr
         },
     } : {
         type : 'document',
-        document : {id, filename: nombreArchivo, caption: `Hola ${cotizacion.cliente.nombre}, esta es tu cotización ${cotizacion.numero} de Los Andes J & C. Total: ${formatoSoles(cotizacion.total)}`},
+        document : {id, filename: nombreArchivo, caption: `Hola ${cotizacion.cliente.nombre}, esta es tu cotización ${cotizacion.numero} de Los Andes EPPS. Total: ${formatoSoles(cotizacion.total)}`},
     };
     await llamarApi('messages', {messaging_product: 'whatsapp', to: cotizacion.cliente.whatsapp, ...mensaje});
     return 'enviado';

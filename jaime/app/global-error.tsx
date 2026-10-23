@@ -7,7 +7,7 @@ export default function GlobalError({error, unstable_retry} : {error : Error & {
     return (
         <html lang="es">
             <body className={"min-h-screen flex flex-col"}>
-                <title>Algo salió mal | Los Andes J & C</title>
+                <title>Algo salió mal | Los Andes EPPS</title>
                 <PaginaEstado
                     codigo={"500"}
                     titulo={"Algo salió mal"}

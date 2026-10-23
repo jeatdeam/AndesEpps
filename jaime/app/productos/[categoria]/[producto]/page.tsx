@@ -10,6 +10,8 @@ import {TarjetaProducto} from '@/app/componentes/TarjetaProducto';
 import {MediosPago} from '@/app/componentes/MediosPago';
 import {formatoPrecio, precioFinal, enOferta, EtiquetaDescuento, EstrellaUnica, IconoCarrito, IconoCotizar, claseBotonProducto} from '@/app/componentes/elementosProducto';
 import {poppins} from '@/app/fuentes';
+import type {Metadata} from 'next';
+import {SITIO, MARCA, aSlug, recortar} from '@/app/seo';
 
 
 const Separador = () => <div className={"w-full self-stretch h-px shrink-0 bg-current opacity-30"}/>;
@@ -20,14 +22,58 @@ export async function generateStaticParams() {
     return [];
 }
 
+// el parametro llega codificado (ej. "diel%C3%A9ctrico") cuando tiene tildes o ñ.
+// generateMetadata y la pagina lo usan; next junta las dos peticiones en una sola
+const buscarProducto = async (producto : string) => {
+    const productoNormalizado = decodeURIComponent(producto).replace(/-+/g, ' ')
+    const data = await obtenerProductos();
+    return {data, elementoFiltrado: data.find(el => el.name === productoNormalizado)};
+}
+
+const urlProducto = (producto : Product) => `/productos/${aSlug(producto.categoria)}/${aSlug(producto.name)}`;
+
+// titulo, descripcion y foto propios de cada producto en Google y al compartir el enlace
+export async function generateMetadata({params} : {params : Promise<{producto:string}>}) : Promise<Metadata> {
+    const {elementoFiltrado} = await buscarProducto((await params).producto);
+    if (!elementoFiltrado) return {};
+
+    const nombre = elementoFiltrado.name.charAt(0).toUpperCase() + elementoFiltrado.name.slice(1);
+    const titulo = elementoFiltrado.marca ? `${nombre} ${elementoFiltrado.marca}` : nombre;
+    const descripcion = recortar(`${nombre}: ${elementoFiltrado.descripcionPrimaria} Precio: ${formatoPrecio(precioFinal(elementoFiltrado))}.`);
+
+    return {
+        title: titulo,
+        description: descripcion,
+        alternates: {canonical: urlProducto(elementoFiltrado)},
+        openGraph: {title: `${titulo} | ${MARCA}`, description: descripcion, images: elementoFiltrado.img.slice(0, 1)},
+    };
+}
+
 export default async function Page ({params} : {params : Promise<{producto:string}>}) {
 
     const {producto} = await params;
-    // el parametro llega codificado (ej. "diel%C3%A9ctrico") cuando tiene tildes o ñ
-    const productoNormalizado = decodeURIComponent(producto).replace(/-+/g, ' ')
-    const data = await obtenerProductos();
-    const elementoFiltrado = data.filter( (producto : Product, _ : number) => producto.name === productoNormalizado )[0]
+    const {data, elementoFiltrado} = await buscarProducto(producto);
     if (!elementoFiltrado) notFound();
+
+    // datos del producto para Google (precio, stock, marca); permiten que aparezcan en los resultados
+    const datosProducto = {
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        name: elementoFiltrado.name,
+        image: elementoFiltrado.img,
+        description: elementoFiltrado.descripcionPrimaria,
+        sku: String(elementoFiltrado.id).padStart(5, '0'),
+        category: elementoFiltrado.categoria,
+        ...(elementoFiltrado.marca && {brand: {'@type': 'Brand', name: elementoFiltrado.marca}}),
+        offers: {
+            '@type': 'Offer',
+            url: `${SITIO}${urlProducto(elementoFiltrado)}`,
+            priceCurrency: 'PEN',
+            price: precioFinal(elementoFiltrado).toFixed(2),
+            availability: elementoFiltrado.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+            seller: {'@type': 'Organization', name: MARCA},
+        },
+    };
 
     const categoriaMasBuscada = data.filter( (producto: Product, _ : number) => producto.categoria === elementoFiltrado.categoria )
 
@@ -43,6 +89,7 @@ export default async function Page ({params} : {params : Promise<{producto:strin
 
     return(
         <div className={"pb-[40px]"}>
+            <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(datosProducto)}}/>
             {/* de 768px a 1023px el ancho se queda fijo en el que tiene a 768px (90% = 691px); desde 1024px vuelve a ser relativo */}
             <div className={"w-[90%] md:w-[691px] lg:w-[90%] xl:w-[70%] 2xl:w-[1200px] mx-auto"}>
                 <h1 className={"p-[25px] text-[35px] font-bold text-center leading-none"}>{elementoFiltrado.name.toUpperCase()}</h1>
@@ -128,7 +175,7 @@ export default async function Page ({params} : {params : Promise<{producto:strin
                     <SideOptions producto={producto}/>
 
                     {/*--------------------------productos recomendadops-----------------------------*/}
-                    <h1 className={"text-[50px] font-bold text-center leading-none"}>Productos recomendados</h1>
+                    <h2 className={"text-[50px] font-bold text-center leading-none"}>Productos recomendados</h2>
 
                     <div className={"w-full rounded-[12px] flex flex-wrap justify-center gap-[25px]"}>
                             {

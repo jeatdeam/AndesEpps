@@ -3,7 +3,7 @@ import Link from 'next/link';
 import {PaginaLegal, Seccion, Lista, Correo, EMPRESA, WHATSAPP_ATENCION} from '@/app/componentes/PaginaLegal';
 
 export const metadata : Metadata = {
-    title: `Términos y condiciones | ${EMPRESA}`,
+    title: 'Términos y condiciones',
     description: `Condiciones de uso del sitio web y de las cotizaciones de ${EMPRESA}.`,
 };
 
