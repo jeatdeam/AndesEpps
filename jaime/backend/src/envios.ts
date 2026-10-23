@@ -5,7 +5,7 @@ import {type Cotizacion, formatoSoles, formatoFecha, venceEl} from './cotizacion
 export type EstadoEnvio = 'enviado' | 'no-solicitado' | 'no-configurado' | 'error';
 
 // URL_TIENDA puede traer varias separadas por coma (cors); los enlaces usan la primera
-const URL_TIENDA = () => (process.env.URL_TIENDA || 'http://localhost:3000').split(',')[0].trim().replace(/\/+$/, '');
+const URL_TIENDA = () => (process.env.URL_TIENDA || 'http://localhost:3000').split(',')[0]!.trim().replace(/\/+$/, '');
 const aSlug = (texto : string) => texto.replace(/\s+/g, '-').toLowerCase();
 
 const escaparHtml = (texto : string) => texto.replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]!));
