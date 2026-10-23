@@ -1,0 +1,380 @@
+"use client";
+import Image from "next/image";
+import {useState, useEffect, useRef} from 'react';
+import Link from 'next/link';
+import {API} from '@/app/configuracion';
+import {Product, Banners} from '@/app/tipos/elementsType'
+import {CarruselMasBuscados} from './CarruselMasBuscados'
+import {BannersOfertas, BannersNuevos} from './BannersInicio'
+import {TituloSeccion} from './TituloSeccion'
+import {IconoWhatsapp} from './Footer'
+import {AnimacionLottie} from './AnimacionLottie'
+import {Cargando} from './Cargando'
+import pulsoWhatsapp from '@/app/animaciones/pulsoWhatsapp.json'
+
+
+// mosaico de 6 columnas (desde md):
+// fila 1 completa, fila 2 en dos mitades, fila 3 grande (2/3) + pequeña (1/3),
+// luego grupos de 4 que mezclan bloques verticales y horizontales
+const MOSAICO_INICIO = [
+    "sm:col-span-2 md:col-span-6",
+    "md:col-span-3",
+    "md:col-span-3",
+    "md:col-span-4",
+    "sm:col-span-2 md:col-span-2",
+];
+
+const MOSAICO_GRUPOS = [
+    ["md:col-span-2 md:row-span-2", "sm:col-span-2 md:col-span-4", "md:col-span-2", "md:col-span-2"],
+    ["sm:col-span-2 md:col-span-4", "md:col-span-2 md:row-span-2", "md:col-span-2", "md:col-span-2"],
+];
+
+// si sobran elementos que no completan un grupo, se reparten para llenar la fila
+const MOSAICO_SOBRANTES = [
+    [],
+    ["sm:col-span-2 md:col-span-6"],
+    ["md:col-span-3", "md:col-span-3"],
+    ["md:col-span-2", "md:col-span-2", "sm:col-span-2 md:col-span-2"],
+];
+
+const MAS_BUSCADOS_IDS = [3, 1, 7, 5, 9, 2, 10, 4];
+
+// boton de flecha del slider: oculto hasta pasar el cursor; con [@media(hover:none)] queda visible en pantallas tactiles
+const CLASE_FLECHA_SLIDER = "pointer-events-auto size-[46px] rounded-full bg-white/70 backdrop-blur-md ring-1 ring-black/5 shadow-[0_4px_14px_rgba(15,23,42,.15)] flex items-center justify-center text-slate-900 cursor-pointer opacity-0 group-hover/slider:opacity-100 focus-visible:opacity-100 focus-visible:translate-x-0 [@media(hover:none)]:opacity-100 [@media(hover:none)]:translate-x-0 hover:bg-white/90 active:scale-90 transition-all duration-300";
+
+// chevron fino de iOS (mismo trazo que las flechas de la galeria del producto)
+const ChevronIOS = ({direccion} : {direccion : 'izquierda' | 'derecha'}) => (
+    <svg viewBox="0 0 24 24" className={"w-[22px] h-[22px]"} fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden={true}>
+        <path d={direccion === 'izquierda' ? "M15 4.5 7.5 12l7.5 7.5" : "M9 4.5 16.5 12 9 19.5"}/>
+    </svg>
+)
+
+
+const claseMosaico =(index : number, total : number) => {
+    if (index < MOSAICO_INICIO.length) return MOSAICO_INICIO[index];
+    const posicion = index - MOSAICO_INICIO.length;
+    const restantes = total - MOSAICO_INICIO.length;
+    const inicioSobrantes = restantes - (restantes % 4);
+    if (posicion >= inicioSobrantes) return MOSAICO_SOBRANTES[restantes % 4][posicion - inicioSobrantes];
+    return MOSAICO_GRUPOS[Math.floor(posicion / 4) % 2][posicion % 4];
+}
+
+// separa el texto en letras para la animacion de cascada; cada palabra queda junta
+// para que el salto de linea no corte una palabra a la mitad
+const TextoCascada = ({texto} : {texto : string}) => {
+    let indice = 0;
+    return (
+        <span aria-hidden={true}>
+            {texto.split(" ").map((palabra, p) => (
+                <span key={p} className={"inline-block whitespace-nowrap"}>
+                    {[...palabra].map((letra, l) => (
+                        <span key={l} className={"letraCascada"} style={{"--i" : indice++} as React.CSSProperties}>{letra}</span>
+                    ))}
+                    {p < texto.split(" ").length - 1 && <span className={"inline-block"}>&nbsp;</span>}
+                </span>
+            ))}
+        </span>
+    );
+}
+
+// productos y banners llegan ya armados desde el servidor (app/page.tsx); si alli fallaron se piden aqui
+export function Inicio({productosIniciales, bannersIniciales} : {productosIniciales : Product[] | null, bannersIniciales : Banners | null}) {
+
+    const containerImg = useRef<HTMLDivElement|null>(null);
+    const arrowRight = useRef<HTMLButtonElement|null>(null);
+    const arrowLeft = useRef<HTMLButtonElement|null>(null);
+    const idInterval = useRef<ReturnType<typeof setInterval> | null>(null)
+    const flagInterval = useRef<boolean>(true);
+    const firstImg = useRef<HTMLImageElement|null>(null);
+    const containerCarrusel = useRef<HTMLDivElement|null>(null);
+
+
+    const [changeLeft, setChangeLeft] = useState<boolean>(false);
+    const [changeRight, setChangeRight] = useState<boolean>(false);
+    const [paintCircle, setPaintCircle] = useState<number>(1);
+    const [bagSlider, setBagSlider] = useState<boolean>(false);
+    const [positionImg, setPositionImg] = useState<number>(0);
+
+
+
+
+    const [categorias, setCategorias] = useState<Product[]|null>(productosIniciales)
+    const [banners, setBanners] = useState<Banners|null>(bannersIniciales)
+
+    // un producto por categoria para el mosaico
+    const categoriasUnicas = (categorias ?? []).filter((el, index, arr) => arr.findIndex(p => p.categoria === el.categoria) === index);
+
+    // simulado: orden fijo de ids hasta tener datos reales de busquedas
+    const masBuscados = MAS_BUSCADOS_IDS
+        .map(id => categorias?.find(p => p.id === id))
+        .filter((p) : p is Product => !!p);
+
+    useEffect(() => {
+        if (productosIniciales) return;
+
+        const obtenerCategorias = async () => {
+
+            const response = await fetch(`${API}/getProductosCategoria`);
+            const result = await response.json();
+            setCategorias(result);
+
+        }
+        obtenerCategorias();
+
+        // si fallan los banners del dashboard se muestran solo los automaticos
+        fetch(`${API}/banners`)
+            .then(response => response.json())
+            .then(setBanners)
+            .catch(() => setBanners(null));
+    },[])
+
+
+
+
+
+    // banners de ejemplo (public/slider): marcas y ofertas ficticias hasta tener las reales
+    const [imagenes, setImagenes] = useState<string[]|null>(["/slider/casco.svg",
+                                                            "/slider/guantes.svg",
+                                                            "/slider/lentes.svg",
+                                                            "/slider/botas.svg"])
+
+    const [imagenesCarrusel, setImagenesCarrusel] = useState<string[]>(["https://res.cloudinary.com/dlrd1wxwd/image/upload/v1780188143/samples/sheep.jpg",
+                                                            "https://res.cloudinary.com/dlrd1wxwd/image/upload/v1780188146/samples/imagecon-group.jpg",
+                                                            "https://res.cloudinary.com/dlrd1wxwd/image/upload/v1780188152/samples/man-portrait.jpg",
+                                                            "https://res.cloudinary.com/dlrd1wxwd/image/upload/v1780188151/samples/man-on-a-escalator.jpg",
+                                                            "https://res.cloudinary.com/dlrd1wxwd/image/upload/v1780188142/samples/animals/reindeer.jpg","https://res.cloudinary.com/dlrd1wxwd/image/upload/v1780188142/samples/food/pot-mussels.jpg",
+                                                            "https://res.cloudinary.com/dlrd1wxwd/image/upload/v1780188146/samples/imagecon-group.jpg",
+                                                            "https://res.cloudinary.com/dlrd1wxwd/image/upload/v1780188141/samples/ecommerce/analog-classic.jpg",
+                                                            "https://res.cloudinary.com/dlrd1wxwd/image/upload/v1780188154/samples/zoom.avif",
+                                                            "https://res.cloudinary.com/dlrd1wxwd/image/upload/v1780188146/samples/imagecon-group.jpg"])
+
+
+    const moveDirectionImgRight = () => {
+
+        if(!imagenes || imagenes.length === 0) return;
+        setImagenes( prev => {
+            if(!prev || prev.length === 0) return prev;
+         return  [...prev.slice(1), prev[0]];
+        })
+        setChangeLeft(false);
+        setChangeRight(false);
+    }
+
+    const moveDirectionImgLeft = () => {
+        if(!imagenes || imagenes.length === 0) return;
+        setImagenes( prev => {
+            if(!prev || prev.length === 0) return prev;
+            return [prev[prev.length-1], ...prev.slice(0, -1)];
+        });
+        setChangeLeft(false);
+        setChangeRight(false);
+    }
+
+    const changeImgRight = () => {
+
+            if(flagInterval.current) {
+                if( !idInterval.current ) return;
+                flagInterval.current = false;
+
+
+                clearInterval(idInterval.current);
+                setChangeRight(true);
+                changeCircleRight();
+                setTimeout(()=>{
+                    moveDirectionImgRight();
+                    idInterval.current = setInterval(changeImgRight, 2000);
+                    flagInterval.current = true;
+                }, 500)
+            }
+
+    }
+
+    const changeImgLeft = () => {
+
+        if(flagInterval.current) {
+            if(!idInterval.current) return;
+            flagInterval.current = false;
+
+
+            clearInterval(idInterval.current);
+            setChangeLeft(true);
+            changeCircleLeft();
+            setTimeout(()=>{
+                moveDirectionImgLeft();
+                idInterval.current = setInterval(changeImgRight, 2000);
+                flagInterval.current = true;
+            }, 500)
+        }
+
+    }
+
+    const changeCircleRight = () => {
+        if( !imagenes || imagenes.length === 0 ) return;
+        setPaintCircle(prev => (prev + 1) %  imagenes.length)
+    }
+
+    const changeCircleLeft = () => {
+        if( !imagenes || imagenes.length === 0) return;
+        setPaintCircle ( prev => (prev - 1 + imagenes.length) %  imagenes.length);
+    }
+
+    const activateInterval = () => {
+
+
+
+    }
+
+    // el boton de whatsapp es fixed, pero no baja mas alla de la fila de redes sociales del footer:
+    // al llegar a ella se queda a su altura (centrado con los iconos) y sube junto con la pagina
+    const botonWhatsapp = useRef<HTMLAnchorElement|null>(null);
+    useEffect(() => {
+        const redes = document.getElementById('redes-footer');
+        if (!redes) return;
+        let cuadro = 0;
+        const ubicar = () => {
+            cancelAnimationFrame(cuadro);
+            cuadro = requestAnimationFrame(() => {
+                const boton = botonWhatsapp.current;
+                if (!boton) return;
+                const fila = redes.getBoundingClientRect();
+                const tope = window.innerHeight - (fila.top + fila.height / 2) - boton.offsetHeight / 2;
+                boton.style.bottom = `${Math.max(25, tope)}px`;
+            });
+        }
+        ubicar();
+        window.addEventListener('scroll', ubicar, {passive: true});
+        window.addEventListener('resize', ubicar);
+        return () => {
+            cancelAnimationFrame(cuadro);
+            window.removeEventListener('scroll', ubicar);
+            window.removeEventListener('resize', ubicar);
+        }
+    }, []);
+
+    //interval
+    useEffect(()=> {
+
+        idInterval.current = setInterval(changeImgRight, 2000);
+
+        return () => {
+            if( !idInterval.current ) return;
+            clearInterval(idInterval.current);
+        }
+    },[]);
+
+
+  return (
+      <div className={""}>
+          {/* el slider mide lo mismo que el menu flotante del header (mismas clases de ancho que en Header.tsx).
+              desde lg tiene 750px de alto; debajo conserva la proporcion que tiene a 1024px y se achica con la ventana,
+              asi el recorte de la imagen es el mismo en cualquier ancho.
+              cada imagen y cada desplazamiento usan 100cqw (el ancho de este contenedor) en lugar de 100vw (el de la pantalla) */}
+          <div  className={`relative aspect-[32/25] lg:aspect-auto lg:h-[750px] flex flex-col justify-center w-[calc(100%-16px)] sm:w-[94%] 2xl:w-[max(74%,1240px)] mx-auto overflow-hidden rounded-[12px] [container-type:inline-size] group/slider`}>
+              {/* las imagenes ya traen el degradado del fondo de la pagina, por eso no necesitan difuminar sus bordes */}
+              <div className={"absolute inset-0"}>
+                  <div ref={containerImg} style={{transform : `translateX(${-100}cqw)`}} className={`${ changeRight ? "-translate-x-[100cqw] transition-transform duration-500 ease-in-out" : ""} ${changeLeft ? "translate-x-[100cqw] transition-transform duration-500 ease-in-out" : ""} flex h-full `}>
+                      {
+                          imagenes &&  imagenes.map((el, index) => (
+                              <img src={el} alt="" key={index} className={"h-full w-[100cqw] shrink-0 object-cover"}/>
+                          ))
+                      }
+                  </div>
+              </div>
+              {/* flechas estilo iOS: circulo de vidrio con chevron fino. aparecen al pasar el cursor por el slider
+                  (o al enfocarlas con teclado); en pantallas tactiles, sin cursor, se ven siempre */}
+              <div className={"absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-[4%] pointer-events-none"}>
+                  <button ref={arrowLeft} type={"button"} onClick={changeImgLeft} aria-label={"Imagen anterior"} className={`${CLASE_FLECHA_SLIDER} -translate-x-[8px] group-hover/slider:translate-x-0`}>
+                      <ChevronIOS direccion={"izquierda"}/>
+                  </button>
+                  <button ref={arrowRight} type={"button"} onClick={changeImgRight} aria-label={"Imagen siguiente"} className={`${CLASE_FLECHA_SLIDER} translate-x-[8px] group-hover/slider:translate-x-0`}>
+                      <ChevronIOS direccion={"derecha"}/>
+                  </button>
+              </div>
+              <div className={"absolute bottom-[2.5%] flex left-1/2 -translate-x-1/2 gap-[10px]"}>
+                  {
+                      imagenes && imagenes.map((_, index) => (
+                          <div className={` ${ paintCircle === index ? "w-[100px] largeCircle relative overflow-hidden" : ""} size-[15px] rounded-full border-1 border-gray-700 transition-all duration-500 ease-in-out`} key={index}/>
+                      ))
+                  }
+              </div>
+          </div>
+
+          {/*-----------------------------------------------------*/}
+
+          <div className={"w-[90%] 2xl:w-[70%] mx-auto"}>
+              <TituloSeccion>Nuestras marcas</TituloSeccion>
+          </div>
+
+          <div  className={"w-[90%] 2xl:w-[70%] mx-auto overflow-hidden"}>
+              <div ref={containerCarrusel} className={"shadow-[0_0_0_1px_rgba(0,0,0,.12)] rounded-[12px]"}>
+                  <div className={"flex carrusel gap-[35px]"}>
+                      {
+                          imagenesCarrusel && imagenesCarrusel.map((el, index) => (
+                              <img  src={el} alt="" key={index} className={"rounded-[12px] w-[200px] h-[100px] object-cover"}/>
+                          ))
+                      }
+                      {
+                          imagenesCarrusel && imagenesCarrusel.map((el, index) => (
+                              <img  src={el} alt="" key={index} className={"rounded-[12px] w-[200px] h-[100px] object-cover"}/>
+                          ))
+                      }
+                  </div>
+              </div>
+
+          </div>
+
+          {/*---------------banners de ofertas---------------*/}
+
+          {categorias && <BannersOfertas productos={categorias} banners={banners}/>}
+
+          {/*---------------categoria de productos---------------*/}
+
+          <div className={"w-[90%] 2xl:w-[70%] mx-auto"}>
+              <TituloSeccion>Categorias de productos EPPS</TituloSeccion>
+              {/*<h2> J & M Andes security EIRL</h2>*/}
+              {/*<h1>3M - STEELPRO - MSA -NORTH -ANSELL -CAT- CLUTE - DELTA PLUS</h1>*/}
+              {!categorias && <Cargando texto={"Cargando categorías..."}/>}
+              <div className={"grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 auto-rows-[220px] md:auto-rows-[240px] grid-flow-dense gap-[15px]"}>
+                  {
+                      categoriasUnicas.map((el : Product, index : number) => (
+                          <Link href={`/productos/${el.categoria.replace(/\s+/g, "-").toLowerCase()}`} key={el.categoria} className={`${claseMosaico(index, categoriasUnicas.length)} group relative overflow-hidden rounded-[12px] shadow-[0_0_0_1px_rgba(0,0,0,.12)]`}>
+                              <img src={el.img[0]} alt={el.categoria} className={"absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"}/>
+                              <div className={"absolute inset-0 bg-black/45 group-hover:bg-black/60 transition-colors duration-300"}/>
+                              <div className={"relative h-full flex items-center justify-center p-[15px]"}>
+                                  <h2 aria-label={el.categoria} className={"text-white text-center font-medium uppercase tracking-wide text-[22px] md:text-[26px] drop-shadow-[0_2px_6px_rgba(0,0,0,.8)] leading-none"}>
+                                      <TextoCascada texto={el.categoria}/>
+                                  </h2>
+                              </div>
+                          </Link>
+                      ))
+                  }
+              </div>
+          </div>
+
+          {/*---------------------productos mas buscados------------------------------*/}
+
+          <div className={"w-[90%] 2xl:w-[70%] mx-auto"}>
+              <TituloSeccion>productos mas buscados</TituloSeccion>
+          </div>
+
+          {/*-----------------------------grid de productos  mas buscados -----------------------------------------*/}
+          <div className={"w-[90%] 2xl:w-[70%] mx-auto"}>
+              <CarruselMasBuscados productos={masBuscados}/>
+          </div>
+
+
+          {/*--------------------------nuevos ingresos--------------------------------------------*/}
+          <div className={"pb-[50px]"}>
+              {categorias && <BannersNuevos productos={categorias} banners={banners}/>}
+          </div>
+
+          <a ref={botonWhatsapp} href="https://wa.me/51986680850" target="_blank" rel="noopener noreferrer" aria-label="Escríbenos por WhatsApp" className={"size-[60px] md:size-[70px] bg-[#25D366] text-white rounded-full fixed bottom-[25px] right-[25px] z-[30] flex items-center justify-center shadow-[0px_4px_14px_rgba(0,0,0,.35)] transition-transform duration-300 hover:scale-110 active:scale-95"}>
+              {/* ondas detras del icono: el boton es fixed con z-index, asi -z-10 queda sobre su fondo y debajo del icono */}
+              <AnimacionLottie datos={pulsoWhatsapp} className={"absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 size-[200%] -z-10 pointer-events-none"}/>
+              <IconoWhatsapp className={"w-[34px] h-[34px] md:w-[40px] md:h-[40px]"}/>
+          </a>
+
+
+      </div>
+  )
+}

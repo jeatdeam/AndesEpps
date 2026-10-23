@@ -1,6 +1,5 @@
 'use client'
 import axios from 'axios';
-import {API} from '@/app/configuracion';
 import {Product} from '../tipos/elementsType';
 import {useState, useEffect, useRef} from 'react';
 import {useControladorBusqueda} from "@/app/controladoresGlobales/controladorBusqueda";
@@ -27,7 +26,7 @@ export const InputBusqueda = () => {
 
     const getProducts = async () : Promise<Product[]> => {
 
-        const {data} = await axios.get(`${API}/getProductosCategoria`);
+        const {data} = await axios.get(`/api/productos`);
 
         return data
     }
