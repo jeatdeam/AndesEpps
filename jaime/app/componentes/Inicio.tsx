@@ -40,11 +40,12 @@ const MOSAICO_SOBRANTES = [
 const MAS_BUSCADOS_IDS = [3, 1, 7, 5, 9, 2, 10, 4];
 
 // boton de flecha del slider: oculto hasta pasar el cursor; con [@media(hover:none)] queda visible en pantallas tactiles
-const CLASE_FLECHA_SLIDER = "pointer-events-auto size-[46px] rounded-full bg-white/70 backdrop-blur-md ring-1 ring-black/5 shadow-[0_4px_14px_rgba(15,23,42,.15)] flex items-center justify-center text-slate-900 cursor-pointer opacity-0 group-hover/slider:opacity-100 focus-visible:opacity-100 focus-visible:translate-x-0 [@media(hover:none)]:opacity-100 [@media(hover:none)]:translate-x-0 hover:bg-white/90 active:scale-90 transition-all duration-300";
+// en celular el slider mide ~150px de alto, por eso la flecha es mas chica hasta sm
+const CLASE_FLECHA_SLIDER = "pointer-events-auto size-[32px] sm:size-[46px] rounded-full bg-white/70 backdrop-blur-md ring-1 ring-black/5 shadow-[0_4px_14px_rgba(15,23,42,.15)] flex items-center justify-center text-slate-900 cursor-pointer opacity-0 group-hover/slider:opacity-100 focus-visible:opacity-100 focus-visible:translate-x-0 [@media(hover:none)]:opacity-100 [@media(hover:none)]:translate-x-0 hover:bg-white/90 active:scale-90 transition-all duration-300";
 
 // chevron fino de iOS (mismo trazo que las flechas de la galeria del producto)
 const ChevronIOS = ({direccion} : {direccion : 'izquierda' | 'derecha'}) => (
-    <svg viewBox="0 0 24 24" className={"w-[22px] h-[22px]"} fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden={true}>
+    <svg viewBox="0 0 24 24" className={"size-[16px] sm:size-[22px]"} fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden={true}>
         <path d={direccion === 'izquierda' ? "M15 4.5 7.5 12l7.5 7.5" : "M9 4.5 16.5 12 9 19.5"}/>
     </svg>
 )
@@ -132,11 +133,11 @@ export function Inicio({productosIniciales, bannersIniciales} : {productosInicia
 
 
 
-    // banners de ejemplo (public/slider): marcas y ofertas ficticias hasta tener las reales
-    const [imagenes, setImagenes] = useState<string[]|null>(["/slider/casco.svg",
-                                                            "/slider/guantes.svg",
-                                                            "/slider/lentes.svg",
-                                                            "/slider/botas.svg"])
+    // banners del slider (public/slider): todos de 1920x768 (5:2), la misma proporcion que el slider
+    const [imagenes, setImagenes] = useState<string[]|null>(["/slider/3m.webp",
+                                                            "/slider/herramientas-construccion.webp",
+                                                            "/slider/cat-grafters.webp",
+                                                            "/slider/dewalt-grid-x.webp"])
 
     const [imagenesCarrusel, setImagenesCarrusel] = useState<string[]>(["https://res.cloudinary.com/dlrd1wxwd/image/upload/v1780188143/samples/sheep.jpg",
                                                             "https://res.cloudinary.com/dlrd1wxwd/image/upload/v1780188146/samples/imagecon-group.jpg",
@@ -266,10 +267,9 @@ export function Inicio({productosIniciales, bannersIniciales} : {productosInicia
   return (
       <div className={""}>
           {/* el slider mide lo mismo que el menu flotante del header (mismas clases de ancho que en Header.tsx).
-              desde lg tiene 750px de alto; debajo conserva la proporcion que tiene a 1024px y se achica con la ventana,
-              asi el recorte de la imagen es el mismo en cualquier ancho.
+              tiene la proporcion de los banners (5:2) en cualquier ancho, asi se ven completos sin recortes.
               cada imagen y cada desplazamiento usan 100cqw (el ancho de este contenedor) en lugar de 100vw (el de la pantalla) */}
-          <div  className={`relative aspect-[32/25] lg:aspect-auto lg:h-[750px] flex flex-col justify-center w-[calc(100%-16px)] sm:w-[94%] 2xl:w-[max(74%,1240px)] mx-auto overflow-hidden rounded-[12px] [container-type:inline-size] group/slider`}>
+          <div  className={`relative aspect-[5/2] flex flex-col justify-center w-[calc(100%-16px)] sm:w-[94%] 2xl:w-[max(74%,1240px)] mx-auto overflow-hidden rounded-[12px] [container-type:inline-size] group/slider`}>
               {/* las imagenes ya traen el degradado del fondo de la pagina, por eso no necesitan difuminar sus bordes */}
               <div className={"absolute inset-0"}>
                   <div ref={containerImg} style={{transform : `translateX(${-100}cqw)`}} className={`${ changeRight ? "-translate-x-[100cqw] transition-transform duration-500 ease-in-out" : ""} ${changeLeft ? "translate-x-[100cqw] transition-transform duration-500 ease-in-out" : ""} flex h-full `}>
@@ -290,10 +290,10 @@ export function Inicio({productosIniciales, bannersIniciales} : {productosInicia
                       <ChevronIOS direccion={"derecha"}/>
                   </button>
               </div>
-              <div className={"absolute bottom-[2.5%] flex left-1/2 -translate-x-1/2 gap-[10px]"}>
+              <div className={"absolute bottom-[4%] flex left-1/2 -translate-x-1/2 gap-[6px] sm:gap-[10px]"}>
                   {
                       imagenes && imagenes.map((_, index) => (
-                          <div className={` ${ paintCircle === index ? "w-[100px] largeCircle relative overflow-hidden" : ""} size-[15px] rounded-full border-1 border-gray-700 transition-all duration-500 ease-in-out`} key={index}/>
+                          <div className={` ${ paintCircle === index ? "w-[48px] sm:w-[100px] largeCircle relative overflow-hidden" : ""} size-[9px] sm:size-[15px] rounded-full border-1 border-gray-700 transition-all duration-500 ease-in-out`} key={index}/>
                       ))
                   }
               </div>
