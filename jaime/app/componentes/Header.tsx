@@ -4,6 +4,7 @@ import {InputBusqueda} from './InputBusqueda'
 import {CarritoHeader} from './CarritoHeader'
 import {EnlacesHeader, MenuHeader} from './NavegacionHeader'
 import {AnimacionLottie} from './AnimacionLottie'
+import {CaminanteHeader} from './CaminanteHeader'
 import losAndesEpps from '@/app/animaciones/losAndesEpps.json'
 import {useRef, useEffect, useState} from 'react';
 import {useControladorBusqueda} from "@/app/controladoresGlobales/controladorBusqueda";
@@ -97,7 +98,9 @@ export const  Header = () => {
         // el menu flotante sobresale un poco a cada lado del contenido de la pagina (90% del ancho, 70% en 2xl):
         // 8px de margen en celular, 94% desde sm y en 2xl el 74% sin bajar de 1240px (el detalle de producto llega a 1200px)
         <div ref={containerHeader} className={"h-[100px]  flex items-center relative"}>
-            <div ref={containerMenu} className={`${activeMenu ? "backdrop-blur-md  bg-blue-500/50" : " bg-blue-500/70 border-gray-400 backdrop-blur-none"} w-[calc(100%-16px)] sm:w-[94%] 2xl:w-[max(74%,1240px)] border transition-all duration-500 linear fixed top-[10px] z-[10] -translate-x-1/2 left-1/2 flex justify-between gap-[24px] p-[20px] rounded-[15px] items-center  origin-center mx-auto h-[80px]`}>
+            {/* azul marino translucido (el mismo de los botones oscuros) con textos e iconos blancos;
+                en vez de borde lleva una sombra solida de 1px muy tenue */}
+            <div ref={containerMenu} className={`${activeMenu ? "backdrop-blur-md bg-slate-900/75" : "bg-slate-900/85 backdrop-blur-none"} menuOscuro text-white w-[calc(100%-16px)] sm:w-[94%] 2xl:w-[max(74%,1240px)] shadow-[0_0_0_1px_rgba(255,255,255,.14),0_8px_24px_rgba(15,23,42,.18)] transition-all duration-500 linear fixed top-[10px] z-[10] -translate-x-1/2 left-1/2 flex justify-between gap-[24px] p-[20px] rounded-[15px] items-center  origin-center mx-auto h-[80px]`}>
 
                 {/* el margen negativo deja que la animacion sea mas alta que el contenido sin agrandar el header.
                     el dibujo empieza ~48px dentro de la animacion: bajo 1024px se corre 40px para que quede
@@ -111,7 +114,7 @@ export const  Header = () => {
                     <div ref={containerBusqueda} className={`flex items-center rounded-[7.5px] gap-[10px] py-[5px] ${activeSearch ? "" : "min-w-0"} relative`}>
                         {activeSearch &&
                             <div onClick={showBusqueda} className={"backCircle  relative size-[35px] shrink-0 flex items-center justify-center cursor-pointer"}>
-                                <svg className={" block z-[-10] transition-all duration-300 linear w-[22.5px] h-[22.5px] rounded-full"} xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
+                                <svg className={" block z-[-10] transition-all duration-300 linear w-[22.5px] h-[22.5px] rounded-full"} xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
                             </div>
                         }
                         {!activeSearch && <InputBusqueda/>}
@@ -123,6 +126,8 @@ export const  Header = () => {
                 </div>
 
                 {statusIcon && <InputBusqueda/>}
+
+                <CaminanteHeader/>
 
             </div>
         </div>

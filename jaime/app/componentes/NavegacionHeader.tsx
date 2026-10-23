@@ -31,7 +31,8 @@ const useCategorias = () => {
     return categorias;
 }
 
-const claseEnlace = (activo : boolean) => `px-[12px] py-[6px] rounded-[10px] text-[15px] font-medium transition-colors duration-300 hover:bg-white/30 ${activo ? "bg-white/30" : ""}`;
+// el header es azul marino: texto blanco y un fondo blanco translucido al pasar el cursor o en la seccion activa
+const claseEnlace = (activo : boolean) => `px-[12px] py-[6px] rounded-[10px] text-[15px] font-medium text-white transition-colors duration-300 hover:bg-white/15 ${activo ? "bg-white/15" : ""}`;
 
 // "/productos/[categoria]" pertenece a Categorias, no a Productos
 const estaActivo = (pathname : string, href : string) => href === '/productos' ? pathname === href : pathname.startsWith(href);
@@ -105,7 +106,7 @@ export const MenuHeader = () => {
     return (
         <div ref={contenedor} className={"flex items-center"}>
             <button onClick={() => setAbierto(!abierto)} aria-expanded={abierto} aria-label={"Abrir menú"} className={"relative p-[5px] flex items-center justify-center cursor-pointer backCircle"}>
-                <svg className={""} xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg>
+                <svg className={""} xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg>
             </button>
             <nav className={`absolute right-0 top-[calc(100%+8px)] w-[260px] max-w-[90vw] bg-white rounded-[12px] p-[6px] shadow-[0_0_0_1px_rgba(0,0,0,.12)] flex flex-col transition-all duration-200 ${abierto ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-[4px]"}`}>
                 {/* en escritorio estos enlaces ya estan en el header, el menu solo muestra las secciones */}
