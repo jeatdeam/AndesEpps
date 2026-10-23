@@ -31,6 +31,17 @@ export type Producto = {
 // imagenes guardadas en disco cuando cloudinary no esta configurado
 export const CARPETA_UPLOADS = path.join(__dirname, '..', 'uploads');
 
+// la tienda guarda productos y banners en la cache de Vercel; despues de cada cambio se le avisa
+// para que lo muestre al instante. Sin REVALIDAR_SECRETO no se avisa y el cambio aparece en 60 s.
+// no se espera la respuesta: si la tienda no contesta, el guardado igual termina bien
+const avisarTienda = () => {
+    const secreto = process.env.REVALIDAR_SECRETO;
+    if (!secreto) return;
+    const tienda = (process.env.URL_TIENDA || 'http://localhost:3000').split(',')[0]!.trim().replace(/\/+$/, '');
+    fetch(`${tienda}/api/revalidar`, {method: 'POST', headers: {'x-revalidar-secreto': secreto}})
+        .catch(error => console.error('no se pudo avisar a la tienda', error));
+}
+
 // los campos vacios se omiten, igual que cuando los productos estaban en el json
 const aProducto = (fila : FilaProducto) : Producto => {
     const {precio, marca, material, descuento, creadoEn, calificacion, resenas, ...resto} = fila;
@@ -67,14 +78,21 @@ export const buscarProducto = async (id : number) : Promise<Producto | undefined
 }
 
 // el id que traiga el producto se ignora: lo asigna la base de datos
-export const crearProducto = async (producto : Producto) =>
-    aProducto(await prisma.producto.create({data: aFila(producto)}));
+export const crearProducto = async (producto : Producto) => {
+    const creado = aProducto(await prisma.producto.create({data: aFila(producto)}));
+    avisarTienda();
+    return creado;
+}
 
-export const actualizarProducto = async (producto : Producto) =>
-    aProducto(await prisma.producto.update({where: {id: producto.id}, data: aFila(producto)}));
+export const actualizarProducto = async (producto : Producto) => {
+    const actualizado = aProducto(await prisma.producto.update({where: {id: producto.id}, data: aFila(producto)}));
+    avisarTienda();
+    return actualizado;
+}
 
 export const eliminarProducto = async (id : number) => {
     await prisma.producto.delete({where: {id}});
+    avisarTienda();
 }
 
 // ---------------- banners de ofertas de la pagina principal ----------------
@@ -111,9 +129,12 @@ export const leerBanners = async () : Promise<Banners> => {
 
 export const guardarBanner = async (posicion : PosicionBanner, banner : Banner) => {
     const datos = {imagen: banner.imagen, titulo: banner.titulo, categoria: banner.categoria ?? null, productoId: banner.productoId ?? null};
-    return aBanner(await prisma.banner.upsert({where: {posicion}, create: {posicion, ...datos}, update: datos}));
+    const guardado = aBanner(await prisma.banner.upsert({where: {posicion}, create: {posicion, ...datos}, update: datos}));
+    avisarTienda();
+    return guardado;
 }
 
 export const quitarBanner = async (posicion : PosicionBanner) => {
     await prisma.banner.deleteMany({where: {posicion}});
+    avisarTienda();
 }
