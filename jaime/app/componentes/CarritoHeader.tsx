@@ -67,9 +67,11 @@ export const CarritoHeader = () => {
             </button>
 
             {/* pt crea un puente invisible para que el hover no se pierda entre el icono y el panel.
-                group-hover solo actua en pantallas con cursor; en celulares lo abre "abierto" (al tocar la bolsa) */}
-            <div className={`absolute right-0 top-full pt-[18px] ${abierto ? "visible opacity-100 translate-y-0" : "invisible opacity-0 translate-y-[5px]"} group-hover:visible group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 z-[20]`}>
-                <div className={"w-[320px] max-w-[85vw] bg-white text-black rounded-[12px] shadow-[0_0_0_1px_rgba(0,0,0,.12)] p-[15px] flex flex-col gap-[12px]"}>
+                group-hover solo actua en pantallas con cursor; en celulares lo abre "abierto" (al tocar la bolsa).
+                en celular el panel ocupa todo el ancho del menu, centrado: el menu tiene transform, asi que "fixed"
+                se ubica respecto a el (left/right 0 = sus bordes, top-full = justo debajo) y no se sale de la pantalla */}
+            <div className={`absolute max-sm:fixed right-0 max-sm:left-0 top-full pt-[18px] max-sm:pt-[10px] ${abierto ? "visible opacity-100 translate-y-0" : "invisible opacity-0 translate-y-[5px]"} group-hover:visible group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 z-[20]`}>
+                <div className={"w-[320px] max-w-[85vw] max-sm:w-full max-sm:max-w-none bg-white text-black rounded-[12px] shadow-[0_0_0_1px_rgba(0,0,0,.12)] p-[15px] flex flex-col gap-[12px]"}>
                     <div className={"flex justify-between items-center"}>
                         <span className={"font-bold"}>Mi carrito</span>
                         <span className={"text-[13px] opacity-70"}>{cantidadTotal} {cantidadTotal === 1 ? 'producto' : 'productos'}</span>
