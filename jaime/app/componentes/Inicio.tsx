@@ -251,9 +251,13 @@ export function Inicio({productosIniciales, bannersIniciales} : {productosInicia
             visibles.forEach((caja, i) => {
                 observador.unobserve(caja);
                 const r = caja.getBoundingClientRect();
-                // las anchas de la mitad de arriba bajan desde arriba de la ventana; las de la mitad de abajo suben desde abajo
+                // en celular (una sola columna) todas suben un poco desde abajo, como el resto de secciones.
+                // en pantallas mayores: las anchas de la mitad de arriba bajan desde arriba de la ventana y las de la mitad
+                // de abajo suben desde abajo; las demas entran por su lado
                 const ancha = r.width > g.width * 0.7;
-                const desde = ancha
+                const desde = window.innerWidth < 640
+                    ? 'translateY(40px)'
+                    : ancha
                     ? (r.top + r.height / 2 < g.top + g.height / 2 ? `translateY(${-(r.bottom + 20)}px)` : `translateY(${window.innerHeight - r.top + 20}px)`)
                     : r.left + r.width / 2 < g.left + g.width / 2
                         ? `translateX(${-(r.right + 20)}px)`
@@ -333,11 +337,11 @@ export function Inicio({productosIniciales, bannersIniciales} : {productosInicia
                       <ChevronIOS direccion={"derecha"}/>
                   </button>
               </div>
-              <div className={"absolute bottom-[4%] flex left-1/2 -translate-x-1/2 gap-[6px] sm:gap-[10px]"}>
+              <div className={"absolute bottom-[4%] flex left-1/2 -translate-x-1/2 gap-[5px] sm:gap-[8px]"}>
                   {
                       imagenes && imagenes.map((_, index) => (
                           // el punto activo se rellena con la animacion (largeCircle en globals.css); el resto va pintado con el mismo blanco al 80%
-                          <div className={` ${ paintCircle === index ? "w-[48px] sm:w-[100px] largeCircle relative overflow-hidden" : "bg-white/80"} size-[9px] sm:size-[15px] rounded-full shadow-[0_0_0_1px_rgba(15,23,42,.35)] transition-all duration-500 ease-in-out`} key={index}/>
+                          <div className={` ${ paintCircle === index ? "w-[32px] sm:w-[64px] largeCircle relative overflow-hidden" : "bg-white/80"} size-[7px] sm:size-[10px] rounded-full shadow-[0_0_0_1px_rgba(15,23,42,.35)] transition-all duration-500 ease-in-out`} key={index}/>
                       ))
                   }
               </div>
