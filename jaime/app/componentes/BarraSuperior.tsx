@@ -1,73 +1,66 @@
 'use client'
-import {useEffect, useState, type ReactNode} from 'react';
+import {useEffect, useRef, useState, type ReactNode} from 'react';
 import {REDES_SOCIALES} from './Footer';
+import {AnimacionLottie} from './AnimacionLottie';
 import {WHATSAPP_TIENDA} from '@/app/configuracion';
+import caminante from '@/app/animaciones/caminanteConstruccion.json';
 
 // alto de la barra: el header flotante (Header.tsx) se ubica debajo de ella mientras la pagina esta arriba del todo
 export const ALTO_BARRA = 34;
-const CAMBIO_CADA = 5000;
-const DURACION = 500;
+// pixeles por segundo: la duracion de cada pasada se calcula con el ancho, asi va igual de rapido en cualquier pantalla
+const VELOCIDAD = 70;
 
 const claseEnlace = "uppercase tracking-[.08em] text-[12px] font-semibold text-white/85 hover:text-white transition-colors";
 
-// dos "diapositivas" que se turnan: la que sale sube y la que entra llega desde abajo
-const DIAPOSITIVAS : ReactNode[] = [
-    <div key={"redes"} className={"h-full flex items-center justify-center sm:justify-between gap-[16px]"}>
-        <div className={"flex items-center gap-[12px]"}>
-            <span className={"text-[13px] text-white/80"}>Síguenos en</span>
-            <div className={"flex items-center gap-[10px]"}>
-                {REDES_SOCIALES.map(({nombre, href, icono}) => (
-                    <a key={nombre} href={href} target="_blank" rel="noopener noreferrer" aria-label={nombre} className={"text-white/80 hover:text-white transition-colors [&_svg]:w-[15px] [&_svg]:h-[15px]"}>
-                        {icono}
-                    </a>
-                ))}
-            </div>
-        </div>
-        <div className={"hidden sm:flex items-center gap-[24px]"}>
-            <a href={`https://wa.me/${WHATSAPP_TIENDA}`} target="_blank" rel="noopener noreferrer" className={claseEnlace}>Contáctenos</a>
-            <a href={`https://wa.me/${WHATSAPP_TIENDA}`} target="_blank" rel="noopener noreferrer" className={claseEnlace}>Cotiza: 986 680 850</a>
-        </div>
-    </div>,
-    <div key={"mensaje"} className={"h-full flex items-center justify-center text-[12px] sm:text-[13px] text-white/85 text-center truncate"}>
-        <span className={"truncate"}>
-            <span className={"text-[#facc15] font-semibold"}>EPP para minería y construcción</span>
-            <span className={"hidden sm:inline"}> · Atención a empresas mineras, contratistas y obras</span>
-            <span> · Venta por mayor y menor en Lima</span>
+// los dos mensajes se turnan: uno en cada pasada del obrero
+const MENSAJES : ReactNode[] = [
+    <span key={"redes"} className={"flex items-center gap-[12px]"}>
+        <span className={"text-[13px] text-white/80"}>Síguenos en</span>
+        <span className={"flex items-center gap-[10px]"}>
+            {REDES_SOCIALES.map(({nombre, href, icono}) => (
+                <a key={nombre} href={href} target="_blank" rel="noopener noreferrer" aria-label={nombre} className={"text-white/80 hover:text-white transition-colors [&_svg]:w-[15px] [&_svg]:h-[15px]"}>
+                    {icono}
+                </a>
+            ))}
         </span>
-    </div>,
+        <span className={"text-white/40"}>·</span>
+        <a href={`https://wa.me/${WHATSAPP_TIENDA}`} target="_blank" rel="noopener noreferrer" className={claseEnlace}>Contáctenos</a>
+        <span className={"text-white/40"}>·</span>
+        <a href={`https://wa.me/${WHATSAPP_TIENDA}`} target="_blank" rel="noopener noreferrer" className={claseEnlace}>Cotiza: 986 680 850</a>
+    </span>,
+    <span key={"mensaje"} className={"text-[13px] text-white/85"}>
+        <span className={"text-[#facc15] font-semibold"}>EPP para minería y construcción</span>
+        <span> · Atención a empresas mineras, contratistas y obras · Venta por mayor y menor en Lima</span>
+    </span>,
 ];
 
+// franja de arriba de la pagina: el obrero de construccion cruza de izquierda a derecha llevando el mensaje detras de el.
+// al salir por la derecha vuelve a entrar por la izquierda con el otro mensaje. Con el cursor encima se detiene
 export const BarraSuperior = () => {
 
-    const [actual, setActual] = useState(0);
-    const [anterior, setAnterior] = useState<number|null>(null);
-    const [pausada, setPausada] = useState(false);
+    const barra = useRef<HTMLDivElement|null>(null);
+    const grupo = useRef<HTMLDivElement|null>(null);
+    const [mensaje, setMensaje] = useState(0);
 
-    // cada CAMBIO_CADA ms pasa a la siguiente; con el cursor encima se detiene
+    // la pasada recorre el ancho de la barra mas el ancho del grupo (entra y sale completo)
     useEffect(() => {
-        if (pausada) return;
-        const espera = setTimeout(() => {
-            setAnterior(actual);
-            setActual((actual + 1) % DIAPOSITIVAS.length);
-        }, CAMBIO_CADA);
-        return () => clearTimeout(espera);
-    }, [actual, pausada]);
-
-    // la que sale se quita cuando termina su animacion
-    useEffect(() => {
-        if (anterior === null) return;
-        const espera = setTimeout(() => setAnterior(null), DURACION);
-        return () => clearTimeout(espera);
-    }, [anterior]);
+        const contenedor = barra.current, movil = grupo.current;
+        if (!contenedor || !movil) return;
+        const ajustar = () => movil.style.setProperty('--duracion-barra', `${(contenedor.clientWidth + movil.offsetWidth) / VELOCIDAD}s`);
+        ajustar();
+        const observador = new ResizeObserver(ajustar);
+        observador.observe(contenedor);
+        observador.observe(movil);
+        return () => observador.disconnect();
+    }, []);
 
     return (
-        <div onMouseEnter={() => setPausada(true)} onMouseLeave={() => setPausada(false)} style={{height: ALTO_BARRA}} className={"bg-slate-900 text-white"}>
-            {/* mismo ancho que el header flotante, asi los bordes de ambos quedan alineados */}
-            <div className={"relative h-full overflow-hidden w-[calc(100%-16px)] sm:w-[94%] 2xl:w-[max(74%,1240px)] mx-auto"}>
-                {anterior !== null && (
-                    <div key={`sale-${anterior}`} aria-hidden={true} className={"barraSale absolute inset-0 px-[12px] sm:px-[20px]"}>{DIAPOSITIVAS[anterior]}</div>
-                )}
-                <div key={`entra-${actual}`} className={`${anterior !== null ? "barraEntra" : ""} absolute inset-0 px-[12px] sm:px-[20px]`}>{DIAPOSITIVAS[actual]}</div>
+        <div ref={barra} style={{height: ALTO_BARRA}} className={"barraSuperior relative overflow-hidden bg-slate-900 text-white"}>
+            <div ref={grupo} onAnimationIteration={() => setMensaje(m => (m + 1) % MENSAJES.length)}
+                className={"barraMovil absolute top-0 h-full flex items-center gap-[10px] whitespace-nowrap"}>
+                {MENSAJES[mensaje]}
+                {/* el obrero va delante: a la derecha del mensaje, que es hacia donde avanza */}
+                <AnimacionLottie datos={caminante} className={"caminanteBarra w-[28px] h-[26px] shrink-0"}/>
             </div>
         </div>
     )
