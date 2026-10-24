@@ -123,9 +123,9 @@ export const  Header = () => {
         // 8px de margen en celular, 94% desde sm y en 2xl el 74% sin bajar de 1240px (el detalle de producto llega a 1200px)
         // alto = separacion con la barra + 80px del menu + 10px hasta el contenido
         <div ref={containerHeader} style={{height: SEPARACION_BARRA + 80 + 10}} className={"flex items-center relative"}>
-            {/* azul marino translucido (el mismo de los botones oscuros) con textos e iconos blancos;
+            {/* degradado azul marino (#0f172a) a un azul un poco mas oscuro (#172554), translucido, con textos e iconos blancos;
                 en vez de borde lleva una sombra solida de 1px muy tenue */}
-            <div ref={containerMenu} style={{top: ALTO_BARRA + SEPARACION_BARRA}} className={`${activeMenu ? "backdrop-blur-md bg-slate-900/75" : "bg-slate-900/85 backdrop-blur-none"} menuOscuro text-white w-[calc(100%-16px)] sm:w-[94%] 2xl:w-[max(74%,1240px)] shadow-[0_0_0_1px_rgba(255,255,255,.14),0_8px_24px_rgba(15,23,42,.18)] transition-[background-color,backdrop-filter] duration-500 linear fixed z-[10] -translate-x-1/2 left-1/2 flex justify-between gap-[24px] p-[20px] rounded-[15px] items-center  origin-center mx-auto h-[80px]`}>
+            <div ref={containerMenu} style={{top: ALTO_BARRA + SEPARACION_BARRA}} className={`${activeMenu ? "backdrop-blur-md from-[#0f172a]/80 to-[#172554]/80" : "from-[#0f172a]/90 to-[#172554]/90 backdrop-blur-none"} bg-gradient-to-r menuOscuro text-white w-[calc(100%-16px)] sm:w-[94%] 2xl:w-[max(74%,1240px)] shadow-[0_0_0_1px_rgba(255,255,255,.14),0_8px_24px_rgba(15,23,42,.18)] transition-[background-color,backdrop-filter] duration-500 linear fixed z-[10] -translate-x-1/2 left-1/2 flex justify-between gap-[24px] p-[20px] rounded-[15px] items-center  origin-center mx-auto h-[80px]`}>
 
                 {/* el margen negativo deja que la animacion sea mas alta que el contenido sin agrandar el header.
                     el dibujo empieza ~48px dentro de la animacion: bajo 1024px se corre 40px para que quede

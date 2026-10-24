@@ -71,9 +71,8 @@ export const InputBusqueda = () => {
     return(
             // data-buscador: el header no cierra la busqueda al tocar dentro de este buscador (ver handleClickOutside en Header.tsx)
             <div data-buscador={true} className={`${!statusIcon ? "w-[450px] max-w-full min-w-0" : "min-w-[350px] absolute top-[150px] left-1/2 -translate-x-1/2 text-gray-900"}`}>
-                {/* en celular el buscador se abre debajo del header, sobre la pagina: fondo blanco translucido con desenfoque
-                    (como el header al hacer scroll) para que tape lo que queda detras */}
-                <div className={`w-full ${statusIcon ? "bg-white/75 backdrop-blur-md shadow-[0_0_0_1px_rgba(15,23,42,.12),0_8px_24px_rgba(15,23,42,.15)]" : "shadow-[0_0_1px_1.25px_rgba(255,255,255,0.8)]"} py-[2.5px] px-[10px] rounded-[12px] relative flex items-center gap-[8px]`}>
+                {/* en celular el buscador se abre debajo del header, sobre el vidrio esmerilado: fondo blanco solido */}
+                <div className={`w-full ${statusIcon ? "bg-white shadow-[0_0_0_1px_rgba(15,23,42,.12),0_8px_24px_rgba(15,23,42,.15)]" : "shadow-[0_0_1px_1.25px_rgba(255,255,255,0.8)]"} py-[2.5px] px-[10px] rounded-[12px] relative flex items-center gap-[8px]`}>
                     {/* la lupa dentro del input usa el mismo circulo de 35px de backCircle; el alto del input se ajusta a el */}
                     <button type="button" onClick={() => inputBusqueda.current?.focus()} aria-label={"Buscar"} className={"backCircle relative size-[35px] -ml-[7.5px] shrink-0 flex items-center justify-center cursor-pointer"}>
                         <svg className={"w-[22.5px] h-[22.5px] shrink-0"} xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>

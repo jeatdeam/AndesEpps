@@ -57,7 +57,7 @@ export const BarraSuperior = () => {
     }, []);
 
     return (
-        <div ref={barra} style={{height: ALTO_BARRA}} className={"barraSuperior relative overflow-hidden bg-slate-900 text-white"}>
+        <div ref={barra} style={{height: ALTO_BARRA}} className={"barraSuperior relative overflow-hidden bg-gradient-to-r from-[#0f172a] to-[#172554] text-white"}>
             <div key={mensaje} ref={grupo} onAnimationEnd={(e) => { if (e.target === e.currentTarget) setMensaje(m => (m + 1) % MENSAJES.length); }}
                 className={"barraMovil absolute top-0 h-full flex items-center gap-[10px] whitespace-nowrap"}>
                 {/* el obrero va delante: a la izquierda del mensaje, que es hacia donde avanza */}

@@ -84,16 +84,18 @@ const Flecha = () => (
     </svg>
 )
 
-// tonos azul hielo de las tarjetas de ofertas y nuevos ingresos (van con el degradado del fondo de la pagina)
-const HIELO_CLARO = "bg-gradient-to-br from-[#eef8fd] to-[#d3ebf8] ring-1 ring-white/80";
-const HIELO_MEDIO = "bg-gradient-to-br from-[#e1f2fb] to-[#bfe2f5] ring-1 ring-white/80";
-const HIELO_INTENSO = "bg-gradient-to-br from-[#d3ebf8] to-[#a8d5ef] ring-1 ring-white/70";
+// degradados de las tarjetas de ofertas y nuevos ingresos: empiezan con el azul marino del header (arriba a la
+// izquierda, donde va el texto en blanco) y terminan en azul hielo o blanco (abajo a la derecha, donde va la foto)
+const MARINO_HIELO = "bg-gradient-to-br from-[#0f172a] via-[#172554] to-[#a8d5ef] ring-1 ring-white/10";
+const MARINO_BLANCO = "bg-gradient-to-br from-[#0f172a] via-[#1e3a5f] to-[#f3f9fd] ring-1 ring-white/10";
+const MARINO_CIELO = "bg-gradient-to-br from-[#172554] via-[#1e3a8a] to-[#d3ebf8] ring-1 ring-white/10";
+const TEXTO_CLARO = {texto: "text-white", suave: "text-sky-100/75"};
 
 // colores de los 3 banners secundarios
 const TEMAS = [
-    {fondo: HIELO_CLARO, texto: "text-slate-900", suave: "text-slate-600", boton: "bg-slate-900 text-white"},
-    {fondo: HIELO_MEDIO, texto: "text-slate-900", suave: "text-slate-600", boton: "bg-sky-700 text-white"},
-    {fondo: HIELO_INTENSO, texto: "text-slate-900", suave: "text-slate-700", boton: "bg-slate-900 text-white"},
+    {fondo: MARINO_HIELO, ...TEXTO_CLARO, boton: "bg-white text-slate-900"},
+    {fondo: MARINO_BLANCO, ...TEXTO_CLARO, boton: "bg-[#facc15] text-slate-900"},
+    {fondo: MARINO_CIELO, ...TEXTO_CLARO, boton: "bg-white text-slate-900"},
 ];
 
 const BannerSecundario = ({banner, indice} : {banner : Banner, indice : number}) => {
@@ -136,18 +138,19 @@ const BannerSecundario = ({banner, indice} : {banner : Banner, indice : number})
 }
 
 const BannerPrincipal = ({principal} : {principal : BannerCategoria}) => (
-    <Link href={hrefCategoria(principal.categoria)} className={"group relative overflow-hidden rounded-[18px] bg-gradient-to-r from-[#d3ebf8] via-[#e6f4fb] to-[#a8d5ef] ring-1 ring-white/80 text-slate-900 min-h-[280px] px-[26px] py-[30px] md:px-[48px] flex flex-col md:flex-row md:items-center gap-[24px] shadow-[0px_6px_20px_rgba(0,0,0,.18)] hover:shadow-[0px_12px_32px_rgba(0,0,0,.28)] transition-shadow duration-300"}>
-        <div className={"absolute -top-[80px] -left-[60px] w-[260px] h-[260px] rounded-full bg-white/40"}/>
+    // de izquierda a derecha: azul marino del header (texto en blanco) hasta azul hielo (fotos de los productos)
+    <Link href={hrefCategoria(principal.categoria)} className={"group relative overflow-hidden rounded-[18px] bg-gradient-to-r from-[#0f172a] via-[#172554] to-[#a8d5ef] ring-1 ring-white/10 text-white min-h-[280px] px-[26px] py-[30px] md:px-[48px] flex flex-col md:flex-row md:items-center gap-[24px] shadow-[0px_6px_20px_rgba(0,0,0,.18)] hover:shadow-[0px_12px_32px_rgba(0,0,0,.28)] transition-shadow duration-300"}>
+        <div className={"absolute -top-[80px] -left-[60px] w-[260px] h-[260px] rounded-full bg-white/5"}/>
         <div className={"relative flex flex-col gap-[10px] md:max-w-[50%]"}>
-            <span className={"self-start bg-sky-700 text-white text-[12px] font-bold uppercase tracking-[0.15em] rounded-full px-[12px] py-[5px]"}>Oferta</span>
+            <span className={"self-start bg-[#facc15] text-slate-900 text-[12px] font-bold uppercase tracking-[0.15em] rounded-full px-[12px] py-[5px]"}>Oferta</span>
             <h3 className={"text-[26px] md:text-[34px] font-extrabold first-letter:uppercase leading-none"}>{principal.categoria}</h3>
-            <p className={"text-[40px] md:text-[54px] font-extrabold leading-none text-sky-700"}>
-                <span className={"text-[18px] md:text-[22px] font-bold text-slate-900"}>Hasta </span>-{principal.maxDescuento}%
+            <p className={"text-[40px] md:text-[54px] font-extrabold leading-none text-[#facc15]"}>
+                <span className={"text-[18px] md:text-[22px] font-bold text-white"}>Hasta </span>-{principal.maxDescuento}%
             </p>
-            <p className={"text-[14px] text-slate-600"}>
+            <p className={"text-[14px] text-sky-100/80"}>
                 {principal.cantidad} {principal.cantidad === 1 ? 'producto' : 'productos'} con descuento en esta categoría
             </p>
-            <span className={"mt-[6px] self-start flex items-center gap-[8px] bg-slate-900 text-white rounded-full px-[18px] py-[9px] text-[14px] font-bold"}>
+            <span className={"mt-[6px] self-start flex items-center gap-[8px] bg-white text-slate-900 rounded-full px-[18px] py-[9px] text-[14px] font-bold"}>
                 Ver ofertas <Flecha/>
             </span>
         </div>
@@ -164,13 +167,13 @@ const BannerPrincipal = ({principal} : {principal : BannerCategoria}) => (
 
 // ---------------- nuevos ingresos ----------------
 
-// colores de los 5 banners de nuevos ingresos (2 grandes arriba y 3 abajo), alternando los tonos de hielo
+// colores de los 5 banners de nuevos ingresos (2 grandes arriba y 3 abajo), alternando los degradados
 const TEMAS_NUEVOS = [
-    {fondo: HIELO_MEDIO, texto: "text-slate-900", suave: "text-slate-600", boton: "bg-slate-900 text-white", etiqueta: "bg-sky-700 text-white"},
-    {fondo: HIELO_INTENSO, texto: "text-slate-900", suave: "text-slate-700", boton: "bg-sky-700 text-white", etiqueta: "bg-slate-900 text-white"},
-    {fondo: HIELO_CLARO, texto: "text-slate-900", suave: "text-slate-600", boton: "bg-slate-900 text-white", etiqueta: "bg-sky-700 text-white"},
-    {fondo: HIELO_INTENSO, texto: "text-slate-900", suave: "text-slate-700", boton: "bg-slate-900 text-white", etiqueta: "bg-sky-700 text-white"},
-    {fondo: HIELO_MEDIO, texto: "text-slate-900", suave: "text-slate-600", boton: "bg-sky-700 text-white", etiqueta: "bg-slate-900 text-white"},
+    {fondo: MARINO_CIELO, ...TEXTO_CLARO, boton: "bg-white text-slate-900", etiqueta: "bg-[#facc15] text-slate-900"},
+    {fondo: MARINO_HIELO, ...TEXTO_CLARO, boton: "bg-[#facc15] text-slate-900", etiqueta: "bg-white text-slate-900"},
+    {fondo: MARINO_BLANCO, ...TEXTO_CLARO, boton: "bg-white text-slate-900", etiqueta: "bg-[#facc15] text-slate-900"},
+    {fondo: MARINO_HIELO, ...TEXTO_CLARO, boton: "bg-white text-slate-900", etiqueta: "bg-[#facc15] text-slate-900"},
+    {fondo: MARINO_CIELO, ...TEXTO_CLARO, boton: "bg-[#facc15] text-slate-900", etiqueta: "bg-white text-slate-900"},
 ];
 
 const BannerNuevoIngreso = ({producto, grande, indice} : {producto : Product, grande : boolean, indice : number}) => {
