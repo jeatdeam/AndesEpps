@@ -150,10 +150,9 @@ export const Footer = () => {
 
                 <div className={"sm:col-span-3 lg:col-span-1 flex flex-col gap-[16px]"}>
                     <Link href={"/"} className={"w-fit flex items-center gap-[10px] text-slate-900"}>
-                        {/* el casco animado del logo del header (solo el casco), sobre el mismo degradado azul marino del header */}
-                        <span className={"size-[48px] rounded-[14px] bg-gradient-to-br from-[#0f172a] to-[#172554] flex items-center justify-center"}>
-                            <AnimacionLottie datos={cascoAnimado} className={"w-[44px] h-[32px]"}/>
-                        </span>
+                        {/* el casco animado del logo del header (solo el casco), sin fondo; cascoAnimado.json va a 60 cuadros
+                            por segundo (el doble de rapido que el logo) y con el contorno azul marino para verse sobre el footer claro */}
+                        <AnimacionLottie datos={cascoAnimado} className={"w-[66px] h-[48px] shrink-0"}/>
                         <span className={"text-[20px] font-bold leading-tight"}>Los Andes EPPS</span>
                     </Link>
                     <p className={"text-[14px] leading-relaxed"}>
