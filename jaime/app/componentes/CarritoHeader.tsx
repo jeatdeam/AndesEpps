@@ -1,5 +1,6 @@
 'use client'
 import {useEffect, useRef, useState} from 'react';
+import {createPortal} from 'react-dom';
 import {useControladorCarrito} from '@/app/controladoresGlobales/controladorCarrito';
 import {useControladorCotizacion} from '@/app/controladoresGlobales/controladorCotizacion';
 import {formatoPrecio} from './elementosProducto';
@@ -57,10 +58,18 @@ export const CarritoHeader = () => {
 
     return (
         <div ref={contenedor} className={"relative group"}>
+            {/* en celular, con el carrito abierto, el resto de la pantalla queda detras del mismo vidrio que la busqueda.
+                va en un portal a <body>: dentro del menu (que tiene transform) "fixed" cubriria solo el menu.
+                z-[9] lo deja debajo del header (z-[10]); tocarlo cierra el panel (ver tocarFuera) */}
+            {abierto && createPortal(
+                <div aria-hidden={true} className={"fixed inset-0 z-[9] bg-slate-900/25 backdrop-blur-sm animate-[aparecerVidrio_.2s_ease-out]"}/>,
+                document.body
+            )}
             <button type={"button"} onClick={alternar} aria-label={"Ver carrito"} aria-expanded={abierto} className={"relative cursor-pointer p-[5px] backCircle"}>
                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M240-80q-33 0-56.5-23.5T160-160v-480q0-33 23.5-56.5T240-720h80q0-66 47-113t113-47q66 0 113 47t47 113h80q33 0 56.5 23.5T800-640v480q0 33-23.5 56.5T720-80H240Zm0-80h480v-480h-80v80q0 17-11.5 28.5T600-520q-17 0-28.5-11.5T560-560v-80H400v80q0 17-11.5 28.5T360-520q-17 0-28.5-11.5T320-560v-80h-80v480Zm160-560h160q0-33-23.5-56.5T480-800q-33 0-56.5 23.5T400-720ZM240-160v-480 480Z"/></svg>
                 {cantidadTotal > 0 && (
-                    <span className={"absolute -top-[4px] -right-[6px] min-w-[18px] h-[18px] px-[4px] rounded-full bg-white text-slate-900 shadow-[0_0_0_1px_rgba(15,23,42,.25)] text-[11px] font-bold flex items-center justify-center leading-none"}>
+                    // contadorPulso (globals.css): cada ~1.8 s salen dos anillos detras del circulo, uno tenue y otro con borde
+                    <span className={"contadorPulso absolute -top-[6px] -right-[8px] min-w-[18px] h-[18px] px-[4px] rounded-full bg-white text-slate-900 shadow-[0_0_0_1px_rgba(15,23,42,.25)] text-[11px] font-bold flex items-center justify-center leading-none"}>
                         {cantidadTotal}
                     </span>
                 )}
