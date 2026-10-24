@@ -76,8 +76,8 @@ const IconoFacebook = () => (
     <svg viewBox="0 0 24 24" className={iconoClase} fill="currentColor"><path d="M14 13.5h2.5l1-4H14v-2c0-1.03 0-2 2-2h1.5V2.14A28 28 0 0 0 14.64 2C11.93 2 10 3.66 10 6.7v2.8H7v4h3V22h4Z"/></svg>
 )
 
-// TODO: reemplazar los "#" por los perfiles reales de la empresa
-const REDES_SOCIALES = [
+// TODO: reemplazar los "#" por los perfiles reales de la empresa. Tambien las usa la barra superior (BarraSuperior.tsx)
+export const REDES_SOCIALES = [
     {nombre: 'TikTok', href: '#', icono: <IconoTiktok/>},
     {nombre: 'Instagram', href: '#', icono: <IconoInstagram/>},
     {nombre: 'Facebook', href: '#', icono: <IconoFacebook/>},

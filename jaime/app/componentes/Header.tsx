@@ -5,6 +5,7 @@ import {CarritoHeader} from './CarritoHeader'
 import {EnlacesHeader, MenuHeader} from './NavegacionHeader'
 import {AnimacionLottie} from './AnimacionLottie'
 import {CaminanteHeader} from './CaminanteHeader'
+import {ALTO_BARRA} from './BarraSuperior'
 import losAndesEpps from '@/app/animaciones/losAndesEpps.json'
 import {useRef, useEffect, useState} from 'react';
 import {useControladorBusqueda} from "@/app/controladoresGlobales/controladorBusqueda";
@@ -76,6 +77,24 @@ export const  Header = () => {
 
     },[])
 
+    // arriba del todo el menu flotante queda debajo de la barra superior; al bajar, la barra se va con la pagina
+    // y el menu sube hasta quedar a 10px del borde de la ventana
+    useEffect(() => {
+        let cuadro = 0;
+        const ubicar = () => {
+            cancelAnimationFrame(cuadro);
+            cuadro = requestAnimationFrame(() => {
+                if (containerMenu.current) containerMenu.current.style.top = `${Math.max(10, ALTO_BARRA + 10 - window.scrollY)}px`;
+            });
+        }
+        ubicar();
+        window.addEventListener('scroll', ubicar, {passive: true});
+        return () => {
+            cancelAnimationFrame(cuadro);
+            window.removeEventListener('scroll', ubicar);
+        }
+    }, []);
+
     useEffect(() => {
         const media = window.matchMedia("(max-width: 768px)");
 
@@ -100,7 +119,7 @@ export const  Header = () => {
         <div ref={containerHeader} className={"h-[100px]  flex items-center relative"}>
             {/* azul marino translucido (el mismo de los botones oscuros) con textos e iconos blancos;
                 en vez de borde lleva una sombra solida de 1px muy tenue */}
-            <div ref={containerMenu} className={`${activeMenu ? "backdrop-blur-md bg-slate-900/75" : "bg-slate-900/85 backdrop-blur-none"} menuOscuro text-white w-[calc(100%-16px)] sm:w-[94%] 2xl:w-[max(74%,1240px)] shadow-[0_0_0_1px_rgba(255,255,255,.14),0_8px_24px_rgba(15,23,42,.18)] transition-all duration-500 linear fixed top-[10px] z-[10] -translate-x-1/2 left-1/2 flex justify-between gap-[24px] p-[20px] rounded-[15px] items-center  origin-center mx-auto h-[80px]`}>
+            <div ref={containerMenu} style={{top: ALTO_BARRA + 10}} className={`${activeMenu ? "backdrop-blur-md bg-slate-900/75" : "bg-slate-900/85 backdrop-blur-none"} menuOscuro text-white w-[calc(100%-16px)] sm:w-[94%] 2xl:w-[max(74%,1240px)] shadow-[0_0_0_1px_rgba(255,255,255,.14),0_8px_24px_rgba(15,23,42,.18)] transition-[background-color,backdrop-filter] duration-500 linear fixed z-[10] -translate-x-1/2 left-1/2 flex justify-between gap-[24px] p-[20px] rounded-[15px] items-center  origin-center mx-auto h-[80px]`}>
 
                 {/* el margen negativo deja que la animacion sea mas alta que el contenido sin agrandar el header.
                     el dibujo empieza ~48px dentro de la animacion: bajo 1024px se corre 40px para que quede
