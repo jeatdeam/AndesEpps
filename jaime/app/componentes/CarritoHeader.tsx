@@ -95,13 +95,17 @@ export const CarritoHeader = () => {
                         </div>
                     ) : (
                         <>
-                            <ul className={"flex flex-col gap-[10px] max-h-[300px] overflow-y-auto scroll-fino pr-[4px]"}>
+                            {/* py/px de 2px: dejan ver la sombra de las fotos, que el overflow de la lista recortaria */}
+                            <ul className={"flex flex-col gap-[12px] max-h-[300px] overflow-y-auto scroll-fino py-[2px] pl-[2px] pr-[4px]"}>
                                 {productos.map(el => (
-                                    <li key={el.id} className={"flex gap-[10px] items-center"}>
-                                        <img src={el.img} alt="" className={"w-[55px] h-[55px] shrink-0 object-contain border rounded-[8px] bg-white"}/>
-                                        <div className={"flex-1 min-w-0 flex flex-col"}>
-                                            <span className={"text-[14px] font-semibold truncate capitalize"}>{el.name}</span>
-                                            <span className={"text-[13px] opacity-70"}>{el.cantidad} x {formatoPrecio(el.precio)}</span>
+                                    <li key={el.id} className={"flex gap-[12px] items-center"}>
+                                        {/* foto con borde tenue y sombra solida abajo, como las demas tarjetas */}
+                                        <img src={el.img} alt="" className={"w-[60px] h-[60px] shrink-0 object-contain rounded-[8px] bg-white shadow-[0_0_0_1px_rgba(15,23,42,.08),0_2px_0_rgba(15,23,42,.08)]"}/>
+                                        {/* tres lineas repartidas en el alto de la foto: nombre, precio unitario con la cantidad, total */}
+                                        <div className={"flex-1 min-w-0 h-[60px] flex flex-col justify-between py-[2px]"}>
+                                            <span className={"text-[14px] font-semibold truncate capitalize leading-tight"}>{el.name}</span>
+                                            <span className={"text-[13px] text-slate-500 leading-tight"}>{formatoPrecio(el.precio)} c/u <span className={"text-slate-400"}>×</span> {el.cantidad}</span>
+                                            <span className={"text-[13px] font-semibold text-slate-900 leading-tight"}>{formatoPrecio(el.precio * el.cantidad)}</span>
                                         </div>
                                         <button onClick={() => quitarProducto(el.id)} aria-label="Quitar producto" className={"shrink-0 w-[26px] h-[26px] rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900 flex items-center justify-center text-[16px] leading-none transition-colors cursor-pointer"}>×</button>
                                     </li>
