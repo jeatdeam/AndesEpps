@@ -230,10 +230,12 @@ const Modal = ({productosIniciales, cerrar} : {productosIniciales : ProductoCarr
     const enviadaPorAlgunCanal = respuesta && (respuesta.correo === 'enviado' || respuesta.whatsapp === 'enviado');
 
     return (
-        <div className={"fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 backdrop-blur-[2px] p-[16px]"} onMouseDown={e => { if (e.target === e.currentTarget && !enviando) cerrar(); }}>
-            <div role={"dialog"} aria-modal={true} aria-labelledby={"titulo-cotizacion"} className={`${poppins.className} w-full max-w-[680px] max-h-[92vh] flex flex-col overflow-hidden rounded-[16px] bg-white text-gray-900 shadow-[0px_20px_60px_rgba(0,0,0,.35)]`}>
+        // dvh (alto visible real): en celular vh incluye la zona detras de las barras del navegador y cortaba arriba y abajo.
+        // el encabezado y los botones quedan fijos; lo de en medio se desplaza
+        <div className={"fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 backdrop-blur-[2px] p-[10px] sm:p-[16px]"} onMouseDown={e => { if (e.target === e.currentTarget && !enviando) cerrar(); }}>
+            <div role={"dialog"} aria-modal={true} aria-labelledby={"titulo-cotizacion"} className={`${poppins.className} w-full max-w-[680px] max-h-[calc(100dvh-20px)] sm:max-h-[92dvh] flex flex-col overflow-hidden rounded-[16px] bg-white text-gray-900 shadow-[0px_20px_60px_rgba(0,0,0,.35)]`}>
 
-                <div className={"flex items-start justify-between gap-[12px] border-b border-gray-200 px-[22px] py-[16px]"}>
+                <div className={"shrink-0 flex items-start justify-between gap-[12px] border-b border-gray-200 px-[16px] sm:px-[22px] py-[12px] sm:py-[16px]"}>
                     <div className={"flex items-center gap-[12px]"}>
                         {/* desde la pantalla final vuelve al formulario con los datos ya escritos para corregirlos */}
                         {respuesta ? (
@@ -254,7 +256,7 @@ const Modal = ({productosIniciales, cerrar} : {productosIniciales : ProductoCarr
                 </div>
 
                 {respuesta ? (
-                    <div className={"overflow-y-auto scroll-fino px-[22px] py-[24px] flex flex-col items-center gap-[16px]"}>
+                    <div className={"flex-1 min-h-0 overflow-y-auto scroll-fino px-[16px] sm:px-[22px] py-[24px] flex flex-col items-center gap-[16px]"}>
                         <span className={"size-[60px] rounded-full bg-green-100 text-green-600 flex items-center justify-center"}>
                             <svg viewBox="0 0 24 24" className={"w-[30px] h-[30px]"} fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 5 5L20 7"/></svg>
                         </span>
@@ -277,31 +279,42 @@ const Modal = ({productosIniciales, cerrar} : {productosIniciales : ProductoCarr
                         </div>
                     </div>
                 ) : (
-                    <form onSubmit={enviar} className={"flex flex-col min-h-0"}>
-                        <div className={"overflow-y-auto scroll-fino px-[22px] py-[18px] flex flex-col gap-[20px]"}>
+                    <form onSubmit={enviar} className={"flex-1 flex flex-col min-h-0"}>
+                        <div className={"flex-1 min-h-0 overflow-y-auto scroll-fino px-[16px] sm:px-[22px] py-[16px] sm:py-[18px] flex flex-col gap-[20px]"}>
 
                             <section className={"flex flex-col gap-[10px]"}>
                                 <h3 className={"text-[12px] font-semibold uppercase tracking-[.12em] text-gray-500 leading-none"}>Productos ({productos.length})</h3>
                                 <ul className={"flex flex-col divide-y divide-gray-100 rounded-[12px] border border-gray-200"}>
-                                    {productos.map(p => (
-                                        <li key={p.id} className={"flex items-center gap-[12px] px-[12px] py-[10px]"}>
-                                            <img src={p.img} alt={""} className={"size-[46px] shrink-0 rounded-[8px] border border-gray-100 object-contain bg-white"}/>
-                                            <div className={"flex-1 min-w-0"}>
-                                                <p className={"text-[14px] font-medium leading-snug line-clamp-2 first-letter:uppercase"}>{p.name}</p>
-                                                <p className={"text-[12px] text-gray-500"}>{formatoPrecio(p.precio)} c/u</p>
-                                            </div>
-                                            <div className={"flex items-center rounded-[8px] border border-gray-300"}>
-                                                <button type={"button"} onClick={() => cambiarCantidad(p.id, p.cantidad - 1)} aria-label={"Restar uno"} className={"size-[30px] text-[16px] text-gray-600 hover:text-gray-900 cursor-pointer"}>−</button>
-                                                <input type={"number"} min={1} max={MAX_CANTIDAD} value={p.cantidad} onChange={e => cambiarCantidad(p.id, Number(e.target.value))} aria-label={`Cantidad de ${p.name}`} className={"w-[46px] text-center text-[14px] outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"}/>
-                                                <button type={"button"} onClick={() => cambiarCantidad(p.id, p.cantidad + 1)} aria-label={"Sumar uno"} className={"size-[30px] text-[16px] text-gray-600 hover:text-gray-900 cursor-pointer"}>+</button>
-                                            </div>
-                                            {productos.length > 1 && (
-                                                <button type={"button"} onClick={() => setProductos(productos.filter(x => x.id !== p.id))} aria-label={`Quitar ${p.name}`} className={"size-[28px] shrink-0 rounded-full flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-900 cursor-pointer"}>
-                                                    <IconoCerrar/>
-                                                </button>
-                                            )}
-                                        </li>
-                                    ))}
+                                    {productos.map(p => {
+                                        const quitar = productos.length > 1 && (
+                                            <button type={"button"} onClick={() => setProductos(productos.filter(x => x.id !== p.id))} aria-label={`Quitar ${p.name}`} className={"size-[28px] shrink-0 rounded-full flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-900 cursor-pointer"}>
+                                                <IconoCerrar/>
+                                            </button>
+                                        );
+                                        return (
+                                            // en celular, dos filas: foto y descripcion arriba; cantidad y subtotal abajo.
+                                            // desde sm todo va en una linea
+                                            <li key={p.id} className={"flex flex-col sm:flex-row sm:items-center gap-[10px] sm:gap-[12px] px-[12px] py-[10px]"}>
+                                                <div className={"flex items-center gap-[12px] flex-1 min-w-0"}>
+                                                    <img src={p.img} alt={""} className={"size-[46px] shrink-0 rounded-[8px] border border-gray-100 object-contain bg-white"}/>
+                                                    <div className={"flex-1 min-w-0"}>
+                                                        <p className={"text-[14px] font-medium leading-snug line-clamp-2 break-words first-letter:uppercase"}>{p.name}</p>
+                                                        <p className={"text-[12px] text-gray-500"}>{formatoPrecio(p.precio)} c/u</p>
+                                                    </div>
+                                                    <span className={"sm:hidden"}>{quitar}</span>
+                                                </div>
+                                                <div className={"flex items-center justify-between sm:justify-end gap-[10px]"}>
+                                                    <div className={"flex items-center rounded-[8px] border border-gray-300"}>
+                                                        <button type={"button"} onClick={() => cambiarCantidad(p.id, p.cantidad - 1)} aria-label={"Restar uno"} className={"size-[30px] text-[16px] text-gray-600 hover:text-gray-900 cursor-pointer"}>−</button>
+                                                        <input type={"number"} min={1} max={MAX_CANTIDAD} value={p.cantidad} onChange={e => cambiarCantidad(p.id, Number(e.target.value))} aria-label={`Cantidad de ${p.name}`} className={"w-[46px] text-center text-[14px] outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"}/>
+                                                        <button type={"button"} onClick={() => cambiarCantidad(p.id, p.cantidad + 1)} aria-label={"Sumar uno"} className={"size-[30px] text-[16px] text-gray-600 hover:text-gray-900 cursor-pointer"}>+</button>
+                                                    </div>
+                                                    <span className={"sm:hidden text-[14px] font-semibold whitespace-nowrap"}>{formatoPrecio(p.precio * p.cantidad)}</span>
+                                                    <span className={"hidden sm:inline-flex"}>{quitar}</span>
+                                                </div>
+                                            </li>
+                                        );
+                                    })}
                                 </ul>
                                 <div className={"flex items-center justify-between px-[4px] text-[14px]"}>
                                     <span className={"text-gray-500"}>Total estimado <span className={"text-[12px]"}>(incluye IGV)</span></span>
@@ -346,7 +359,7 @@ const Modal = ({productosIniciales, cerrar} : {productosIniciales : ProductoCarr
                             </section>
                         </div>
 
-                        <div className={"border-t border-gray-200 px-[22px] py-[14px] flex flex-col gap-[10px]"}>
+                        <div className={"shrink-0 border-t border-gray-200 px-[16px] sm:px-[22px] py-[12px] sm:py-[14px] flex flex-col gap-[10px]"}>
                             {error && <p role={"alert"} className={"rounded-[10px] bg-red-50 px-[12px] py-[8px] text-[13px] text-red-700"}>{error}</p>}
                             <div className={"flex flex-wrap items-center justify-end gap-[10px]"}>
                                 <button type={"button"} onClick={cerrar} disabled={enviando} className={"rounded-[10px] px-[16px] py-[10px] text-[14px] font-semibold text-gray-600 hover:text-gray-900 cursor-pointer disabled:opacity-40"}>Cancelar</button>
