@@ -11,10 +11,29 @@ import {aSlug} from '@/app/seo';
 import {formatoPrecio, precioFinal, enOferta} from './elementosProducto';
 
 
+// fila de un producto en el panel del buscador (resultados y recomendados). Foto de tamano fijo, nombre que se corta
+// con "..." si no entra y precio que nunca baja de linea: asi nada se desborda en pantallas angostas
+const FilaProducto = ({product, alElegir} : {product : Product, alElegir : () => void}) => (
+    <Link href={`/productos/${aSlug(product.categoria)}/${aSlug(product.name)}`} onClick={alElegir}
+        className={"animateElement flex items-center gap-[10px] bg-white rounded-[10px] p-[7px] shadow-[0_0_0_1px_rgba(15,23,42,.08)] hover:bg-sky-50 transition-colors"}>
+        <img className={"size-[44px] shrink-0 rounded-[8px] object-contain bg-white"} src={product.img[0]} alt=""/>
+        <div className={"flex-1 min-w-0 leading-tight"}>
+            <div className={"text-[12px] text-gray-500 truncate first-letter:uppercase"}>{product.categoria}</div>
+            <div className={"text-[14px] font-medium text-gray-900 truncate first-letter:uppercase"}>{product.name}</div>
+        </div>
+        <div className={"shrink-0 text-right text-[13px] leading-tight whitespace-nowrap"}>
+            {enOferta(product) && <div className={"line-through text-gray-500 text-[12px]"}>{formatoPrecio(product.precio)}</div>}
+            <div className={"font-semibold text-gray-900"}>{formatoPrecio(precioFinal(product))}</div>
+        </div>
+    </Link>
+)
+
 export const InputBusqueda = () => {
 
 
     const [elementosBuscados, setElementosBuscados] = useState<Product[]|null>(null);
+    // productos que se muestran al abrir el buscador, antes de escribir (primero los que tienen descuento)
+    const [recomendados, setRecomendados] = useState<Product[]>([]);
     const [activeSubInput, setActiveSubInput] = useState<boolean>(false);
     const [activeSearch, setActiveSearch] = useState<boolean>(false);
     const [textoBuscado, setTextoBuscado] = useState('');
@@ -66,7 +85,25 @@ export const InputBusqueda = () => {
 
     useEffect(()=> {
         if(!statusBusqueda && inputBusqueda.current) inputBusqueda.current.value="";
+        if(!statusBusqueda) setTextoBuscado('');
     },[statusBusqueda])
+
+    // se piden una sola vez, al abrir el buscador (en celular se monta ya abierto; en escritorio al enfocar el input)
+    const cargarRecomendados = async () => {
+        if (recomendados.length > 0) return;
+        try {
+            const productos = await getProducts();
+            const conDescuento = productos.filter(enOferta);
+            setRecomendados([...conDescuento, ...productos.filter(p => !enOferta(p))].slice(0, 3));
+        } catch {}
+    }
+    useEffect(() => {
+        if (statusIcon) cargarRecomendados();
+    }, [statusIcon]);
+
+    // el panel se ve con el buscador abierto: con texto muestra resultados; sin texto, los recomendados
+    const hayTexto = textoBuscado.length > 0;
+    const panelVisible = (statusBusqueda || statusIcon) && (hayTexto || recomendados.length > 0);
 
     return(
             // data-buscador: el header no cierra la busqueda al tocar dentro de este buscador (ver handleClickOutside en Header.tsx)
@@ -78,28 +115,23 @@ export const InputBusqueda = () => {
                         <svg className={"w-[22.5px] h-[22.5px] shrink-0"} xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
                     </button>
                     {/* dentro del header (azul marino) el texto es blanco; en celular el buscador se abre fuera, sobre la pagina clara */}
-                    <input ref={inputBusqueda}  onChange={busquedaTxt} className={`text-[15px] h-[25px] md:block w-full outline-none ${statusIcon ? "text-gray-900 placeholder:text-gray-500" : "text-white placeholder:text-white/60"}`} type="text" placeholder={"escriba el nombre del producto"}/>
+                    <input ref={inputBusqueda}  onChange={busquedaTxt} onFocus={() => { activeBusqueda(); cargarRecomendados(); }} className={`text-[15px] h-[25px] md:block w-full outline-none ${statusIcon ? "text-gray-900 placeholder:text-gray-500" : "text-white placeholder:text-white/60"}`} type="text" placeholder={"escriba el nombre del producto"}/>
                     {
-                        statusBusqueda &&
-                        <div className={`py-[10px] px-[10px] ${elementosBuscados && elementosBuscados.length > 0 ? "h-[250px]" : "h-auto"} ${activeSubInput ? '' : 'hidden'} w-full absolute top-[125%] bg-white rounded-[8px] z-[10]  gap-[7.5px] flex flex-col transition-all duration-300 ease-in-out left-0 shadow-[0_0_1px_1.25px_rgba(128,128,128,0.8)]`}>
+                        panelVisible &&
+                        <div className={`p-[8px] w-full absolute top-[125%] bg-white rounded-[12px] z-[10] flex flex-col left-0 shadow-[0_0_0_1px_rgba(15,23,42,.1),0_10px_28px_rgba(15,23,42,.18)]`}>
 
-                            <div className={`${elementosBuscados && elementosBuscados.length > 0 ? "h-[225px]" : "h-auto"} p-[10px] rounded-[12px]  flex flex-col gap-[10px] bg-blue-50 scroll-fino overflow-y-auto`}>
+                            <div className={`${hayTexto && elementosBuscados && elementosBuscados.length > 3 ? "max-h-[260px]" : ""} p-[8px] rounded-[10px] flex flex-col gap-[8px] bg-sky-50/70 scroll-fino overflow-y-auto`}>
                                 {
-
-                                    (elementosBuscados && elementosBuscados.length > 0) ? elementosBuscados.map((product) => (
-                                            // cada resultado lleva a la pagina de su producto
-                                            <Link key={product.id} href={`/productos/${aSlug(product.categoria)}/${aSlug(product.name)}`} onClick={cerrarBusqueda}
-                                                className={"animateElement flex border gap-[5px] border-gray-400 rounded-[12px] p-[7.5px] h-[55px] hover:bg-blue-300 transition-colors"}>
-                                                <img className={"h-full w-[25%] block object-contain"} src={product.img[0]} alt=""/>
-                                                <div className={"text-black w-[55%] leading-none self-center min-w-0"}>
-                                                    <div className={"text-[12px] text-gray-500 truncate first-letter:uppercase"}>{product.categoria}</div>
-                                                    <div className={"text-[14px] font-medium truncate first-letter:uppercase"}>{product.name}</div>
-                                                </div>
-                                                <div className={"text-black text-[13px] w-[20%] text-right self-center leading-tight"}>
-                                                    {enOferta(product) && <div className={"line-through text-gray-500"}>{formatoPrecio(product.precio)}</div>}
-                                                    <div className={"font-medium"}>{formatoPrecio(precioFinal(product))}</div>
-                                                </div>
-                                            </Link>
+                                    // sin texto: recomendados, para que el buscador no se vea vacio
+                                    !hayTexto ? (
+                                        <>
+                                            <p className={"text-[11px] font-semibold uppercase tracking-[.12em] text-gray-500 px-[2px]"}>Recomendados para ti</p>
+                                            {recomendados.map(product => <FilaProducto key={product.id} product={product} alElegir={cerrarBusqueda}/>)}
+                                        </>
+                                    )
+                                    // con texto: cada resultado lleva a la pagina de su producto
+                                    : (elementosBuscados && elementosBuscados.length > 0) ? elementosBuscados.map((product) => (
+                                            <FilaProducto key={product.id} product={product} alElegir={cerrarBusqueda}/>
                                         ))
                                         :
                                         <div role={"status"} className={`text-black ${elementosBuscados? 'animateElement' : 'hidden'} flex flex-col items-center text-center gap-[4px] py-[6px]`}>
