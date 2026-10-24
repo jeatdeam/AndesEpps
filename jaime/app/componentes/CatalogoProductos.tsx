@@ -269,8 +269,9 @@ export const CatalogoProductos = ({productos, parametros} : {productos : Product
     );
 
     return (
-        // todo el catalogo va dentro de una tarjeta con el mismo borde de 1px y redondeo que el detalle de producto
-        <section className={`${poppins.className} w-[92%] max-w-[1400px] mx-auto my-[32px] p-[20px] lg:p-[28px] bg-white rounded-[12.5px] shadow-[0_0_0_1px_rgba(0,0,0,.12)] text-gray-900`}>
+        // todo el catalogo va dentro de una tarjeta con el mismo borde de 1px y redondeo que el detalle de producto.
+        // sin margen arriba: queda a la misma distancia del header que el slider en el inicio
+        <section className={`${poppins.className} w-[92%] max-w-[1400px] mx-auto mt-0 mb-[32px] p-[20px] lg:p-[28px] bg-white rounded-[12.5px] shadow-[0_0_0_1px_rgba(0,0,0,.12)] text-gray-900`}>
 
             <div className={"flex flex-col gap-[4px] mb-[20px]"}>
                 <h1 className={"text-[26px] font-bold first-letter:uppercase leading-none"}>

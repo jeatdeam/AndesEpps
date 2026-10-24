@@ -119,6 +119,47 @@ body {
     to   { left: 0; transform: translateX(-100%); }
 }
 
+/* contador del carrito (CarritoHeader.tsx): late cada 1.8 s. Detras del circulo salen dos anillos:
+   ::before relleno tenue que crece mas, ::after solo con borde marcado que crece menos y sale un poco despues.
+   isolation crea su propio contexto: los anillos (z-index -1) quedan detras del numero pero dentro del contador */
+.contadorPulso {
+    isolation: isolate;
+}
+
+.contadorPulso::before,
+.contadorPulso::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.contadorPulso::before {
+    background: rgba(255, 255, 255, .35);
+    animation: pulsoContador 1.8s ease-out infinite;
+}
+
+.contadorPulso::after {
+    border: 1.5px solid rgba(255, 255, 255, .85);
+    animation: pulsoContadorBorde 1.8s ease-out .15s infinite;
+}
+
+@keyframes pulsoContador {
+    0%        { transform: scale(1); opacity: .9; }
+    70%, 100% { transform: scale(2.3); opacity: 0; }
+}
+
+@keyframes pulsoContadorBorde {
+    0%        { transform: scale(1); opacity: 1; }
+    60%, 100% { transform: scale(1.75); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .contadorPulso::before, .contadorPulso::after { animation: none; opacity: 0; }
+}
+
 /* vidrio detras del buscador abierto en celular (Header.tsx) */
 @keyframes aparecerVidrio {
     from { opacity: 0; }
