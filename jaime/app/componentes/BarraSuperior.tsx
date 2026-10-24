@@ -1,8 +1,6 @@
 'use client'
 import {useEffect, useRef, useState, type ReactNode} from 'react';
-import {REDES_SOCIALES} from './Footer';
 import {AnimacionLottie} from './AnimacionLottie';
-import {WHATSAPP_TIENDA} from '@/app/configuracion';
 import caminante from '@/app/animaciones/caminanteConstruccion.json';
 
 // alto de la barra: el header flotante (Header.tsx) se ubica debajo de ella mientras la pagina esta arriba del todo
@@ -10,27 +8,13 @@ export const ALTO_BARRA = 34;
 // pixeles por segundo: la duracion de cada pasada se calcula con el ancho, asi va igual de rapido en cualquier pantalla
 const VELOCIDAD = 70;
 
-const claseEnlace = "uppercase tracking-[.08em] text-[12px] font-semibold text-white/85 hover:text-white transition-colors";
-
-// los dos mensajes se turnan: uno en cada pasada del obrero
+// los dos mensajes se turnan: uno en cada pasada del obrero (el primero es el mismo texto del h1 de la pagina)
 const MENSAJES : ReactNode[] = [
-    <span key={"redes"} className={"flex items-center gap-[12px]"}>
-        <span className={"text-[13px] text-white/80"}>Síguenos en</span>
-        <span className={"flex items-center gap-[10px]"}>
-            {REDES_SOCIALES.map(({nombre, href, icono}) => (
-                <a key={nombre} href={href} target="_blank" rel="noopener noreferrer" aria-label={nombre} className={"text-white/80 hover:text-white transition-colors [&_svg]:w-[15px] [&_svg]:h-[15px]"}>
-                    {icono}
-                </a>
-            ))}
-        </span>
-        <span className={"text-white/40"}>·</span>
-        <a href={`https://wa.me/${WHATSAPP_TIENDA}`} target="_blank" rel="noopener noreferrer" className={claseEnlace}>Contáctenos</a>
-        <span className={"text-white/40"}>·</span>
-        <a href={`https://wa.me/${WHATSAPP_TIENDA}`} target="_blank" rel="noopener noreferrer" className={claseEnlace}>Cotiza: 986 680 850</a>
+    <span key={"titulo"} className={"text-[13px] font-semibold text-[#facc15]"}>
+        Equipos de protección personal para minería y construcción
     </span>,
-    <span key={"mensaje"} className={"text-[13px] text-white/85"}>
-        <span className={"text-[#facc15] font-semibold"}>EPP para minería y construcción</span>
-        <span> · Atención a empresas mineras, contratistas y obras · Venta por mayor y menor en Lima</span>
+    <span key={"descripcion"} className={"text-[13px] text-white/85"}>
+        Abastecemos a empresas mineras, contratistas y obras de construcción con EPP certificados. Venta al por mayor y menor en Lima - Perú.
     </span>,
 ];
 
