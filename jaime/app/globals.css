@@ -105,6 +105,11 @@ body {
     animation-play-state: paused;
 }
 
+/* el obrero avanza hacia la izquierda: se voltea para que mire hacia donde camina (si no, parece ir de reversa) */
+.caminanteBarra {
+    transform: scaleX(-1);
+}
+
 .caminanteBarra svg image {
     image-rendering: pixelated;
 }

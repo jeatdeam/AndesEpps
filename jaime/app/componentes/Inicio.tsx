@@ -359,14 +359,16 @@ export function Inicio({productosIniciales, bannersIniciales} : {productosInicia
               <TituloSeccion>Nuestras marcas</TituloSeccion>
           </div>
 
-          <div  className={"w-[90%] 2xl:w-[70%] mx-auto overflow-hidden"}>
-              <div ref={containerCarrusel} className={"shadow-[0_0_0_1px_rgba(0,0,0,.12)] rounded-[12px]"}>
+          {/* caja blanca con borde muy tenue y una sombra solida (sin desenfoque) abajo, como si sobresaliera de la pagina.
+              en celular los logos son mas chicos para que no queden casi del alto del slider */}
+          <div className={"w-[90%] 2xl:w-[70%] mx-auto pb-[4px]"}>
+              <div ref={containerCarrusel} className={"bg-white rounded-[12px] overflow-hidden px-[10px] py-[10px] sm:py-[14px] shadow-[0_0_0_1px_rgba(15,23,42,.08),0_4px_0_rgba(15,23,42,.07)]"}>
                   {/* la lista va dos veces para que la animacion de desplazamiento no tenga cortes;
-                      el py de 2px deja ver la sombra de 1px de cada logo, que el overflow-hidden recortaria */}
-                  <div className={"flex carrusel gap-[35px] py-[2px]"}>
+                      el py de 2px deja ver la sombra de 1px de cada logo */}
+                  <div className={"flex carrusel gap-[20px] sm:gap-[35px] py-[2px]"}>
                       {
                           [...MARCAS, ...MARCAS].map((marca, index) => (
-                              <img src={marca.imagen} alt={index < MARCAS.length ? marca.nombre : ""} key={index} className={"rounded-[12px] w-[200px] h-[100px] object-cover shadow-[0_0_0_1px_rgba(0,0,0,.12)]"}/>
+                              <img src={marca.imagen} alt={index < MARCAS.length ? marca.nombre : ""} key={index} className={"rounded-[10px] sm:rounded-[12px] w-[130px] h-[65px] sm:w-[200px] sm:h-[100px] object-cover shadow-[0_0_0_1px_rgba(0,0,0,.12)]"}/>
                           ))
                       }
                   </div>
@@ -383,11 +385,11 @@ export function Inicio({productosIniciales, bannersIniciales} : {productosInicia
 
           <div className={"w-[90%] 2xl:w-[70%] mx-auto"}>
               {/* el titulo aparece suave; las cajas del mosaico tienen su propia entrada (ver "mosaico" arriba) */}
-              <Aparecer><TituloSeccion>Categorias de productos EPPS</TituloSeccion></Aparecer>
+              <Aparecer><TituloSeccion>Categorías de productos EPPS</TituloSeccion></Aparecer>
               {/*<h2> J & M Andes security EIRL</h2>*/}
               {/*<h1>3M - STEELPRO - MSA -NORTH -ANSELL -CAT- CLUTE - DELTA PLUS</h1>*/}
               {!categorias && <Cargando texto={"Cargando categorías..."}/>}
-              <div ref={mosaico} className={"grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 auto-rows-[220px] md:auto-rows-[240px] grid-flow-dense gap-[15px]"}>
+              <div ref={mosaico} className={"grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 auto-rows-[160px] sm:auto-rows-[220px] md:auto-rows-[240px] grid-flow-dense gap-[15px]"}>
                   {
                       categoriasUnicas.map((el : Product, index : number) => (
                           <Link href={`/productos/${el.categoria.replace(/\s+/g, "-").toLowerCase()}`} key={el.categoria} className={`${claseMosaico(index, categoriasUnicas.length)} group relative overflow-hidden rounded-[12px] shadow-[0_0_0_1px_rgba(0,0,0,.12)]`}>
@@ -408,7 +410,7 @@ export function Inicio({productosIniciales, bannersIniciales} : {productosInicia
 
           <Aparecer>
           <div className={"w-[90%] 2xl:w-[70%] mx-auto"}>
-              <TituloSeccion>productos mas buscados</TituloSeccion>
+              <TituloSeccion>Productos más buscados</TituloSeccion>
           </div>
 
           {/*-----------------------------grid de productos  mas buscados -----------------------------------------*/}
