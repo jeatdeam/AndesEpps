@@ -1,5 +1,5 @@
 'use client'
-import {useEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {useControladorCarrito} from '@/app/controladoresGlobales/controladorCarrito';
 import {useControladorCotizacion} from '@/app/controladoresGlobales/controladorCotizacion';
 import {formatoPrecio} from './elementosProducto';
@@ -23,6 +23,30 @@ export const CarritoHeader = () => {
     const {productos, quitarProducto, vaciarCarrito} = useControladorCarrito();
     const abrirCotizacion = useControladorCotizacion(estado => estado.abrir);
 
+    // en escritorio el panel se abre al pasar el cursor (group-hover). En celulares no hay cursor:
+    // se abre y se cierra tocando la bolsa, y se cierra al tocar fuera del panel
+    const [abierto, setAbierto] = useState(false);
+    const contenedor = useRef<HTMLDivElement|null>(null);
+    const alternar = () => {
+        if (window.matchMedia('(hover: hover)').matches) return;
+        setAbierto(!abierto);
+    }
+
+    useEffect(() => {
+        if (!abierto) return;
+        // el toque que cierra el panel no debe abrir ademas lo que habia debajo (un banner, un producto):
+        // se descarta el clic que llega justo despues; si no llega (fue un scroll) se deja de esperar
+        const descartarClic = (event : MouseEvent) => { event.preventDefault(); event.stopPropagation(); }
+        const tocarFuera = (event : PointerEvent) => {
+            if (!contenedor.current || contenedor.current.contains(event.target as Node)) return;
+            setAbierto(false);
+            document.addEventListener('click', descartarClic, {capture: true, once: true});
+            setTimeout(() => document.removeEventListener('click', descartarClic, {capture: true}), 500);
+        }
+        document.addEventListener('pointerdown', tocarFuera);
+        return () => document.removeEventListener('pointerdown', tocarFuera);
+    }, [abierto]);
+
     // carga el carrito guardado en localStorage una vez montado en el cliente
     useEffect(() => {
         useControladorCarrito.persist.rehydrate();
@@ -32,18 +56,19 @@ export const CarritoHeader = () => {
     const precioTotal = productos.reduce((acc, el) => acc + el.precio * el.cantidad, 0);
 
     return (
-        <div className={"relative group"}>
-            <div className={"relative cursor-pointer p-[5px] backCircle"}>
+        <div ref={contenedor} className={"relative group"}>
+            <button type={"button"} onClick={alternar} aria-label={"Ver carrito"} aria-expanded={abierto} className={"relative cursor-pointer p-[5px] backCircle"}>
                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M240-80q-33 0-56.5-23.5T160-160v-480q0-33 23.5-56.5T240-720h80q0-66 47-113t113-47q66 0 113 47t47 113h80q33 0 56.5 23.5T800-640v480q0 33-23.5 56.5T720-80H240Zm0-80h480v-480h-80v80q0 17-11.5 28.5T600-520q-17 0-28.5-11.5T560-560v-80H400v80q0 17-11.5 28.5T360-520q-17 0-28.5-11.5T320-560v-80h-80v480Zm160-560h160q0-33-23.5-56.5T480-800q-33 0-56.5 23.5T400-720ZM240-160v-480 480Z"/></svg>
                 {cantidadTotal > 0 && (
                     <span className={"absolute -top-[4px] -right-[6px] min-w-[18px] h-[18px] px-[4px] rounded-full bg-red-600 text-white text-[11px] font-bold flex items-center justify-center leading-none"}>
                         {cantidadTotal}
                     </span>
                 )}
-            </div>
+            </button>
 
-            {/* pt crea un puente invisible para que el hover no se pierda entre el icono y el panel */}
-            <div className={"absolute right-0 top-full pt-[18px] invisible opacity-0 translate-y-[5px] group-hover:visible group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 z-[20]"}>
+            {/* pt crea un puente invisible para que el hover no se pierda entre el icono y el panel.
+                group-hover solo actua en pantallas con cursor; en celulares lo abre "abierto" (al tocar la bolsa) */}
+            <div className={`absolute right-0 top-full pt-[18px] ${abierto ? "visible opacity-100 translate-y-0" : "invisible opacity-0 translate-y-[5px]"} group-hover:visible group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 z-[20]`}>
                 <div className={"w-[320px] max-w-[85vw] bg-white text-black rounded-[12px] shadow-[0_0_0_1px_rgba(0,0,0,.12)] p-[15px] flex flex-col gap-[12px]"}>
                     <div className={"flex justify-between items-center"}>
                         <span className={"font-bold"}>Mi carrito</span>
