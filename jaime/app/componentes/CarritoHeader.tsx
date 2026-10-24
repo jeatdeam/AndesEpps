@@ -3,6 +3,8 @@ import {useEffect, useRef, useState} from 'react';
 import {createPortal} from 'react-dom';
 import {useControladorCarrito} from '@/app/controladoresGlobales/controladorCarrito';
 import {useControladorCotizacion} from '@/app/controladoresGlobales/controladorCotizacion';
+import {useControladorIconoSearch} from '@/app/controladoresGlobales/controladorIconoSearch';
+import {useControladorBusqueda} from '@/app/controladoresGlobales/controladorBusqueda';
 import {formatoPrecio} from './elementosProducto';
 import {AnimacionLottie} from './AnimacionLottie';
 import carritoVacio from '@/app/animaciones/carritoVacio.json';
@@ -28,10 +30,18 @@ export const CarritoHeader = () => {
     // se abre y se cierra tocando la bolsa, y se cierra al tocar fuera del panel
     const [abierto, setAbierto] = useState(false);
     const contenedor = useRef<HTMLDivElement|null>(null);
+    // en celular solo puede estar abierto uno: el ultimo que se toco. Abrir el carrito cierra la busqueda
+    // y abrir la busqueda (statusIcon) cierra el carrito
+    const {statusIcon, desactiveIcon} = useControladorIconoSearch();
+    const desactiveBusqueda = useControladorBusqueda(estado => estado.desactiveBusqueda);
     const alternar = () => {
         if (window.matchMedia('(hover: hover)').matches) return;
+        if (!abierto) { desactiveIcon(); desactiveBusqueda(); }
         setAbierto(!abierto);
     }
+    useEffect(() => {
+        if (statusIcon) setAbierto(false);
+    }, [statusIcon]);
 
     useEffect(() => {
         if (!abierto) return;
@@ -41,6 +51,8 @@ export const CarritoHeader = () => {
         const tocarFuera = (event : PointerEvent) => {
             if (!contenedor.current || contenedor.current.contains(event.target as Node)) return;
             setAbierto(false);
+            // dentro del header (lupa, menu) el toque si debe hacer su accion: solo se descarta fuera de el
+            if ((event.target as Element).closest?.('.menuOscuro')) return;
             document.addEventListener('click', descartarClic, {capture: true, once: true});
             setTimeout(() => document.removeEventListener('click', descartarClic, {capture: true}), 500);
         }

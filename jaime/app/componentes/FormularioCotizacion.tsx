@@ -202,8 +202,13 @@ const Modal = ({productosIniciales, cerrar} : {productosIniciales : ProductoCarr
     const cambiar = (campo : keyof DatosCliente) => (e : React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
         setCliente({...cliente, [campo]: e.target.value});
 
-    const cambiarCantidad = (id : number, cantidad : number) =>
+    // cuantas veces cambio la cantidad de cada producto: se usa como key para que el parpadeo vuelva a correr en cada clic
+    const [latidos, setLatidos] = useState<Record<number, number>>({});
+    const cambiarCantidad = (id : number, cantidad : number) => {
         setProductos(productos.map(p => p.id === id ? {...p, cantidad: Math.min(MAX_CANTIDAD, Math.max(1, Math.floor(cantidad) || 1))} : p));
+        setLatidos({...latidos, [id]: (latidos[id] ?? 0) + 1});
+    }
+    const totalLatidos = Object.values(latidos).reduce((a, b) => a + b, 0);
 
     const total = productos.reduce((acc, p) => acc + p.precio * p.cantidad, 0);
 
@@ -304,12 +309,14 @@ const Modal = ({productosIniciales, cerrar} : {productosIniciales : ProductoCarr
                                                     <span className={"sm:hidden"}>{quitar}</span>
                                                 </div>
                                                 <div className={"flex items-center justify-between sm:justify-end gap-[10px]"}>
-                                                    <div className={"flex items-center rounded-[8px] border border-gray-300"}>
+                                                    <div className={"relative flex items-center rounded-[8px] border border-gray-300"}>
+                                                        {/* anillo que parpadea al sumar o restar (no se vuelve a montar el input, asi no pierde el foco) */}
+                                                        {latidos[p.id] ? <span key={latidos[p.id]} aria-hidden={true} className={"parpadeoCantidad absolute inset-0 rounded-[8px] pointer-events-none"}/> : null}
                                                         <button type={"button"} onClick={() => cambiarCantidad(p.id, p.cantidad - 1)} aria-label={"Restar uno"} className={"size-[30px] text-[16px] text-gray-600 hover:text-gray-900 cursor-pointer"}>−</button>
                                                         <input type={"number"} min={1} max={MAX_CANTIDAD} value={p.cantidad} onChange={e => cambiarCantidad(p.id, Number(e.target.value))} aria-label={`Cantidad de ${p.name}`} className={"w-[46px] text-center text-[14px] outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"}/>
                                                         <button type={"button"} onClick={() => cambiarCantidad(p.id, p.cantidad + 1)} aria-label={"Sumar uno"} className={"size-[30px] text-[16px] text-gray-600 hover:text-gray-900 cursor-pointer"}>+</button>
                                                     </div>
-                                                    <span className={"sm:hidden text-[14px] font-semibold whitespace-nowrap"}>{formatoPrecio(p.precio * p.cantidad)}</span>
+                                                    <span key={latidos[p.id] ?? 0} className={`sm:hidden inline-block text-[14px] font-semibold whitespace-nowrap ${latidos[p.id] ? "parpadeoNumero" : ""}`}>{formatoPrecio(p.precio * p.cantidad)}</span>
                                                     <span className={"hidden sm:inline-flex"}>{quitar}</span>
                                                 </div>
                                             </li>
@@ -318,7 +325,7 @@ const Modal = ({productosIniciales, cerrar} : {productosIniciales : ProductoCarr
                                 </ul>
                                 <div className={"flex items-center justify-between px-[4px] text-[14px]"}>
                                     <span className={"text-gray-500"}>Total estimado <span className={"text-[12px]"}>(incluye IGV)</span></span>
-                                    <span className={"text-[16px] font-bold"}>{formatoPrecio(total)}</span>
+                                    <span key={totalLatidos} className={`inline-block text-[16px] font-bold ${totalLatidos ? "parpadeoNumero" : ""}`}>{formatoPrecio(total)}</span>
                                 </div>
                             </section>
 

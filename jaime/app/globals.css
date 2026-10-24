@@ -171,6 +171,31 @@ body {
     .barraMovil { animation: none; left: 50%; transform: translateX(-50%); }
 }
 
+/* formulario de cotizacion: parpadeo al sumar o restar cantidad.
+   el selector se ilumina con un anillo que se abre y el subtotal / total crecen un instante en celeste */
+.parpadeoCantidad {
+    animation: parpadeoCantidad .5s ease-out;
+}
+
+@keyframes parpadeoCantidad {
+    0%   { background: rgba(2, 132, 199, .18); box-shadow: 0 0 0 0 rgba(2, 132, 199, .45); }
+    100% { background: transparent; box-shadow: 0 0 0 7px rgba(2, 132, 199, 0); }
+}
+
+.parpadeoNumero {
+    animation: parpadeoNumero .45s ease-out;
+}
+
+@keyframes parpadeoNumero {
+    0%   { transform: scale(1); }
+    35%  { transform: scale(1.14); color: #0284c7; }
+    100% { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .parpadeoCantidad, .parpadeoNumero { animation: none; }
+}
+
 
 /*end de svg-search*/
 
