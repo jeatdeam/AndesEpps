@@ -347,19 +347,10 @@ export function Inicio({productosIniciales, bannersIniciales} : {productosInicia
               </div>
           </div>
 
-          {/*---------------presentacion: el titulo principal (h1) que lee Google---------------*/}
-
-          {/* tarjeta con el degradado celeste de los banners de ofertas y el borde de 1px de las demas tarjetas */}
-          {/* desde aqui cada seccion aparece con una transicion suave al llegar a ella (componente Aparecer) */}
-          <Aparecer className={"w-[90%] 2xl:w-[70%] mx-auto pt-[40.5px]"}>
-              <div className={"rounded-[12px] bg-gradient-to-r from-[#d3ebf8] via-[#e6f4fb] to-[#a8d5ef] shadow-[0_0_0_1px_rgba(0,0,0,.12)] px-[20px] py-[24px] md:px-[40px] md:py-[32px] text-center"}>
-                  <h1 className={"text-[22px] md:text-[30px] font-semibold leading-tight text-slate-900"}>Equipos de protección personal para minería y construcción</h1>
-                  <p className={"mt-[8px] text-[15px] md:text-[17px] text-slate-600"}>Abastecemos a empresas mineras, contratistas y obras de construcción con EPP certificados. Venta por mayor y menor en Lima.</p>
-              </div>
-          </Aparecer>
-
           {/*-----------------------------------------------------*/}
 
+          {/* el h1 de la pagina esta en la barra superior que se mueve (BarraSuperior.tsx).
+              desde aqui cada seccion aparece con una transicion suave al llegar a ella (componente Aparecer) */}
           <Aparecer>
           <div className={"w-[90%] 2xl:w-[70%] mx-auto"}>
               <TituloSeccion>Nuestras marcas</TituloSeccion>
