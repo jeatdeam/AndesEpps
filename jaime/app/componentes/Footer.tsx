@@ -228,14 +228,15 @@ export const Footer = () => {
 
             {/* creditos del desarrollador */}
             <div className={"bg-neutral-900"}>
-                <div className={"w-[90%] xl:w-[80%] mx-auto py-[10px] flex flex-col sm:flex-row items-center justify-center gap-[6px] sm:gap-[12px]"}>
-                    <TextoEscritura texto={"Desarrollado y diseñado por:"} className={`${doto.className} text-[14px] font-bold uppercase tracking-[.14em] text-neutral-300`}/>
+                {/* en celular la franja es mas baja: solo texto y firma (mas chica), sin pochita */}
+                <div className={"w-[90%] xl:w-[80%] mx-auto py-[6px] sm:py-[10px] flex flex-col sm:flex-row items-center justify-center gap-0 sm:gap-[12px]"}>
+                    <TextoEscritura texto={"Desarrollado y diseñado por:"} className={`${doto.className} text-[12px] sm:text-[14px] font-bold uppercase tracking-[.14em] text-neutral-300`}/>
                     <a href="https://github.com/jeatdeam" target="_blank" rel="noopener noreferrer" aria-label={"Portafolio de jeatdeam en GitHub"} className={"flex items-center shrink-0 hover:opacity-80 transition-opacity"}>
                         {/* la firma escrita queda ~9px arriba del centro de su animacion y con ~24px vacios a la izquierda:
                             se baja y se corre para que quede alineada con el texto */}
-                        <AnimacionLottie datos={jeatdeam} className={"w-[179px] h-[75px] shrink-0 translate-y-[9px] -ml-[20px]"}/>
+                        <AnimacionLottie datos={jeatdeam} className={"w-[134px] h-[56px] translate-y-[3px] -ml-[15px] sm:w-[179px] sm:h-[75px] sm:translate-y-[9px] sm:-ml-[20px] shrink-0"}/>
                         {/* margen negativo: ambas animaciones traen espacio vacio en sus bordes */}
-                        <AnimacionLottie datos={pochita} className={"size-[75px] shrink-0 -ml-[18px]"}/>
+                        <AnimacionLottie datos={pochita} className={"hidden sm:block size-[75px] shrink-0 -ml-[18px]"}/>
                     </a>
                 </div>
             </div>
