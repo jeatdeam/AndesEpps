@@ -3,6 +3,7 @@ import type {ReactNode} from "react";
 import {AnimacionLottie} from "@/app/componentes/AnimacionLottie";
 import pochita from "@/app/animaciones/pochita.json";
 import jeatdeam from "@/app/animaciones/jeatdeam.json";
+import cascoAnimado from "@/app/animaciones/cascoAnimado.json";
 import {TextoEscritura} from "@/app/componentes/TextoEscritura";
 import {doto} from "@/app/fuentes";
 
@@ -60,9 +61,6 @@ const IconoCaja = () => (
     <svg viewBox="0 0 24 24" className={iconoClase} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5Z"/><path d="m3 8 9 5 9-5M12 13v8"/></svg>
 )
 
-const IconoCasco = () => (
-    <svg viewBox="0 0 24 24" className={"w-[34px] h-[34px] shrink-0"} fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round"><path d="M2 18h20v-2H2Z"/><path d="M4 16v-3a8 8 0 0 1 16 0v3"/><path d="M10 5.3V10M14 5.3V10"/></svg>
-)
 
 const IconoTiktok = () => (
     <svg viewBox="0 0 24 24" className={iconoClase} fill="currentColor"><path d="M16.6 5.82A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 0 1-2.59 2.5c-1.42 0-2.6-1.16-2.6-2.6 0-1.72 1.66-3.01 3.37-2.48V9.66c-3.45-.46-6.47 2.22-6.47 5.64 0 3.33 2.76 5.7 5.69 5.7 3.14 0 5.69-2.55 5.69-5.7V9.01a7.35 7.35 0 0 0 4.3 1.38V7.3s-1.88.09-3.24-1.48Z"/></svg>
@@ -152,7 +150,10 @@ export const Footer = () => {
 
                 <div className={"sm:col-span-3 lg:col-span-1 flex flex-col gap-[16px]"}>
                     <Link href={"/"} className={"w-fit flex items-center gap-[10px] text-slate-900"}>
-                        <span className={"size-[48px] rounded-[14px] bg-sky-700 text-white flex items-center justify-center"}><IconoCasco/></span>
+                        {/* el casco animado del logo del header (solo el casco), sobre el mismo degradado azul marino del header */}
+                        <span className={"size-[48px] rounded-[14px] bg-gradient-to-br from-[#0f172a] to-[#172554] flex items-center justify-center"}>
+                            <AnimacionLottie datos={cascoAnimado} className={"w-[44px] h-[32px]"}/>
+                        </span>
                         <span className={"text-[20px] font-bold leading-tight"}>Los Andes EPPS</span>
                     </Link>
                     <p className={"text-[14px] leading-relaxed"}>
