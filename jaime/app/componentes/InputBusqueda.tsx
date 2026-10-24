@@ -6,6 +6,9 @@ import {useControladorBusqueda} from "@/app/controladoresGlobales/controladorBus
 import {useControladorIconoSearch} from "@/app/controladoresGlobales/controladorIconoSearch";
 import {AnimacionLottie} from './AnimacionLottie';
 import animacionSinResultados from '@/app/animaciones/sinResultados.json';
+import Link from 'next/link';
+import {aSlug} from '@/app/seo';
+import {formatoPrecio, precioFinal, enOferta} from './elementosProducto';
 
 
 export const InputBusqueda = () => {
@@ -19,8 +22,16 @@ export const InputBusqueda = () => {
 
     const inputBusqueda = useRef<HTMLInputElement|null>(null)
 
-    const {statusBusqueda, activeBusqueda} = useControladorBusqueda()
-    const {statusIcon} = useControladorIconoSearch();
+    const {statusBusqueda, activeBusqueda, desactiveBusqueda} = useControladorBusqueda()
+    const {statusIcon, desactiveIcon} = useControladorIconoSearch();
+
+    // al elegir un resultado se cierra la busqueda (y en celular el buscador flotante con su vidrio)
+    const cerrarBusqueda = () => {
+        desactiveBusqueda();
+        desactiveIcon();
+        setElementosBuscados(null);
+        setActiveSubInput(false);
+    }
 
     // React.TipoDeEvento<ElementoHTML>
 
@@ -58,7 +69,8 @@ export const InputBusqueda = () => {
     },[statusBusqueda])
 
     return(
-            <div className={`${!statusIcon ? "w-[450px] max-w-full min-w-0" : "min-w-[350px] absolute top-[150px] left-1/2 -translate-x-1/2 text-gray-900"}`}>
+            // data-buscador: el header no cierra la busqueda al tocar dentro de este buscador (ver handleClickOutside en Header.tsx)
+            <div data-buscador={true} className={`${!statusIcon ? "w-[450px] max-w-full min-w-0" : "min-w-[350px] absolute top-[150px] left-1/2 -translate-x-1/2 text-gray-900"}`}>
                 {/* en celular el buscador se abre debajo del header, sobre la pagina: fondo blanco translucido con desenfoque
                     (como el header al hacer scroll) para que tape lo que queda detras */}
                 <div className={`w-full ${statusIcon ? "bg-white/75 backdrop-blur-md shadow-[0_0_0_1px_rgba(15,23,42,.12),0_8px_24px_rgba(15,23,42,.15)]" : "shadow-[0_0_1px_1.25px_rgba(255,255,255,0.8)]"} py-[2.5px] px-[10px] rounded-[12px] relative flex items-center gap-[8px]`}>
@@ -75,18 +87,20 @@ export const InputBusqueda = () => {
                             <div className={`${elementosBuscados && elementosBuscados.length > 0 ? "h-[225px]" : "h-auto"} p-[10px] rounded-[12px]  flex flex-col gap-[10px] bg-blue-50 scroll-fino overflow-y-auto`}>
                                 {
 
-                                    (elementosBuscados && elementosBuscados.length > 0) ? elementosBuscados.map((product, index) => (
-                                            <div key={index} className={"animateElement  flex border gap-[5px] border-gray-400 rounded-[12px] p-[7.5px] h-[55px] hover:bg-blue-300"}>
-                                                <img className={"h-[full] w-[25%] block object-contain"} src={product.img[0]} alt=""/>
-                                                <div className={"text-black w-[55%] leading-none self-center"}>
-                                                    <div className={"text-[14px] font-thin"}>{product.name}</div>
-                                                    <div className={"text-[14px] font-medium"}>{product.name}</div>
+                                    (elementosBuscados && elementosBuscados.length > 0) ? elementosBuscados.map((product) => (
+                                            // cada resultado lleva a la pagina de su producto
+                                            <Link key={product.id} href={`/productos/${aSlug(product.categoria)}/${aSlug(product.name)}`} onClick={cerrarBusqueda}
+                                                className={"animateElement flex border gap-[5px] border-gray-400 rounded-[12px] p-[7.5px] h-[55px] hover:bg-blue-300 transition-colors"}>
+                                                <img className={"h-full w-[25%] block object-contain"} src={product.img[0]} alt=""/>
+                                                <div className={"text-black w-[55%] leading-none self-center min-w-0"}>
+                                                    <div className={"text-[12px] text-gray-500 truncate first-letter:uppercase"}>{product.categoria}</div>
+                                                    <div className={"text-[14px] font-medium truncate first-letter:uppercase"}>{product.name}</div>
                                                 </div>
-                                                <div className={"text-black text-[14px] w-[20%] text-right self-center leading-none"}>
-                                                    <div className={"line-through text-gray-500"}>S/. {product.precio}</div>
-                                                    <div className={"text-gray-400 font-medium"}>S/. {product.precio}</div>
+                                                <div className={"text-black text-[13px] w-[20%] text-right self-center leading-tight"}>
+                                                    {enOferta(product) && <div className={"line-through text-gray-500"}>{formatoPrecio(product.precio)}</div>}
+                                                    <div className={"font-medium"}>{formatoPrecio(precioFinal(product))}</div>
                                                 </div>
-                                            </div>
+                                            </Link>
                                         ))
                                         :
                                         <div role={"status"} className={`text-black ${elementosBuscados? 'animateElement' : 'hidden'} flex flex-col items-center text-center gap-[4px] py-[6px]`}>

@@ -39,7 +39,9 @@ export const  Header = () => {
     }
 
     useEffect(()=> {
+        // tocar dentro de cualquier buscador (tambien el flotante de celular, marcado con data-buscador) no lo cierra
         const handleClickOutside = (event : MouseEvent) => {
+            if ((event.target as Element).closest?.('[data-buscador]')) return;
             if(containerBusqueda.current && !containerBusqueda.current.contains(event.target as Node)) desactiveBusqueda();
         }
         document.addEventListener('mousedown', handleClickOutside)
