@@ -79,26 +79,26 @@ body {
     background: rgba(255, 255, 255, .18);
 }
 
-/* secciones que aparecen al bajar por la pagina (componente Aparecer) */
+/* secciones que aparecen al bajar por la pagina (componente Aparecer): solo las que empiezan debajo de la
+   pantalla reciben .aparecer-oculto; al llegar a ellas se quita y la transicion las muestra */
 .aparecer {
-    opacity: 0;
-    transform: translateY(28px);
     transition: opacity .7s ease, transform .8s cubic-bezier(.22, 1, .36, 1);
 }
 
-.aparecer-visible {
-    opacity: 1;
-    transform: none;
+.aparecer-oculto {
+    opacity: 0;
+    transform: translateY(28px);
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .aparecer { opacity: 1; transform: none; transition: none; }
+    .aparecer { transition: none; }
 }
 
-/* barra superior (BarraSuperior.tsx): el grupo mensaje + obrero entra por la izquierda (totalmente fuera)
-   y sale por la derecha; cada vuelta reinicia desde la izquierda. --duracion-barra la calcula el componente */
+/* barra superior (BarraSuperior.tsx): el grupo obrero + mensaje entra por la derecha (totalmente fuera)
+   y sale por la izquierda, una sola vez; el componente lo vuelve a montar con el otro mensaje.
+   --duracion-barra la calcula el componente */
 .barraMovil {
-    animation: cruzarBarra var(--duracion-barra, 20s) linear infinite;
+    animation: cruzarBarra var(--duracion-barra, 20s) linear 1 both;
 }
 
 .barraSuperior:hover .barraMovil {
@@ -110,8 +110,8 @@ body {
 }
 
 @keyframes cruzarBarra {
-    from { left: 0; transform: translateX(-100%); }
-    to   { left: 100%; transform: translateX(0); }
+    from { left: 100%; transform: translateX(0); }
+    to   { left: 0; transform: translateX(-100%); }
 }
 
 /* vidrio detras del buscador abierto en celular (Header.tsx) */

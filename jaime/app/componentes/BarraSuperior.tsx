@@ -1,5 +1,5 @@
 'use client'
-import {useEffect, useRef, useState, type ReactNode} from 'react';
+import {useEffect, useLayoutEffect, useRef, useState, type ReactNode} from 'react';
 import {usePathname} from 'next/navigation';
 import {AnimacionLottie} from './AnimacionLottie';
 import caminante from '@/app/animaciones/caminanteConstruccion.json';
@@ -24,8 +24,9 @@ const mensajes = (esInicio : boolean) : ReactNode[] => {
     ];
 }
 
-// franja de arriba de la pagina: el obrero de construccion cruza de izquierda a derecha llevando el mensaje detras de el.
-// al salir por la derecha vuelve a entrar por la izquierda con el otro mensaje. Con el cursor encima se detiene
+// franja de arriba de la pagina: el obrero de construccion entra por la derecha y camina hacia la izquierda llevando
+// el mensaje detras de el, asi el texto se lee de izquierda a derecha a medida que aparece.
+// cuando sale por la izquierda, vuelve a entrar por la derecha con el otro mensaje. Con el cursor encima se detiene
 export const BarraSuperior = () => {
 
     const barra = useRef<HTMLDivElement|null>(null);
@@ -33,25 +34,35 @@ export const BarraSuperior = () => {
     const [mensaje, setMensaje] = useState(0);
     const MENSAJES = mensajes(usePathname() === '/');
 
-    // la pasada recorre el ancho de la barra mas el ancho del grupo (entra y sale completo)
-    useEffect(() => {
+    // cada pasada es una animacion nueva (el grupo se vuelve a montar con key={mensaje}); su duracion se fija antes
+    // de pintarse y no cambia mientras corre, porque cambiarla a mitad de camino hace que el texto salte o parpadee
+    const ajustarDuracion = () => {
         const contenedor = barra.current, movil = grupo.current;
-        if (!contenedor || !movil) return;
-        const ajustar = () => movil.style.setProperty('--duracion-barra', `${(contenedor.clientWidth + movil.offsetWidth) / VELOCIDAD}s`);
-        ajustar();
-        const observador = new ResizeObserver(ajustar);
+        if (contenedor && movil) movil.style.setProperty('--duracion-barra', `${(contenedor.clientWidth + movil.offsetWidth) / VELOCIDAD}s`);
+    }
+    useLayoutEffect(ajustarDuracion, [mensaje]);
+
+    // si cambia el ancho de la ventana se recalcula (solo en ese caso)
+    useEffect(() => {
+        const contenedor = barra.current;
+        if (!contenedor) return;
+        let ancho = contenedor.clientWidth;
+        const observador = new ResizeObserver(() => {
+            if (contenedor.clientWidth === ancho) return;
+            ancho = contenedor.clientWidth;
+            ajustarDuracion();
+        });
         observador.observe(contenedor);
-        observador.observe(movil);
         return () => observador.disconnect();
     }, []);
 
     return (
         <div ref={barra} style={{height: ALTO_BARRA}} className={"barraSuperior relative overflow-hidden bg-slate-900 text-white"}>
-            <div ref={grupo} onAnimationIteration={() => setMensaje(m => (m + 1) % 2)}
+            <div key={mensaje} ref={grupo} onAnimationEnd={(e) => { if (e.target === e.currentTarget) setMensaje(m => (m + 1) % MENSAJES.length); }}
                 className={"barraMovil absolute top-0 h-full flex items-center gap-[10px] whitespace-nowrap"}>
-                {MENSAJES[mensaje]}
-                {/* el obrero va delante: a la derecha del mensaje, que es hacia donde avanza */}
+                {/* el obrero va delante: a la izquierda del mensaje, que es hacia donde avanza */}
                 <AnimacionLottie datos={caminante} className={"caminanteBarra w-[28px] h-[26px] shrink-0"}/>
+                {MENSAJES[mensaje]}
             </div>
         </div>
     )

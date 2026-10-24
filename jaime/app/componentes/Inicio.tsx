@@ -238,7 +238,9 @@ export function Inicio({productosIniciales, bannersIniciales} : {productosInicia
         const grilla = mosaico.current;
         if (!grilla || grilla.children.length === 0) return;
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-        const cajas = [...grilla.children] as HTMLElement[];
+        // las cajas que ya se ven al cargar (segun el alto de la pantalla) se quedan quietas; solo se animan las de mas abajo
+        const cajas = ([...grilla.children] as HTMLElement[]).filter(caja => caja.getBoundingClientRect().top >= window.innerHeight);
+        if (cajas.length === 0) return;
         cajas.forEach(caja => caja.style.opacity = '0');
 
         // cada caja entra cuando llega a la pantalla (el mosaico es mas alto que la ventana);
@@ -286,7 +288,8 @@ export function Inicio({productosIniciales, bannersIniciales} : {productosInicia
                 if (!boton) return;
                 const fila = redes.getBoundingClientRect();
                 const tope = window.innerHeight - (fila.top + fila.height / 2) - boton.offsetHeight / 2;
-                boton.style.bottom = `${Math.max(25, tope)}px`;
+                // en celular el boton es mas chico y va mas pegado a la esquina (16px), igual que su clase bottom
+                boton.style.bottom = `${Math.max(window.innerWidth < 640 ? 16 : 25, tope)}px`;
             });
         }
         ubicar();
@@ -420,10 +423,10 @@ export function Inicio({productosIniciales, bannersIniciales} : {productosInicia
               {categorias && <Aparecer><BannersNuevos productos={categorias} banners={banners}/></Aparecer>}
           </div>
 
-          <a ref={botonWhatsapp} href="https://wa.me/51986680850" target="_blank" rel="noopener noreferrer" aria-label="Escríbenos por WhatsApp" className={"size-[60px] md:size-[70px] bg-[#25D366] text-white rounded-full fixed bottom-[25px] right-[25px] z-[30] flex items-center justify-center shadow-[0px_4px_14px_rgba(0,0,0,.35)] transition-transform duration-300 hover:scale-110 active:scale-95"}>
+          <a ref={botonWhatsapp} href="https://wa.me/51986680850" target="_blank" rel="noopener noreferrer" aria-label="Escríbenos por WhatsApp" className={"size-[48px] sm:size-[60px] md:size-[70px] bg-[#25D366] text-white rounded-full fixed bottom-[16px] right-[16px] sm:bottom-[25px] sm:right-[25px] z-[30] flex items-center justify-center shadow-[0px_4px_14px_rgba(0,0,0,.35)] transition-transform duration-300 hover:scale-110 active:scale-95"}>
               {/* ondas detras del icono: el boton es fixed con z-index, asi -z-10 queda sobre su fondo y debajo del icono */}
               <AnimacionLottie datos={pulsoWhatsapp} className={"absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 size-[200%] -z-10 pointer-events-none"}/>
-              <IconoWhatsapp className={"w-[34px] h-[34px] md:w-[40px] md:h-[40px]"}/>
+              <IconoWhatsapp className={"w-[26px] h-[26px] sm:w-[34px] sm:h-[34px] md:w-[40px] md:h-[40px]"}/>
           </a>
 
 
