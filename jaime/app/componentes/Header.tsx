@@ -4,7 +4,6 @@ import {InputBusqueda} from './InputBusqueda'
 import {CarritoHeader} from './CarritoHeader'
 import {EnlacesHeader, MenuHeader} from './NavegacionHeader'
 import {AnimacionLottie} from './AnimacionLottie'
-import {CaminanteHeader} from './CaminanteHeader'
 import {ALTO_BARRA} from './BarraSuperior'
 import losAndesEpps from '@/app/animaciones/losAndesEpps.json'
 import {useRef, useEffect, useState} from 'react';
@@ -146,9 +145,14 @@ export const  Header = () => {
 
                 {statusIcon && <InputBusqueda/>}
 
-                <CaminanteHeader/>
-
             </div>
+
+            {/* en celular, con el buscador abierto, el resto de la pantalla queda detras de un vidrio esmerilado
+                (debajo del header, z-[9]); tocarlo cierra la busqueda para seguir navegando */}
+            {statusIcon && (
+                <div onClick={() => { desactiveIcon(); desactiveBusqueda(); }} aria-hidden={true}
+                    className={"fixed inset-0 z-[9] bg-slate-900/25 backdrop-blur-sm animate-[aparecerVidrio_.2s_ease-out]"}/>
+            )}
         </div>
     )
 }
