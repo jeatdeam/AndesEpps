@@ -117,6 +117,25 @@ body {
     .aparecer { opacity: 1; transform: none; transition: none; }
 }
 
+/* barra superior (BarraSuperior.tsx): la diapositiva que sale sube y la que entra llega desde abajo */
+.barraSale  { animation: barraSale .5s cubic-bezier(.22, 1, .36, 1) forwards; }
+.barraEntra { animation: barraEntra .5s cubic-bezier(.22, 1, .36, 1); }
+
+@keyframes barraSale {
+    from { transform: none; opacity: 1; }
+    to   { transform: translateY(-100%); opacity: 0; }
+}
+
+@keyframes barraEntra {
+    from { transform: translateY(100%); opacity: 0; }
+    to   { transform: none; opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .barraSale { display: none; }
+    .barraEntra { animation: none; }
+}
+
 
 /*end de svg-search*/
 

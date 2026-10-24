@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import {Header} from "./componentes/Header";
+import {BarraSuperior} from "./componentes/BarraSuperior";
 import {Footer} from "./componentes/Footer";
 import {FormularioCotizacion} from "./componentes/FormularioCotizacion";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -43,6 +44,7 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
+      <BarraSuperior/>
       <Header/>
       {children}
       <Footer/>
