@@ -270,7 +270,7 @@ export const CatalogoProductos = ({productos, parametros} : {productos : Product
     return (
         // todo el catalogo va dentro de una tarjeta con el mismo borde de 1px y redondeo que el detalle de producto.
         // sin margen arriba: queda a la misma distancia del header que el slider en el inicio
-        <section className={`relative w-[92%] max-w-[1400px] mx-auto mt-0 mb-[32px] p-[20px] lg:p-[28px] rounded-[12.5px] text-gray-900`}>
+        <section className={`relative w-[92%] max-w-[1400px] 2xl:w-[calc(max(74%,1240px)-40px)] mx-auto mt-0 mb-[32px] p-[20px] lg:p-[28px] rounded-[12.5px] text-gray-900`}>
 
             {/* vidrio en una capa aparte: un backdrop-filter en la seccion haria que el cajon de filtros (fixed) del celular
                 se ubique dentro de ella y no sobre toda la pantalla. el contenido lleva relative para quedar encima */}
@@ -335,7 +335,7 @@ export const CatalogoProductos = ({productos, parametros} : {productos : Product
 
                     {resultado.length > 0 ? (
                         <div className={"mt-[20px] grid grid-cols-[repeat(auto-fill,275px)] justify-center gap-[20px]"}>
-                            {resultado.map(producto => <TarjetaProducto key={producto.id} producto={producto}/>)}
+                            {resultado.map(producto => <TarjetaProducto key={producto.id} producto={producto} vidrio/>)}
                         </div>
                     ) : (
                         <div className={"mt-[40px] flex flex-col items-center gap-[10px] text-center py-[40px]"}>

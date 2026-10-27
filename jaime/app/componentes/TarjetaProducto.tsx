@@ -8,8 +8,13 @@ const aSlug = (texto : string) => texto.replace(/\s+/g, '-').toLowerCase();
 
 const claseBoton = `flex-1 ${claseBotonProducto}`;
 
+// estilo de la tarjeta: blanca solida, o de vidrio (catalogo filtrado). El vidrio lleva un degradado blanco translucido,
+// borde blanco y un brillo de 1px arriba para que se distinga de la caja del catalogo, que tambien es de vidrio
+const FONDO_SOLIDO = "bg-white shadow-[0_0_0_1px_rgba(0,0,0,.12)] hover:shadow-[0_0_0_1px_rgba(0,0,0,.35)]";
+const FONDO_VIDRIO = "bg-gradient-to-br from-white/75 to-white/35 backdrop-blur-md shadow-[0_0_0_1px_rgba(255,255,255,.8),inset_0_1px_0_rgba(255,255,255,.95),0_8px_24px_rgba(15,23,42,.08)] hover:shadow-[0_0_0_1px_rgba(255,255,255,1),inset_0_1px_0_rgba(255,255,255,1),0_12px_32px_rgba(15,23,42,.16)]";
+
 // fino: todo el texto con el mismo grosor que los enlaces del header (font-normal), lo usa el carrusel del inicio
-export const TarjetaProducto = ({producto, fino = false} : {producto : Product, fino? : boolean}) => {
+export const TarjetaProducto = ({producto, fino = false, vidrio = false} : {producto : Product, fino? : boolean, vidrio? : boolean}) => {
 
     const href = `/productos/${aSlug(producto.categoria)}/${aSlug(producto.name)}`;
     const peso = (normal : string) => fino ? "font-normal" : normal;
@@ -17,7 +22,7 @@ export const TarjetaProducto = ({producto, fino = false} : {producto : Product, 
     const pesoForzado = fino ? "font-normal!" : "";
 
     return (
-        <div className={`w-[275px] h-[445px] shrink-0 overflow-hidden bg-white text-gray-900 rounded-[12px] p-[12px] flex flex-col shadow-[0_0_0_1px_rgba(0,0,0,.12)] hover:shadow-[0_0_0_1px_rgba(0,0,0,.35)] transition-shadow duration-300`}>
+        <div className={`w-[275px] h-[445px] shrink-0 overflow-hidden ${vidrio ? FONDO_VIDRIO : FONDO_SOLIDO} text-gray-900 rounded-[12px] p-[12px] flex flex-col transition-shadow duration-300`}>
             <Link href={href} className={"relative block w-full"}>
                 <img className={"w-[230px] max-w-full mx-auto aspect-square object-contain bg-white rounded-[8px]"} src={producto.img[0]} alt={producto.name}/>
                 {enOferta(producto) && <EtiquetaDescuento descuento={producto.descuento!} className={`absolute top-0 left-0 text-[12px] px-[9px] py-[5px] ${pesoForzado}`}/>}
