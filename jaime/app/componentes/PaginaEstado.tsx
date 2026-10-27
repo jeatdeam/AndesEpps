@@ -1,10 +1,9 @@
 import type {ReactNode} from 'react';
-import {poppins} from '@/app/fuentes';
 
 // estructura comun de las paginas de 404 y de error
 // ilustracion: reemplaza al circulo con el casco (la 404 usa la animacion lottie)
 export const PaginaEstado = ({codigo, titulo, descripcion, children, detalle, ilustracion} : {codigo : string, titulo : string, descripcion : string, children : ReactNode, detalle? : ReactNode, ilustracion? : ReactNode}) => (
-    <main className={`${poppins.className} w-full flex-1 flex items-center justify-center px-[16px] py-[60px] text-gray-900`}>
+    <main className={`w-full flex-1 flex items-center justify-center px-[16px] py-[60px] text-gray-900`}>
         <div className={"w-full max-w-[560px] flex flex-col items-center text-center gap-[18px]"}>
             <div className={"relative flex items-center justify-center"}>
                 <span className={"text-[110px] sm:text-[140px] font-extrabold leading-none tracking-tight text-slate-900/10 select-none"}>{codigo}</span>

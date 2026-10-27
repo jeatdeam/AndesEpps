@@ -1,6 +1,5 @@
 import type {ReactNode} from 'react';
 import Link from 'next/link';
-import {poppins} from '@/app/fuentes';
 
 // datos que se repiten en las paginas legales (privacidad, terminos y eliminacion de datos)
 export const EMPRESA = 'Los Andes EPPS (J & M Andes Security E.I.R.L.)';
@@ -10,7 +9,7 @@ export const ACTUALIZACION = '22 de octubre de 2026';
 
 // el header es fijo (80px de alto a 10px del borde), por eso el contenido empieza mas abajo
 export const PaginaLegal = ({titulo, resumen, children} : {titulo : string, resumen : string, children : ReactNode}) => (
-    <main className={`${poppins.className} w-[calc(100%-16px)] sm:w-[94%] max-w-[860px] mx-auto pt-[120px] pb-[60px] text-slate-700`}>
+    <main className={`w-[calc(100%-16px)] sm:w-[94%] max-w-[860px] mx-auto pt-[120px] pb-[60px] text-slate-700`}>
         <article className={"rounded-[20px] bg-white/70 ring-1 ring-white shadow-[0px_6px_20px_rgba(15,23,42,.06)] px-[22px] py-[30px] md:px-[44px] md:py-[40px] flex flex-col gap-[26px]"}>
             <header className={"flex flex-col gap-[8px] border-b border-slate-200 pb-[20px]"}>
                 <p className={"text-[12px] font-semibold uppercase tracking-[.14em] text-sky-700"}>{EMPRESA}</p>

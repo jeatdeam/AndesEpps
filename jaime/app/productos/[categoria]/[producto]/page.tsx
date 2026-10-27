@@ -9,7 +9,6 @@ import {BotonCotizar} from '@/app/componentes/BotonCotizar';
 import {TarjetaProducto} from '@/app/componentes/TarjetaProducto';
 import {MediosPago} from '@/app/componentes/MediosPago';
 import {formatoPrecio, precioFinal, enOferta, EtiquetaDescuento, EstrellaUnica, IconoCarrito, IconoCotizar, claseBotonProducto} from '@/app/componentes/elementosProducto';
-import {poppins} from '@/app/fuentes';
 import type {Metadata} from 'next';
 import {SITIO, MARCA, aSlug, recortar} from '@/app/seo';
 
@@ -98,7 +97,7 @@ export default async function Page ({params} : {params : Promise<{producto:strin
                     <div className={"mx-auto w-full gap-[40px] flex flex-col lg:flex-row justify-between  lg:min-h-[750px]"}>
                         {/* alto minimo en vez de fijo: si la descripcion no cabe la fila crece y no aparece scroll interno */}
                         <GaleriaProducto imagenes={elementoFiltrado.img}/>
-                        <div className={`${poppins.className} flex flex-col gap-[18px] w-full lg:w-1/2 bg-white shadow-[0_0_0_1px_rgba(0,0,0,.12)] rounded-[12.5px] p-[25px]`}>
+                        <div className={`flex flex-col gap-[18px] w-full lg:w-1/2 bg-white shadow-[0_0_0_1px_rgba(0,0,0,.12)] rounded-[12.5px] p-[25px]`}>
                             <div className={"flex flex-col gap-[6px]"}>
                                 <span className={"text-[13px] font-semibold uppercase tracking-[0.15em] opacity-80"}>
                                     {elementoFiltrado.categoria}

@@ -32,17 +32,56 @@ const useCategorias = () => {
 }
 
 // el header es azul marino: texto blanco y un fondo blanco translucido al pasar el cursor o en la seccion activa
-const claseEnlace = (activo : boolean) => `px-[12px] py-[6px] rounded-[10px] text-[15px] font-medium text-white transition-colors duration-300 hover:bg-white/15 ${activo ? "bg-white/15" : ""}`;
+const claseEnlace = (activo : boolean) => `px-[12px] py-[6px] rounded-[10px] text-[15px] font-normal text-white transition-colors duration-300 hover:bg-white/15 ${activo ? "bg-white/15" : ""}`;
 
 // "/productos/[categoria]" pertenece a Categorias, no a Productos
 const estaActivo = (pathname : string, href : string) => href === '/productos' ? pathname === href : pathname.startsWith(href);
 
-export const EnlacesHeader = () => {
+// Productos, Ofertas y Categorias
+export const TOTAL_ENLACES = ENLACES.length + 1;
+const SEPARACION_ENLACES = 4;
+
+const FlechaCategorias = ({abierto} : {abierto : boolean}) => (
+    <svg viewBox="0 0 24 24" className={`w-[16px] h-[16px] transition-transform duration-300 ${abierto ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+        <path d="m6 9 6 6 6-6"/>
+    </svg>
+);
+
+// desde 1024px los enlaces ocupan el espacio que sobra entre el logo y el buscador (flex-1 con base 0, asi el buscador conserva su ancho).
+// si no entran todos, los que estan mas cerca del buscador pasan al menu de hamburguesa uno por uno.
+// "visibles" lo guarda el Header para que MenuHeader muestre los que faltan; empieza en 0 para que en el
+// primer render (servidor) ningun enlace se monte sobre el buscador antes de medir
+export const EnlacesHeader = ({visibles, onVisibles} : {visibles : number, onVisibles : (cantidad : number) => void}) => {
 
     const pathname = usePathname();
     const categorias = useCategorias();
     const [abierto, setAbierto] = useState(false);
     const contenedor = useRef<HTMLDivElement|null>(null);
+    const nav = useRef<HTMLElement|null>(null);
+    // copia invisible de los tres enlaces para conocer su ancho aunque esten en el menu
+    const medidas = useRef<HTMLDivElement|null>(null);
+
+    useEffect(() => {
+        if(!nav.current || !medidas.current) return;
+        const calcular = () => {
+            if(!nav.current || !medidas.current) return;
+            const disponible = nav.current.clientWidth;
+            // bajo 1024px el nav esta oculto (ancho 0): todos los enlaces van al menu
+            if(disponible === 0) return onVisibles(0);
+            let usado = 0, cantidad = 0;
+            for(const enlace of Array.from(medidas.current.children) as HTMLElement[]) {
+                usado += enlace.offsetWidth + (cantidad > 0 ? SEPARACION_ENLACES : 0);
+                if(usado > disponible) break;
+                cantidad++;
+            }
+            onVisibles(cantidad);
+        }
+        // tambien se observa la copia: cambia de ancho cuando termina de cargar la fuente
+        const observador = new ResizeObserver(calcular);
+        observador.observe(nav.current);
+        observador.observe(medidas.current);
+        return () => observador.disconnect();
+    }, [onVisibles]);
 
     useEffect(() => {
         const handleClickOutside = (event : MouseEvent) => {
@@ -55,16 +94,18 @@ export const EnlacesHeader = () => {
     const categoriasActivo = pathname.startsWith('/productos/');
 
     return (
-        <nav className={"hidden lg:flex items-center gap-[4px] shrink-0"}>
-            {ENLACES.map(({texto, href}) => (
-                <Link key={href} href={href} className={claseEnlace(estaActivo(pathname, href))}>{texto}</Link>
+        <nav ref={nav} className={"relative flex-1 min-w-0 hidden lg:flex items-center justify-end gap-[4px]"}>
+            <div ref={medidas} aria-hidden={true} className={"absolute invisible pointer-events-none flex whitespace-nowrap"}>
+                {ENLACES.map(({texto, href}) => <span key={href} className={claseEnlace(false)}>{texto}</span>)}
+                <span className={`${claseEnlace(false)} flex items-center gap-[4px]`}>Categorías<FlechaCategorias abierto={false}/></span>
+            </div>
+            {ENLACES.slice(0, visibles).map(({texto, href}) => (
+                <Link key={href} href={href} className={`${claseEnlace(estaActivo(pathname, href))} shrink-0 whitespace-nowrap`}>{texto}</Link>
             ))}
-            <div ref={contenedor} onMouseLeave={() => setAbierto(false)} className={"relative"}>
-                <button onClick={() => setAbierto(!abierto)} onMouseEnter={() => setAbierto(true)} aria-expanded={abierto} className={`${claseEnlace(categoriasActivo)} flex items-center gap-[4px] cursor-pointer`}>
+            {visibles === TOTAL_ENLACES && <div ref={contenedor} onMouseLeave={() => setAbierto(false)} className={"relative shrink-0"}>
+                <button onClick={() => setAbierto(!abierto)} onMouseEnter={() => setAbierto(true)} aria-expanded={abierto} className={`${claseEnlace(categoriasActivo)} flex items-center gap-[4px] whitespace-nowrap cursor-pointer`}>
                     Categorías
-                    <svg viewBox="0 0 24 24" className={`w-[16px] h-[16px] transition-transform duration-300 ${abierto ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                        <path d="m6 9 6 6 6-6"/>
-                    </svg>
+                    <FlechaCategorias abierto={abierto}/>
                 </button>
                 {/* pt en vez de margin para que el mouse no "caiga" en un hueco y cierre el menu */}
                 <div className={`absolute left-0 top-full pt-[8px] transition-all duration-200 ${abierto ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-[4px]"}`}>
@@ -78,12 +119,12 @@ export const EnlacesHeader = () => {
                         )}
                     </div>
                 </div>
-            </div>
+            </div>}
         </nav>
     )
 }
 
-export const MenuHeader = () => {
+export const MenuHeader = ({enlacesVisibles} : {enlacesVisibles : number}) => {
 
     const pathname = usePathname();
     const categorias = useCategorias();
@@ -109,16 +150,14 @@ export const MenuHeader = () => {
                 <svg className={""} xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg>
             </button>
             <nav className={`absolute right-0 top-[calc(100%+8px)] w-[260px] max-w-[90vw] bg-white rounded-[12px] p-[6px] shadow-[0_0_0_1px_rgba(0,0,0,.12)] flex flex-col transition-all duration-200 ${abierto ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-[4px]"}`}>
-                {/* en escritorio estos enlaces ya estan en el header, el menu solo muestra las secciones */}
-                <div className={"lg:hidden flex flex-col"}>
-                    {ENLACES.map(({texto, href}) => (
+                {/* solo los enlaces que no entraron en el header (ver EnlacesHeader) */}
+                {enlacesVisibles < TOTAL_ENLACES && <div className={"flex flex-col"}>
+                    {ENLACES.slice(enlacesVisibles).map(({texto, href}) => (
                         <Link key={href} href={href} onClick={cerrar} className={claseItem(estaActivo(pathname, href))}>{texto}</Link>
                     ))}
                     <button onClick={() => setVerCategorias(!verCategorias)} aria-expanded={verCategorias} className={`${claseItem(pathname.startsWith('/productos/'))} flex items-center justify-between cursor-pointer`}>
                         Categorías
-                        <svg viewBox="0 0 24 24" className={`w-[16px] h-[16px] transition-transform duration-300 ${verCategorias ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                            <path d="m6 9 6 6 6-6"/>
-                        </svg>
+                        <FlechaCategorias abierto={verCategorias}/>
                     </button>
                     {verCategorias && (
                         <div className={"max-h-[260px] overflow-y-auto scroll-fino flex flex-col pl-[10px]"}>
@@ -130,7 +169,7 @@ export const MenuHeader = () => {
                         </div>
                     )}
                     <div className={"h-px bg-gray-200 my-[6px]"}/>
-                </div>
+                </div>}
                 {SECCIONES_MENU.map(({texto, href, icono}) => (
                     <Link key={href} href={href} onClick={cerrar} className={`${claseItem(pathname.startsWith(href))} flex items-center gap-[10px]`}>
                         <svg viewBox="0 0 24 24" className={"w-[18px] h-[18px] shrink-0 text-gray-500"} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">{icono}</svg>

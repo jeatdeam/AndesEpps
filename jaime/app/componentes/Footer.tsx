@@ -87,7 +87,7 @@ const IconoFlecha = () => (
 )
 
 const Titulo = ({children} : {children : ReactNode}) => (
-    <h3 className={"text-[12px] font-semibold uppercase tracking-[.14em] text-slate-900 mb-[18px] leading-none"}>
+    <h3 className={"text-[12px] font-extrabold uppercase tracking-[.14em] text-slate-900 mb-[18px] leading-none"}>
         {children}
     </h3>
 )
@@ -149,10 +149,10 @@ export const Footer = () => {
             <div className={"w-[90%] xl:w-[80%] mx-auto py-[50px] grid gap-[40px] grid-cols-1 sm:grid-cols-3 lg:grid-cols-[1.4fr_1fr_1fr_1fr]"}>
 
                 <div className={"sm:col-span-3 lg:col-span-1 flex flex-col gap-[16px]"}>
-                    <Link href={"/"} className={"w-fit flex items-center gap-[10px] text-slate-900"}>
+                    <Link href={"/"} className={"w-fit flex items-center gap-0 text-slate-900"}>
                         {/* el casco animado del logo del header (solo el casco), sin fondo; cascoAnimado.json va a 60 cuadros
                             por segundo (el doble de rapido que el logo) y con el contorno azul marino para verse sobre el footer claro */}
-                        <AnimacionLottie datos={cascoAnimado} className={"w-[66px] h-[48px] shrink-0"}/>
+                        <AnimacionLottie datos={cascoAnimado} className={"w-[76px] h-[58px] shrink-0"}/>
                         <span className={"text-[20px] font-bold leading-tight"}>Los Andes EPPS</span>
                     </Link>
                     <p className={"text-[14px] leading-relaxed"}>
@@ -229,7 +229,7 @@ export const Footer = () => {
             {/* creditos del desarrollador */}
             <div className={"bg-neutral-900"}>
                 {/* en celular todo va en una sola linea: "Desarrollado por:" y la firma (mas chica), sin pochita */}
-                <div className={"w-[90%] xl:w-[80%] mx-auto py-[4px] sm:py-[10px] flex flex-row items-center justify-center gap-[6px] sm:gap-[12px]"}>
+                <div className={"w-[90%] xl:w-[80%] mx-auto py-[4px] sm:py-[8px] flex flex-row items-center justify-center gap-[6px] sm:gap-[12px]"}>
                     <span className={"sm:hidden"}>
                         <TextoEscritura texto={"Desarrollado por:"} className={`${doto.className} text-[12px] font-bold uppercase tracking-[.14em] text-neutral-300`}/>
                     </span>
@@ -239,9 +239,9 @@ export const Footer = () => {
                     <a href="https://github.com/jeatdeam" target="_blank" rel="noopener noreferrer" aria-label={"Portafolio de jeatdeam en GitHub"} className={"flex items-center shrink-0 hover:opacity-80 transition-opacity"}>
                         {/* la firma escrita queda ~9px arriba del centro de su animacion y con ~24px vacios a la izquierda:
                             se baja y se corre para que quede alineada con el texto */}
-                        <AnimacionLottie datos={jeatdeam} className={"w-[120px] h-[50px] translate-y-[6px] -ml-[14px] sm:w-[179px] sm:h-[75px] sm:translate-y-[9px] sm:-ml-[20px] shrink-0"}/>
+                        <AnimacionLottie datos={jeatdeam} className={"w-[120px] h-[50px] translate-y-[6px] -ml-[14px] sm:w-[153px] sm:h-[64px] sm:translate-y-[8px] sm:-ml-[17px] shrink-0"}/>
                         {/* margen negativo: ambas animaciones traen espacio vacio en sus bordes */}
-                        <AnimacionLottie datos={pochita} className={"hidden sm:block size-[75px] shrink-0 -ml-[18px]"}/>
+                        <AnimacionLottie datos={pochita} className={"hidden sm:block size-[64px] shrink-0 -ml-[15px]"}/>
                     </a>
                 </div>
             </div>

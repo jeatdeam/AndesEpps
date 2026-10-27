@@ -1,7 +1,6 @@
 'use client'
 import {useState, useEffect, useMemo, type ReactNode} from 'react';
 import {Product} from '@/app/tipos/elementsType';
-import {poppins} from '@/app/fuentes';
 import {TarjetaProducto} from './TarjetaProducto';
 import {formatoPrecio, precioFinal, enOferta, compararIngreso, idsNuevosIngresos, CANTIDAD_NUEVOS} from './elementosProducto';
 
@@ -271,20 +270,24 @@ export const CatalogoProductos = ({productos, parametros} : {productos : Product
     return (
         // todo el catalogo va dentro de una tarjeta con el mismo borde de 1px y redondeo que el detalle de producto.
         // sin margen arriba: queda a la misma distancia del header que el slider en el inicio
-        <section className={`${poppins.className} w-[92%] max-w-[1400px] mx-auto mt-0 mb-[32px] p-[20px] lg:p-[28px] bg-white rounded-[12.5px] shadow-[0_0_0_1px_rgba(0,0,0,.12)] text-gray-900`}>
+        <section className={`relative w-[92%] max-w-[1400px] mx-auto mt-0 mb-[32px] p-[20px] lg:p-[28px] rounded-[12.5px] text-gray-900`}>
 
-            <div className={"flex flex-col gap-[4px] mb-[20px]"}>
+            {/* vidrio en una capa aparte: un backdrop-filter en la seccion haria que el cajon de filtros (fixed) del celular
+                se ubique dentro de ella y no sobre toda la pantalla. el contenido lleva relative para quedar encima */}
+            <div aria-hidden={true} className={"absolute inset-0 rounded-[12.5px] bg-white/55 backdrop-blur-xl shadow-[0_0_0_1px_rgba(255,255,255,.7),0_8px_32px_rgba(15,23,42,.08)]"}/>
+
+            <div className={"relative flex flex-col gap-[4px] mb-[20px]"}>
                 <h1 className={"text-[26px] font-bold first-letter:uppercase leading-none"}>
                     {filtros.categoria.length === 1 ? filtros.categoria[0] : filtros.nuevos ? 'Nuevos ingresos' : filtros.oferta ? 'Ofertas' : 'Equipos de protección personal'}
                 </h1>
                 <p className={"text-[13px] text-gray-500"}>{resultado.length} {resultado.length === 1 ? 'producto encontrado' : 'productos encontrados'}</p>
             </div>
 
-            <div className={"flex gap-[28px] items-start"}>
+            <div className={"relative flex gap-[28px] items-start"}>
 
                 {/* panel lateral: en escritorio es un recuadro con borde de 1px dentro de la tarjeta del catalogo; en movil un cajon deslizable */}
                 <div onClick={() => setPanelAbierto(false)} className={`fixed inset-0 z-[40] bg-black/40 transition-opacity duration-300 lg:hidden ${panelAbierto ? "opacity-100" : "opacity-0 pointer-events-none"}`}/>
-                <aside className={`fixed top-0 left-0 z-[50] h-full w-[300px] max-w-[85%] bg-white px-[20px] py-[16px] overflow-y-auto scroll-fino transition-transform duration-300 ${panelAbierto ? "translate-x-0" : "-translate-x-full"} lg:z-auto lg:h-auto lg:w-[270px] lg:max-w-none lg:shrink-0 lg:translate-x-0 lg:p-[18px] lg:rounded-[12.5px] lg:shadow-[0_0_0_1px_rgba(0,0,0,.12)] lg:overflow-visible lg:sticky lg:top-[20px]`}>
+                <aside className={`fixed top-0 left-0 z-[50] h-full w-[300px] max-w-[85%] bg-white lg:bg-white/50 px-[20px] py-[16px] overflow-y-auto scroll-fino transition-transform duration-300 ${panelAbierto ? "translate-x-0" : "-translate-x-full"} lg:z-auto lg:h-auto lg:w-[270px] lg:max-w-none lg:shrink-0 lg:translate-x-0 lg:p-[18px] lg:rounded-[12.5px] lg:shadow-[0_0_0_1px_rgba(0,0,0,.12)] lg:overflow-visible lg:sticky lg:top-[20px]`}>
                     <div className={"flex items-center justify-between pb-[6px] border-b-2 border-slate-900"}>
                         <h2 className={"text-[16px] font-bold leading-none"}>Filtrar por</h2>
                         <button onClick={() => setPanelAbierto(false)} className={"lg:hidden text-[22px] leading-none cursor-pointer"} aria-label={"Cerrar filtros"}>×</button>

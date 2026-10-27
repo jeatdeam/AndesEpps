@@ -4,7 +4,6 @@ import {useState, useEffect, useRef, type ReactNode} from 'react';
 import {useControladorCotizacion} from '@/app/controladoresGlobales/controladorCotizacion';
 import type {ProductoCarrito} from '@/app/controladoresGlobales/controladorCarrito';
 import {API, WHATSAPP_TIENDA} from '@/app/configuracion';
-import {poppins} from '@/app/fuentes';
 import {formatoPrecio, IconoCotizar} from './elementosProducto';
 import {IconoWhatsapp} from './Footer';
 
@@ -238,7 +237,7 @@ const Modal = ({productosIniciales, cerrar} : {productosIniciales : ProductoCarr
         // dvh (alto visible real): en celular vh incluye la zona detras de las barras del navegador y cortaba arriba y abajo.
         // el encabezado y los botones quedan fijos; lo de en medio se desplaza
         <div className={"fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 backdrop-blur-[2px] p-[10px] sm:p-[16px]"} onMouseDown={e => { if (e.target === e.currentTarget && !enviando) cerrar(); }}>
-            <div role={"dialog"} aria-modal={true} aria-labelledby={"titulo-cotizacion"} className={`${poppins.className} w-full max-w-[680px] max-h-[calc(100dvh-20px)] sm:max-h-[92dvh] flex flex-col overflow-hidden rounded-[16px] bg-white text-gray-900 shadow-[0px_20px_60px_rgba(0,0,0,.35)]`}>
+            <div role={"dialog"} aria-modal={true} aria-labelledby={"titulo-cotizacion"} className={`w-full max-w-[680px] max-h-[calc(100dvh-20px)] sm:max-h-[92dvh] flex flex-col overflow-hidden rounded-[16px] bg-white text-gray-900 shadow-[0px_20px_60px_rgba(0,0,0,.35)]`}>
 
                 <div className={"shrink-0 flex items-start justify-between gap-[12px] border-b border-gray-200 px-[16px] sm:px-[22px] py-[12px] sm:py-[16px]"}>
                     <div className={"flex items-center gap-[12px]"}>

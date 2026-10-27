@@ -8,7 +8,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-raleway);
+  --font-serif: var(--font-playfair);
   --font-mono: var(--font-geist-mono);
 }
 
@@ -46,7 +47,12 @@ body {
   background-image: linear-gradient(160deg, #d6ecf8 0%, #e6f4fb 35%, #f3f9fd 70%, #ffffff 100%);
   background-attachment: fixed;
   /*color: var(--foreground);*/
-  font-family: Arial, Helvetica, sans-serif;
+  /* raleway en textos y playfair en titulos; los creditos del footer usan doto (ver Footer.tsx) */
+  font-family: var(--font-raleway), Arial, Helvetica, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-playfair), Georgia, serif;
 }
 
 
@@ -94,15 +100,15 @@ body {
     .aparecer { transition: none; }
 }
 
-/* barra superior (BarraSuperior.tsx): el grupo obrero + mensaje entra por la derecha (totalmente fuera)
-   y sale por la izquierda, una sola vez; el componente lo vuelve a montar con el otro mensaje.
-   --duracion-barra la calcula el componente */
-.barraMovil {
-    animation: cruzarBarra var(--duracion-barra, 20s) linear 1 both;
+/* barra superior (BarraSuperior.tsx): el componente mueve cada grupo obrero + mensaje (left en px).
+   el primero nace en el 60% de la barra y aparece suave; los siguientes entran caminando desde el borde derecho */
+.barraPrimera {
+    animation: aparecerBarra .5s ease-out both;
 }
 
-.barraSuperior:hover .barraMovil {
-    animation-play-state: paused;
+@keyframes aparecerBarra {
+    from { opacity: 0; }
+    to   { opacity: 1; }
 }
 
 /* el obrero avanza hacia la izquierda: se voltea para que mire hacia donde camina (si no, parece ir de reversa) */
@@ -114,10 +120,6 @@ body {
     image-rendering: pixelated;
 }
 
-@keyframes cruzarBarra {
-    from { left: 100%; transform: translateX(0); }
-    to   { left: 0; transform: translateX(-100%); }
-}
 
 /* contador del carrito (CarritoHeader.tsx): late cada 1.8 s. Detras del circulo salen dos anillos:
    ::before relleno tenue que crece mas, ::after solo con borde marcado que crece menos y sale un poco despues.
@@ -168,7 +170,8 @@ body {
 
 /* sin animacion: el mensaje queda quieto y centrado */
 @media (prefers-reduced-motion: reduce) {
-    .barraMovil { animation: none; left: 50%; transform: translateX(-50%); }
+    /* !important: el componente pone left en el estilo del elemento */
+    .barraMovil { animation: none; left: 50% !important; transform: translateX(-50%); }
 }
 
 /* formulario de cotizacion: parpadeo al sumar o restar cantidad.

@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import {Product, BannerOferta, Banners, PosicionBanner, POSICIONES_NUEVOS} from '@/app/tipos/elementsType';
-import {poppins} from '@/app/fuentes';
 import {TituloSeccion} from './TituloSeccion';
 import {formatoPrecio, precioFinal, enOferta, compararIngreso, CANTIDAD_NUEVOS} from './elementosProducto';
 
@@ -269,7 +268,7 @@ export const BannersOfertas = ({productos, banners} : {productos : Product[], ba
     return (
         <section className={"w-[90%] 2xl:w-[70%] mx-auto"}>
             <TituloSeccion>Ofertas</TituloSeccion>
-            <div className={`${poppins.className} flex flex-col gap-[18px]`}>
+            <div className={`flex flex-col gap-[18px]`}>
                 <FilaBanners posiciones={['principal']} ranuras={ranuras} productos={productos}/>
                 <FilaBanners posiciones={ESPACIOS_SECUNDARIOS} ranuras={ranuras} productos={productos}/>
             </div>
@@ -284,7 +283,7 @@ export const BannersNuevos = ({productos, banners} : {productos : Product[], ban
     return (
         <section className={"w-[90%] 2xl:w-[70%] mx-auto"}>
             <TituloSeccion>Nuevos ingresos</TituloSeccion>
-            <div className={`${poppins.className} flex flex-col gap-[18px]`}>
+            <div className={`flex flex-col gap-[18px]`}>
                 <FilaBanners posiciones={POSICIONES_NUEVOS.slice(0, 2)} ranuras={ranuras} productos={productos}/>
                 <FilaBanners posiciones={POSICIONES_NUEVOS.slice(2)} ranuras={ranuras} productos={productos}/>
             </div>

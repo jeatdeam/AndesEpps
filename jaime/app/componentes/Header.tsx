@@ -32,6 +32,8 @@ export const  Header = () => {
     const [activeMenu, setActiveMenu] = useState<boolean>(false);
     const containerMenu = useRef<HTMLDivElement|null>(null);
     const containerHeader = useRef<HTMLDivElement|null>(null);
+    // cuantos de los enlaces (Productos, Ofertas, Categorias) entran junto al buscador; el resto va al menu
+    const [enlacesVisibles, setEnlacesVisibles] = useState<number>(0);
 
     const showBusqueda = () => {
         if(!activeSearch) return;
@@ -133,7 +135,7 @@ export const  Header = () => {
                 <Link href={"/"} aria-label={"Los Andes EPPS - inicio"} className={"flex items-center w-fit shrink-0 mr-auto -my-[56px] lg:-my-[78px]"}>
                     <AnimacionLottie datos={losAndesEpps} className={"w-[251px] h-[150.4px] lg:w-[326px] lg:h-[195.5px] shrink-0 max-lg:-ml-[40px] max-lg:translate-y-[8px] lg:translate-y-[14px]"}/>
                 </Link>
-                <EnlacesHeader/>
+                <EnlacesHeader visibles={enlacesVisibles} onVisibles={setEnlacesVisibles}/>
                 {/* el logo empuja todo a la derecha (mr-auto): enlaces, buscador e iconos quedan juntos con la misma separacion */}
                 <div className={`flex min-w-0 justify-end ${activeSearch ? "gap-[10px]" : "gap-[24px]"}`}>
                     <div ref={containerBusqueda} className={`flex items-center rounded-[7.5px] gap-[10px] py-[5px] ${activeSearch ? "" : "min-w-0"} relative`}>
@@ -146,7 +148,7 @@ export const  Header = () => {
                     </div>
                     <div className={"flex gap-[10px] items-center"}>
                         <CarritoHeader/>
-                        <MenuHeader/>
+                        <MenuHeader enlacesVisibles={enlacesVisibles}/>
                     </div>
                 </div>
 

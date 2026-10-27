@@ -126,7 +126,7 @@ export const CarruselMasBuscados = ({productos} : {productos : Product[]}) => {
             <div className={"flex w-max gap-[20px] pr-[20px]"}>
                 {[...productos, ...productos].map((producto, index) => (
                     <div key={index} aria-hidden={index >= productos.length}>
-                        <TarjetaProducto producto={producto}/>
+                        <TarjetaProducto producto={producto} fino/>
                     </div>
                 ))}
             </div>

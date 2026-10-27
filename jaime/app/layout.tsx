@@ -3,14 +3,10 @@ import {Header} from "./componentes/Header";
 import {BarraSuperior} from "./componentes/BarraSuperior";
 import {Footer} from "./componentes/Footer";
 import {FormularioCotizacion} from "./componentes/FormularioCotizacion";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono } from "next/font/google";
 import "./globals.css";
+import {raleway, playfair} from "./fuentes";
 import {SITIO, MARCA, TITULO_SITIO, DESCRIPCION_SITIO} from "./seo";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -42,7 +38,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+    <html lang="es" className={`${raleway.variable} ${playfair.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
       <BarraSuperior/>
       <Header/>

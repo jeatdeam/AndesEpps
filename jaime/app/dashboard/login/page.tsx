@@ -3,7 +3,6 @@ import axios from 'axios';
 import {useState} from 'react';
 import {useRouter} from 'next/navigation';
 import {API} from '@/app/configuracion';
-import {poppins} from '@/app/fuentes';
 import {clienteAdmin} from '@/app/componentes/dashboard/clienteAdmin';
 
 const claseInput = "w-full rounded-[10px] border border-gray-300 bg-white px-[12px] py-[10px] text-[14px] outline-none transition focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10";
@@ -30,7 +29,7 @@ export default function Page() {
     }
 
     return (
-        <main className={`${poppins.className} w-full min-h-[70vh] flex items-center justify-center px-[16px] py-[48px]`}>
+        <main className={`w-full min-h-[70vh] flex items-center justify-center px-[16px] py-[48px]`}>
             <form onSubmit={entrar} className={"w-full max-w-[380px] flex flex-col gap-[16px] rounded-[16px] border border-gray-200 bg-white p-[24px] shadow-[0px_10px_30px_rgba(0,0,0,.06)]"}>
                 <div>
                     <span className={"text-[12px] font-semibold uppercase tracking-[0.15em] text-gray-500"}>Panel de administración</span>
