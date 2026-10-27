@@ -25,10 +25,6 @@ const IconoCorreo = () => (
     <svg viewBox="0 0 24 24" className={iconoClase} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>
 )
 
-const IconoLibro = () => (
-    <svg viewBox="0 0 24 24" className={iconoClase} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5v15Z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/><path d="M9 7h7M9 11h5"/></svg>
-)
-
 const IconoEscudo = () => (
     <svg viewBox="0 0 24 24" className={iconoClase} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg>
 )
@@ -220,9 +216,11 @@ export const Footer = () => {
                     <Link href={"/terminos"} className={"hover:text-slate-900 hover:underline"}>Términos</Link>
                     <Link href={"/eliminacion-de-datos"} className={"hover:text-slate-900 hover:underline"}>Eliminación de datos</Link>
                 </nav>
-                <Link href={"#"} className={"flex items-center gap-[8px] rounded-full bg-white/60 ring-1 ring-white hover:ring-sky-500/60 hover:text-slate-900 px-[14px] py-[8px] transition"}>
-                    <IconoLibro/>
-                    Libro de reclamaciones
+                {/* indecopi pide que el acceso al libro de reclamaciones virtual se vea en un lugar visible de todas las paginas:
+                    va con la imagen oficial en el footer (presente en todo el sitio), en una caja blanca porque la imagen tiene fondo blanco.
+                    TODO: cambiar "#" por la pagina o el formulario del libro de reclamaciones virtual */}
+                <Link href={"#"} aria-label={"Libro de Reclamaciones"} className={"shrink-0 block rounded-[12px] bg-white p-[6px] shadow-[0_0_0_1px_rgba(15,23,42,.08),0_4px_0_rgba(15,23,42,.07)] hover:-translate-y-[2px] hover:shadow-[0_0_0_1px_rgba(3,105,161,.35),0_6px_0_rgba(15,23,42,.08)] transition"}>
+                    <img src={"/libro-reclamaciones.png"} alt={"Libro de Reclamaciones"} width={303} height={232} className={"block w-[130px] sm:w-[150px] h-auto"}/>
                 </Link>
             </div>
 
