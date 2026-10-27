@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import {Header} from "./componentes/Header";
 import {BarraSuperior} from "./componentes/BarraSuperior";
 import {Footer} from "./componentes/Footer";
+import {CreditosDesarrollador} from "./componentes/CreditosDesarrollador";
+import {SegunSeccion} from "./componentes/SegunSeccion";
 import {FormularioCotizacion} from "./componentes/FormularioCotizacion";
 import { Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -40,10 +42,10 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${raleway.variable} ${playfair.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
-      <BarraSuperior/>
-      <Header/>
+      {/* el dashboard no lleva barra superior, header ni footer: solo los creditos del desarrollador al fondo */}
+      <SegunSeccion tienda={<><BarraSuperior/><Header/></>}/>
       {children}
-      <Footer/>
+      <SegunSeccion tienda={<Footer/>} dashboard={<div className={"mt-auto"}><CreditosDesarrollador/></div>}/>
       <FormularioCotizacion/>
       </body>
     </html>
