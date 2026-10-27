@@ -13,10 +13,11 @@ const ENLACES = [
 ];
 
 // secciones que solo viven en el menu de hamburguesa (en todas las pantallas).
-// el dashboard no se enlaza: el administrador entra directo a /dashboard
+// el dashboard se enlaza solo mientras la tienda es un prototipo, para probarlo: quitarlo al publicar
 const SECCIONES_MENU = [
     {texto: 'Ventas corporativas', href: '/ventas-corporativas', icono: <><rect x="4" y="2" width="16" height="20" rx="1"/><path d="M9 22v-4h6v4M8 6h.01M12 6h.01M16 6h.01M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01"/></>},
     {texto: 'Ayuda', href: '/ayuda', icono: <><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/></>},
+    {texto: 'Dashboard', href: '/dashboard', icono: <><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></>},
 ];
 
 const useCategorias = () => {

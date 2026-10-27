@@ -1,8 +1,7 @@
 import Link from "next/link";
 import type {ReactNode} from "react";
 import {AnimacionLottie} from "@/app/componentes/AnimacionLottie";
-import pochita from "@/app/animaciones/pochita.json";
-import jeatdeam from "@/app/animaciones/jeatdeam.json";
+import firmaPauloDev from "@/app/animaciones/firmaPauloDev.json";
 import cascoAnimado from "@/app/animaciones/cascoAnimado.json";
 import {TextoEscritura} from "@/app/componentes/TextoEscritura";
 import {doto} from "@/app/fuentes";
@@ -226,20 +225,18 @@ export const Footer = () => {
 
             {/* creditos del desarrollador */}
             <div className={"bg-neutral-900"}>
-                {/* en celular todo va en una sola linea: "Desarrollado por:" y la firma (mas chica), sin pochita */}
-                <div className={"w-[90%] xl:w-[80%] mx-auto py-[4px] sm:py-[8px] flex flex-row items-center justify-center gap-[6px] sm:gap-[12px]"}>
+                {/* firma grande: en celular el texto va arriba y la firma abajo, centrados; desde sm van en una linea */}
+                <div className={"w-[90%] xl:w-[80%] mx-auto py-[8px] flex flex-col sm:flex-row items-center justify-center gap-[2px] sm:gap-[22px]"}>
                     <span className={"sm:hidden"}>
                         <TextoEscritura texto={"Desarrollado por:"} className={`${doto.className} text-[12px] font-bold uppercase tracking-[.14em] text-neutral-300`}/>
                     </span>
                     <span className={"hidden sm:inline"}>
                         <TextoEscritura texto={"Desarrollado y diseñado por:"} className={`${doto.className} text-[14px] font-bold uppercase tracking-[.14em] text-neutral-300`}/>
                     </span>
-                    <a href="https://github.com/jeatdeam" target="_blank" rel="noopener noreferrer" aria-label={"Portafolio de jeatdeam en GitHub"} className={"flex items-center shrink-0 hover:opacity-80 transition-opacity"}>
-                        {/* la firma escrita queda ~9px arriba del centro de su animacion y con ~24px vacios a la izquierda:
-                            se baja y se corre para que quede alineada con el texto */}
-                        <AnimacionLottie datos={jeatdeam} className={"w-[120px] h-[50px] translate-y-[6px] -ml-[14px] sm:w-[153px] sm:h-[64px] sm:translate-y-[8px] sm:-ml-[17px] shrink-0"}/>
-                        {/* margen negativo: ambas animaciones traen espacio vacio en sus bordes */}
-                        <AnimacionLottie datos={pochita} className={"hidden sm:block size-[64px] shrink-0 -ml-[15px]"}/>
+                    <a href="https://github.com/jeatdeam" target="_blank" rel="noopener noreferrer" aria-label={"Portafolio de PauloDev en GitHub"} className={"flex items-center shrink-0 hover:opacity-80 transition-opacity"}>
+                        {/* la animacion es de 800x300 y la firma ocupa ~78% del ancho y ~47% del alto, centrada:
+                            los margenes negativos recortan el espacio vacio (arriba/abajo y, desde sm, el de la izquierda para pegarla al texto) */}
+                        <AnimacionLottie datos={firmaPauloDev} className={"w-[260px] h-[98px] -my-[22px] sm:w-[320px] sm:h-[120px] sm:-my-[28px] sm:-ml-[37px] lg:w-[440px] lg:h-[165px] lg:-my-[38px] lg:-ml-[51px] shrink-0"}/>
                     </a>
                 </div>
             </div>
