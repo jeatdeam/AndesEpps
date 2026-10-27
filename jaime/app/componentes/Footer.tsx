@@ -225,8 +225,8 @@ export const Footer = () => {
 
             {/* creditos del desarrollador */}
             <div className={"bg-neutral-900"}>
-                {/* firma grande: en celular el texto va arriba y la firma abajo, centrados; desde sm van en una linea */}
-                <div className={"w-[90%] xl:w-[80%] mx-auto py-[8px] flex flex-col sm:flex-row items-center justify-center gap-[2px] sm:gap-[22px]"}>
+                {/* el texto y la firma van siempre en una sola linea; en celular y tablet la firma es mas chica para que quepa */}
+                <div className={"w-[90%] xl:w-[80%] mx-auto py-[4px] flex flex-row items-center justify-center gap-[8px] sm:gap-[16px] lg:gap-[22px]"}>
                     <span className={"sm:hidden"}>
                         <TextoEscritura texto={"Desarrollado por:"} className={`${doto.className} text-[12px] font-bold uppercase tracking-[.14em] text-neutral-300`}/>
                     </span>
@@ -237,7 +237,7 @@ export const Footer = () => {
                         {/* la animacion es de 1000x420: la firma, la brocha y el "</>" ocupan ~66% del ancho y ~64% del alto, un poco a la derecha y arriba.
                             los margenes negativos recortan ese espacio vacio; al final se deshace en particulas y el ultimo cuadro queda vacio,
                             por eso con "reducir movimiento" se deja quieta en el cuadro 130, con la firma completa */}
-                        <AnimacionLottie datos={firmaJeatdeamDev} cuadroReposo={130} className={"w-[300px] h-[126px] -mt-[16px] -mb-[26px] -ml-[58px] -mr-[43px] sm:w-[340px] sm:h-[143px] sm:-mt-[17px] sm:-mb-[29px] sm:-ml-[62px] sm:-mr-[44px] lg:w-[460px] lg:h-[193px] lg:-mt-[24px] lg:-mb-[40px] lg:-ml-[86px] lg:-mr-[60px] shrink-0"}/>
+                        <AnimacionLottie datos={firmaJeatdeamDev} cuadroReposo={130} className={"w-[205px] h-[86px] -mt-[12px] -mb-[19px] -ml-[38px] -mr-[28px] lg:w-[320px] lg:h-[134px] lg:-mt-[18px] lg:-mb-[29px] lg:-ml-[60px] lg:-mr-[44px] shrink-0"}/>
                     </a>
                 </div>
             </div>
