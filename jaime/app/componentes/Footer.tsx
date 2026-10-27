@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type {ReactNode} from "react";
 import {AnimacionLottie} from "@/app/componentes/AnimacionLottie";
-import firmaPauloDev from "@/app/animaciones/firmaPauloDev.json";
+import firmaJeatdeamDev from "@/app/animaciones/firmaJeatdeamDev.json";
 import cascoAnimado from "@/app/animaciones/cascoAnimado.json";
 import {TextoEscritura} from "@/app/componentes/TextoEscritura";
 import {doto} from "@/app/fuentes";
@@ -233,10 +233,11 @@ export const Footer = () => {
                     <span className={"hidden sm:inline"}>
                         <TextoEscritura texto={"Desarrollado y diseñado por:"} className={`${doto.className} text-[14px] font-bold uppercase tracking-[.14em] text-neutral-300`}/>
                     </span>
-                    <a href="https://github.com/jeatdeam" target="_blank" rel="noopener noreferrer" aria-label={"Portafolio de PauloDev en GitHub"} className={"flex items-center shrink-0 hover:opacity-80 transition-opacity"}>
-                        {/* la animacion es de 800x300 y la firma ocupa ~78% del ancho y ~47% del alto, centrada:
-                            los margenes negativos recortan el espacio vacio (arriba/abajo y, desde sm, el de la izquierda para pegarla al texto) */}
-                        <AnimacionLottie datos={firmaPauloDev} className={"w-[260px] h-[98px] -my-[22px] sm:w-[320px] sm:h-[120px] sm:-my-[28px] sm:-ml-[37px] lg:w-[440px] lg:h-[165px] lg:-my-[38px] lg:-ml-[51px] shrink-0"}/>
+                    <a href="https://github.com/jeatdeam" target="_blank" rel="noopener noreferrer" aria-label={"Portafolio de jeatdeam en GitHub"} className={"flex items-center shrink-0 hover:opacity-80 transition-opacity"}>
+                        {/* la animacion es de 1000x420: la firma, la brocha y el "</>" ocupan ~66% del ancho y ~64% del alto, un poco a la derecha y arriba.
+                            los margenes negativos recortan ese espacio vacio; al final se deshace en particulas y el ultimo cuadro queda vacio,
+                            por eso con "reducir movimiento" se deja quieta en el cuadro 130, con la firma completa */}
+                        <AnimacionLottie datos={firmaJeatdeamDev} cuadroReposo={130} className={"w-[300px] h-[126px] -mt-[16px] -mb-[26px] -ml-[58px] -mr-[43px] sm:w-[340px] sm:h-[143px] sm:-mt-[17px] sm:-mb-[29px] sm:-ml-[62px] sm:-mr-[44px] lg:w-[460px] lg:h-[193px] lg:-mt-[24px] lg:-mb-[40px] lg:-ml-[86px] lg:-mr-[60px] shrink-0"}/>
                     </a>
                 </div>
             </div>

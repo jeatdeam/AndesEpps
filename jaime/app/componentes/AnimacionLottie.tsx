@@ -7,7 +7,8 @@ type DatosLottie = {op : number, ip : number};
 // reproduce un json lottie (app/animaciones). lottie-web usa el dom, por eso se importa dentro del efecto.
 // bucleDesde: se reproduce una vez completa y luego repite solo desde ese cuadro hasta el final
 // activo: si se pasa, la animacion solo corre mientras es true (ej. al pasar el cursor) y vuelve al inicio al soltar
-export const AnimacionLottie = ({datos, className, bucle = true, bucleDesde, etiqueta, activo} : {datos : DatosLottie, className? : string, bucle? : boolean, bucleDesde? : number, etiqueta? : string, activo? : boolean}) => {
+// cuadroReposo: cuadro que se deja quieto con "reducir movimiento" (por defecto bucleDesde o el ultimo)
+export const AnimacionLottie = ({datos, className, bucle = true, bucleDesde, etiqueta, activo, cuadroReposo} : {datos : DatosLottie, className? : string, bucle? : boolean, bucleDesde? : number, etiqueta? : string, activo? : boolean, cuadroReposo? : number}) => {
 
     const contenedor = useRef<HTMLDivElement>(null);
     const animacionRef = useRef<AnimationItem | null>(null);
@@ -37,7 +38,7 @@ export const AnimacionLottie = ({datos, className, bucle = true, bucleDesde, eti
 
             if (reducirMovimiento) {
                 // sin animacion se deja quieto el cuadro de reposo
-                animacion.addEventListener('DOMLoaded', () => animacion.goToAndStop(bucleDesde ?? datos.op - 1, true));
+                animacion.addEventListener('DOMLoaded', () => animacion.goToAndStop(cuadroReposo ?? bucleDesde ?? datos.op - 1, true));
                 return;
             }
             if (bucle && bucleDesde !== undefined) {
@@ -53,7 +54,7 @@ export const AnimacionLottie = ({datos, className, bucle = true, bucleDesde, eti
             cancelado = true;
             destruir();
         }
-    }, [datos, bucle, bucleDesde, controlada]);
+    }, [datos, bucle, bucleDesde, controlada, cuadroReposo]);
 
     useEffect(() => {
         const animacion = animacionRef.current;
